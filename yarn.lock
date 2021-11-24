@@ -1986,10 +1986,6 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-"@types/@metamask/detect-provider":
-  version "1.2.0"
-  resolved "https://codeload.github.com/metamask/detect-provider/tar.gz/2bbb8e685e0e8ca0a89a00d28a7e4aa3818ef1ce"
-
 "@types/aria-query@^4.2.0":
   version "4.2.2"
   resolved "https://registry.npmjs.org/@types/aria-query/-/aria-query-4.2.2.tgz"
