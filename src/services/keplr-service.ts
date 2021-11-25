@@ -1,68 +1,67 @@
-import { Keplr, Window, Key, ChainInfo } from '@keplr-wallet/types';
+import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
+import { DirectSignResponse } from '@cosmjs/proto-signing';
+import { ChainInfo, Keplr, Key, Window } from '@keplr-wallet/types';
 
-export type KeplrService = {
-  connect: (chainId: string) => Promise<boolean>;
-  getPublicKey: (chainId: string) => Promise<Key | false>;
-  suggestExperimentalChain: (chainInfo: ChainInfo) => Promise<boolean>;
+export type DirectSignDoc = {
+  chainId: string;
+  /** SignDoc bodyBytes */
+  bodyBytes?: Uint8Array | null;
+  /** SignDoc authInfoBytes */
+  authInfoBytes?: Uint8Array | null;
+  /** SignDoc accountNumber */
+  accountNumber?: Long | null;
 }
 
-const keplr = new Promise<Keplr | null>((resolve) => {
+export interface IKeplrService {
+  readonly connect: (chainId: string) => Promise<void>;
+  readonly getPublicKey: (chainId: string) => Promise<Key>;
+  readonly suggestExperimentalChain: (chainInfo: ChainInfo) => Promise<void>;
+  readonly sign: (chainId: string, signer: string, signDoc: DirectSignDoc) => Promise<DirectSignResponse>;
+  readonly sendTx: (chainId: string, tx: StdTx, mode: BroadcastMode) => Promise<Uint8Array>;
+}
+
+const keplr = new Promise<Keplr>((resolve, reject) => {
   window.onload = () => {
     const _window = window as Window;
-    if (_window.keplr) {
-      resolve(_window.keplr);
-    } else {
-      resolve(null);
-    }
+    _window.keplr ? resolve(_window.keplr) : reject(new Error('Not found Keplr'));
   };
 });
 
-async function detectKeplrProvider (): Promise<Keplr | null> {
-  return await keplr;
+async function detectKeplrProvider (): Promise<Keplr> {
+  return keplr;
 }
 
-async function connect (chainId: string): Promise<boolean> {
-  try {
-    const keplr = await detectKeplrProvider();
-    if (keplr) {
-      await keplr.enable(chainId);
-      return true;
-    }
-  } catch (error) {
-    console.error(error);
-  }
-  return false;
+async function connect (chainId: string): Promise<void> {
+  const keplr = await detectKeplrProvider();
+  return keplr.enable(chainId);
 }
 
-async function getPublicKey (chainId: string): Promise<Key | false> {
-  try {
-    const keplr = await detectKeplrProvider();
-    if (keplr) {
-      return await keplr.getKey(chainId);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-  return false;
+async function getPublicKey (chainId: string): Promise<Key> {
+  const keplr = await detectKeplrProvider();
+  return keplr.getKey(chainId);
 }
 
-async function suggestExperimentalChain (chainInfo: ChainInfo): Promise<boolean> {
-  try {
-    const keplr = await detectKeplrProvider();
-    if (keplr) {
-      await keplr.experimentalSuggestChain(chainInfo);
-      return true;
-    }
-  } catch (error) {
-    console.error(error);
-  }
-  return false;
+async function suggestExperimentalChain (chainInfo: ChainInfo): Promise<void> {
+  const keplr = await detectKeplrProvider();
+  return keplr.experimentalSuggestChain(chainInfo);
 }
 
-const keplrService: KeplrService = {
-  connect: connect,
-  getPublicKey: getPublicKey,
-  suggestExperimentalChain: suggestExperimentalChain
+async function sign (chainId: string, signer: string, signDoc: DirectSignDoc): Promise<DirectSignResponse> {
+  const keplr = await detectKeplrProvider();
+  return keplr.signDirect(chainId, signer, signDoc);
+}
+
+async function sendTx (chainId: string, tx: StdTx, mode: BroadcastMode = BroadcastMode.Sync): Promise<Uint8Array> {
+  const keplr = await detectKeplrProvider();
+  return keplr.sendTx(chainId, tx, mode);
+}
+
+const keplrService: IKeplrService = {
+  connect,
+  getPublicKey,
+  suggestExperimentalChain,
+  sign,
+  sendTx
 };
 
 export default keplrService;

@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@cosmjs/launchpad": "^0.26.5",
+    "@cosmjs/proto-signing": "^0.26.5",
     "@keplr-wallet/types": "^0.9.6",
     "@metamask/detect-provider": "^1.2.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -14,13 +16,15 @@
     "@types/react-dom": "^17.0.0",
     "big.js": "^6.1.1",
     "dotenv": "^10.0.0",
+    "ethers": "^5.5.1",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "^3.4.4",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
-    "web3": "^1.6.1"
+    "web3": "^1.6.1",
+    "web3-utils": "^1.6.1"
   },
   "scripts": {
     "start": "react-scripts start",
