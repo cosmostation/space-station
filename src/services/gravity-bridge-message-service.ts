@@ -1,4 +1,4 @@
-import { google, gravity } from 'constants/gravity-bridge-main';
+import { google, gravity } from 'constants/gravity-main';
 
 export interface IERC20Token {
   contract?: (string | null);
@@ -14,7 +14,7 @@ function createSendToEthereumMessage (sender: string, ethAddress: string, erc20T
   });
 
   return new google.protobuf.Any({
-		type_url: '/gravity.v1.SendToEthereum',
+		type_url: '/gravity.SendToEthereum',
     value: gravity.v1.SendToEthereum.encode(sendMessage).finish()
 	});
 }

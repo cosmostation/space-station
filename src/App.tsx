@@ -1,9 +1,13 @@
 import './App.css';
 
+import { cosmos } from 'constants/gravity-main';
 import chainInfo from 'constants/keplr-chain-info';
 import dotenv from 'dotenv';
+import _ from 'lodash';
+import Long from 'long';
 import React, { useCallback, useEffect, useState } from 'react';
 import cosmosTxService from 'services/cosmos-tx-service';
+import gravityBridgeLcdService from 'services/gravity-bridge-lcd-service';
 import gravityBridgeMessageService from 'services/gravity-bridge-message-service';
 import keplrService from 'services/keplr-service';
 
@@ -32,8 +36,43 @@ async function sendMessage (): Promise<void> {
     { contract: TOKEN_CONTACT_ADDRESS.WEENUS, amount: '10000000000' }
   );
 
+  console.log('account:', account);
+  console.log('message:', message);
+
   const txBody = cosmosTxService.createTxBody([message]);
-  console.log(txBody);
+  const accountInfo = await gravityBridgeLcdService.getAccountInfo(account.bech32Address);
+
+  const chainId = chainInfo.gravityBridge.chainId;
+  const sequence = new Long(_.toInteger(accountInfo.sequence));
+  const fee = '0';
+  const gasLimit = new Long(200000);
+  const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
+
+  const authInfo = cosmosTxService.getAuthInfo(
+    account.pubKey,
+    sequence,
+    fee,
+    gasLimit,
+    mode,
+  );
+  console.log('AuthInfo:', authInfo);
+
+  const signDoc = cosmosTxService.getSignDoc(
+    chainId,
+    txBody,
+    authInfo,
+    _.toInteger(accountInfo.account_number)
+  );
+  console.log('SignDoc:', signDoc);
+
+  const signature = await keplrService.sign(chainId, account.bech32Address, signDoc);
+  console.log('Signautre:', signature);
+
+  const txBytes = cosmosTxService.createTxRawBytes(signature);
+  console.log('TxBytes:', txBytes);
+
+  const broadcastResult = await gravityBridgeLcdService.broadcastProtoTx(txBytes, cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC);
+  console.log('BroadcastResult:', broadcastResult);
 }
 
 function App () {

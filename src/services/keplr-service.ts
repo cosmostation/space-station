@@ -1,23 +1,22 @@
-import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
+import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { ChainInfo, Keplr, Key, Window } from '@keplr-wallet/types';
+import { cosmos } from 'constants/gravity-main';
+import Long from 'long';
 
 export type DirectSignDoc = {
   chainId: string;
-  /** SignDoc bodyBytes */
-  bodyBytes?: Uint8Array | null;
-  /** SignDoc authInfoBytes */
-  authInfoBytes?: Uint8Array | null;
-  /** SignDoc accountNumber */
-  accountNumber?: Long | null;
+  bodyBytes: Uint8Array;
+  authInfoBytes: Uint8Array;
+  accountNumber: Long;
 }
 
 export interface IKeplrService {
   readonly connect: (chainId: string) => Promise<void>;
   readonly getPublicKey: (chainId: string) => Promise<Key>;
   readonly suggestExperimentalChain: (chainInfo: ChainInfo) => Promise<void>;
-  readonly sign: (chainId: string, signer: string, signDoc: DirectSignDoc) => Promise<DirectSignResponse>;
-  readonly sendTx: (chainId: string, tx: StdTx, mode: BroadcastMode) => Promise<Uint8Array>;
+  readonly sign: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
+  readonly sendTx: (chainId: string, txBytes: Uint8Array, mode: BroadcastMode) => Promise<Uint8Array>;
 }
 
 const keplr = new Promise<Keplr>((resolve, reject) => {
@@ -46,14 +45,20 @@ async function suggestExperimentalChain (chainInfo: ChainInfo): Promise<void> {
   return keplr.experimentalSuggestChain(chainInfo);
 }
 
-async function sign (chainId: string, signer: string, signDoc: DirectSignDoc): Promise<DirectSignResponse> {
+async function sign (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
   const keplr = await detectKeplrProvider();
-  return keplr.signDirect(chainId, signer, signDoc);
+  const _signDoc: DirectSignDoc = {
+    chainId,
+    bodyBytes: signDoc.body_bytes,
+    authInfoBytes: signDoc.auth_info_bytes,
+    accountNumber: signDoc.account_number as Long
+  }
+  return keplr.signDirect(chainId, signer, _signDoc);
 }
 
-async function sendTx (chainId: string, tx: StdTx, mode: BroadcastMode = BroadcastMode.Sync): Promise<Uint8Array> {
+async function sendTx (chainId: string, txBytes: Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
   const keplr = await detectKeplrProvider();
-  return keplr.sendTx(chainId, tx, mode);
+  return keplr.sendTx(chainId, txBytes, mode);
 }
 
 const keplrService: IKeplrService = {
