@@ -98,7 +98,7 @@ const TransferBox: React.FC = () => {
         ethAccount.address,
         selectedToken,
         numberService.convertWithoutDecimal(amount, selectedToken.decimals)
-      ).then(({ txHash }) => {
+      ).then((txHash) => {
           console.log(txHash);
           Toast.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
         }).catch((error) => {

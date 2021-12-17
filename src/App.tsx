@@ -38,7 +38,6 @@ function App () {
         <TransferBox />
       </div>
       <ToastContainer position="top-right" hideProgressBar={true} theme={theme} autoClose={false} />
-      {/* <Delegator/> */}
     </div>
   );
 }

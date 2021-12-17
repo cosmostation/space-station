@@ -35,7 +35,7 @@ async function getContract (abi: AbiItem[], contractAddress: string): Promise<Co
   return contract;
 }
 
-async function sendToCosmos (fromAddress: string, erc20Address: string, gravityBridgeAddress: string, amount: string): Promise<unknown> {
+async function sendToCosmos (fromAddress: string, erc20Address: string, gravityBridgeAddress: string, amount: string): Promise<Contract> {
   const contract = await getContract(gravityBridgeAbi as AbiItem[], GRAVITY_BRIDGE_CONTRACT_ADDRESS);
   const method = (contract.methods as gravityBridgetContractMethods).sendToCosmos(erc20Address, gravityBridgeAddress, amount);
   return method.send({ from: fromAddress });
@@ -57,7 +57,7 @@ async function getERC20Info (erc20Address: string): Promise<any> {
   return contract;
 }
 
-async function approve (fromAddress: string, erc20Address: string, spenderAddress: string, amount: string): Promise<unknown> {
+async function approve (fromAddress: string, erc20Address: string, spenderAddress: string, amount: string): Promise<Contract> {
   const contract = await getContract(erc20Abi as AbiItem[], erc20Address);
   const method = (contract.methods as erc20ContractMethods).approve(spenderAddress, amount);
   return method.send({ from: fromAddress });
