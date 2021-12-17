@@ -4,7 +4,6 @@
   padding: 0;
   overflow: visible;
   /* inherit font & color from ancestor */
-  color: inherit;
   font: inherit;
 
   /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
@@ -51,6 +50,10 @@
 
 .IconButton img {
   width: 12px;
+}
+
+.IconButton path {
+  stroke: var(--app-font-color);
 }
 
 .Button:disabled {

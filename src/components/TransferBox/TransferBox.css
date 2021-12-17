@@ -74,8 +74,12 @@
   cursor: pointer;
 }
 
+.token-selector-max-button .Text {
+  color: var(--base-00) !important;
+}
+
 .token-selector-token-amount-input {
-  color: var(--base-03);
+  color: var(--input-color);
   font-size: 1.5rem;
   background: transparent;
   border: none;

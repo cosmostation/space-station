@@ -16,6 +16,7 @@ import useEthAccount from 'hooks/use-eth-account';
 import useGravityBridgeAccount from 'hooks/use-gravity-bridge-account';
 import useTokenBalance from 'hooks/use-token-balance';
 import arrowIcon from 'images/arrow-icon.png';
+import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
 import defaultTokenIcon from 'images/default-token-icon.png';
 import ethIcon from 'images/ethereum-icon.png';
 import gravityBridgeIcon from 'images/gravity-bridge-icon.png';
@@ -100,8 +101,7 @@ const TransferBox: React.FC = () => {
           console.log(txHash);
           Toast.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
         }).catch((error) => {
-          console.error(error);
-          Toast.showTxFailToast(selectedToken, amount, toNetwork, error.toString());
+          Toast.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
         }).finally(() => setTxBroadcastingOpened(false))
     }
   }, [ethAccount, selectedToken, amount, toNetwork, setTxBroadcastingOpened]);
@@ -157,7 +157,7 @@ const TransferBox: React.FC = () => {
                 {selectedToken?.symbol ? selectedToken.symbol : 'Select Token'}
               </Text>
               <IconButton size="small">
-                <img src={selectArrowIcon} alt="select button icon" />
+                <ArrowNoTailIcon/>
               </IconButton>
             </div>
             {selectedToken !== undefined ? (

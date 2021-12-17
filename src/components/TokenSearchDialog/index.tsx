@@ -92,8 +92,9 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, className, sele
   }, [select, close]);
 
   const onClose = useCallback(() => {
+    setSearchText('');
     close();
-  }, [close])
+  }, [close, setSearchText])
 
   return (
     <DialogContainer open={open} close={onClose}>

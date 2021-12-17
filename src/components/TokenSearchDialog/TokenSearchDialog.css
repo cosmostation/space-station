@@ -20,15 +20,15 @@
   height: 48px;
   padding: 0 12px;
   box-sizing: border-box;
-  color: var(--base-00);
+  color: var(--input-color);
   background: transparent;
-  border: 1px solid var(--base-03);
+  border: 1px solid var(--input-border-color);
   border-radius: 9px;
 }
 
 .token-search-input:focus-visible {
   outline: 0;
-  border: 1px solid var(--base-00);
+  border: 1px solid var(--input-focus-border-color);
 }
 
 .no-token-candidate {
@@ -53,7 +53,7 @@
 }
 
 .token-list-item:hover {
-  background-color: var(--base-06);
+  background-color: var(--token-list-item-hover-color);
 }
 
 .token-list-item-icon {

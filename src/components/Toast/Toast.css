@@ -18,3 +18,7 @@
   font-size: 0.938rem;
   line-height: 1.2rem;
 }
+
+.toast-error-detail {
+  margin-top: 8px;
+}

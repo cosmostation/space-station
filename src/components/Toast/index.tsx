@@ -34,13 +34,13 @@ function showTxSuccessToast (tokenInfo: TokenInfo, amount: string, txHash: strin
 }
 
 
-function showTxFailToast (tokenInfo: TokenInfo, amount: string, toNetwork: SupportedNetwork, errorMessage: string) {
+function showTxFailToast (tokenInfo: TokenInfo, amount: string, toNetwork: SupportedNetwork, errorMessage?: string) {
   const _toNetwork = toNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge';
   const message = `Failed to transfer ${amount} ${tokenInfo.symbol} to ${_toNetwork}`;
   return toast(
     <div className="toast-message">
       <p>{message}</p>
-      <Text size="tiny">{errorMessage}</Text>
+      {errorMessage ? <Text size="tiny" className="toast-error-detail">{errorMessage}</Text> : <></>}
     </div>,
     {
       icon: () =>  <img src={FailIcon} alt="fail" className="toast-icon"/>

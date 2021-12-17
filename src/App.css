@@ -15,6 +15,7 @@ html {
 
 .dark {
   --app-background-color: linear-gradient(115.04deg, #501882 -9.96%, #000000 46.01%, #0C637E 100.24%);
+  --app-font-color: var(--base-00);
 
   --header-font-color: var(--base-00);
   --header-base-color: var(--base-07);
@@ -24,10 +25,17 @@ html {
   --token-selector-background-color: var(--base-07);
   --token-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   --toastify-color-dark: var(--base-06);
+
+  --input-color: var(--base-03);
+  --input-border-color: var(--base-03);
+  --input-focus-border-color: var(--base-00);
+
+  --token-list-item-hover-color: var(--base-06);
 }
 
 .light {
   --app-background-color: linear-gradient(115.04deg, #C6D4F3 -9.96%, #C9E3E1 46.01%, #D0E2E7 100.24%);
+  --app-font-color: var(--base-05);
 
   --header-font-color: var(--base-05);
   --header-base-color: var(--base-00);
@@ -36,6 +44,12 @@ html {
 
   --token-selector-background-color: var(--base-00);
   --token-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  --input-color: var(--base-05);
+  --input-border-color: var(--base-05);
+  --input-focus-border-color: var(--base-05);
+
+  --token-list-item-hover-color: var(--base-01);
 }
 
 .App {
@@ -43,7 +57,7 @@ html {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  color: white;
+  color: var(--app-font-color);
 }
 
 .container {

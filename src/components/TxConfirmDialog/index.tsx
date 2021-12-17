@@ -90,7 +90,7 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
           </Box>
         </Row>
         <Row>
-          <Button className={classNames('tx-confirm-transfer-button')} onClick={onConfirm}>
+          <Button className={classNames('tx-confirm-transfer-button')} onClick={onConfirm} type="primary">
             Transfer
           </Button>
         </Row>
