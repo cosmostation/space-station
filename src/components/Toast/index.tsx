@@ -5,7 +5,6 @@ import Text from 'components/Text';
 import dotenv from 'dotenv';
 import FailIcon from 'images/fail-icon.png';
 import SuccessIcon from 'images/success-icon.png';
-import _ from 'lodash';
 import React from 'react';
 import { toast } from 'react-toastify';
 import { SupportedNetwork } from 'types';
@@ -26,7 +25,7 @@ function showTxSuccessToast (tokenInfo: TokenInfo, amount: string, txHash: strin
   const message = `Succeed to transfer ${amount} ${tokenInfo.symbol} to ${_toNetwork}`;
   return toast(<>
     <p className="toast-message">{message}</p>
-    <a className="toast-explorer-link" href={explorerLink} target="_blank">
+    <a className="toast-explorer-link" href={explorerLink} target="_blank" rel="noopener noreferrer">
       <Text size="tiny">View on Explorer</Text>
     </a>
   </>, {

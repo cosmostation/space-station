@@ -5,12 +5,9 @@ import classNames from 'classnames';
 import Header from 'components/Header';
 import TransferBox from 'components/TransferBox';
 import dotenv from 'dotenv';
-import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import themeStore, { ThemeType } from 'stores/theme-store';
-
-import Delegator from './Delegator';
 
 dotenv.config();
 

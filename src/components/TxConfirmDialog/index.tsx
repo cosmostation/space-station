@@ -11,8 +11,7 @@ import Text from 'components/Text';
 import arrowIcon from 'images/arrow-icon.png';
 import closeIcon from 'images/close-icon.png';
 import defaultTokenIcon from 'images/default-token-icon.png';
-import _ from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { SupportedNetwork } from 'types';
 
 type TxSenderProps = {

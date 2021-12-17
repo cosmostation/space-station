@@ -24,6 +24,6 @@ export default function useTokenBalance (network: SupportedNetwork, address?: st
     } else {
       setBalance('0');
     }
-  }, [network, address, tokenInfo]);
+  }, [network, address, tokenInfo, rounds]);
   return balance;
 }

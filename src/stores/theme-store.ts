@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 
 export enum ThemeType {

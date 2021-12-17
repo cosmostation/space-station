@@ -20,7 +20,7 @@ const DialogContainer: React.FC<DialogContainerProps> = ({ open, children, close
 
   const onClose = useCallback(() => {
     close();
-  }, [])
+  }, [close])
 
   return (
     <Dialog open={open} onClose={onClose} className={theme}>

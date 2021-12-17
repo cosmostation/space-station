@@ -20,13 +20,11 @@ import defaultTokenIcon from 'images/default-token-icon.png';
 import ethIcon from 'images/ethereum-icon.png';
 import gravityBridgeIcon from 'images/gravity-bridge-icon.png';
 import selectArrowIcon from 'images/select-arrow-icon.png';
-import SuccessIcon from 'images/success-icon.png';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import numberService from 'services/number-service';
 import transferService from 'services/transfer-service';
 import { SupportedNetwork } from 'types';
-
 
 const TransferBox: React.FC = () => {
   const [fromNetwork, setFromNetwork] = useState<SupportedNetwork>(SupportedNetwork.Eth);
@@ -57,7 +55,7 @@ const TransferBox: React.FC = () => {
       setToNetwork(SupportedNetwork.GravityBridge);
       setFromNetwork(SupportedNetwork.Eth);
     }
-  }, [fromNetwork, setFromNetwork, toNetwork, setToNetwork]);
+  }, [fromNetwork, setFromNetwork, setToNetwork]);
 
   const onClickMax = useCallback(() => {
     setAmount(tokenBalance);

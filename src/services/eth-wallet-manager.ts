@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import _ from 'lodash';
 import metaMaskWallet from 'services/meta-mask-wallet';
 import web3Service from 'services/web3-service';
 import ethAccountStore from 'stores/eth-account-store';

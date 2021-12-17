@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { erc20ContractMethods, gravityBridgetContractMethods } from 'types';
 import Web3 from 'web3';
 import { AbstractProvider } from 'web3-core';
-import { Contract, ContractSendMethod } from 'web3-eth-contract';
+import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 
 import metaMaskService from './meta-mask-wallet';

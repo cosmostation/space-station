@@ -34,8 +34,8 @@ const Header: React.FC<any> = () => {
       <div className="logo-container">
         <>
           { currentTheme === ThemeType.Dark
-            ? <img src={DarkLogo} className="logo" />
-            : <img src={LightLogo} className="logo" />
+            ? <img src={DarkLogo} className="logo" alt="Gravity bridge logo"/>
+            : <img src={LightLogo} className="logo" alt="Gravity bridge logo"/>
           }
         </>
       </div>

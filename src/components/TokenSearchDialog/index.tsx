@@ -89,7 +89,7 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, className, sele
   const onTokenSelect = useCallback((tokenInfo: TokenInfo) => {
     select(tokenInfo);
     close();
-  }, []);
+  }, [select, close]);
 
   const onClose = useCallback(() => {
     close();
@@ -123,7 +123,7 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, className, sele
           <ul className="token-candidate-list">
             {_.map(candidates, (token, i) => (
               <li className="token-list-item" key={`${token.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
-                <img src={token.logoURI ? token.logoURI : defaultTokenIcon} className="token-list-item-icon"/>
+                <img src={token.logoURI ? token.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.symbol} logo`}/>
                 <div>
                   <Text size="small">{token.symbol}</Text>
                   <Text size="tiny" muted className="token-list-token-name">{token.name}</Text>

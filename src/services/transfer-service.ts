@@ -1,6 +1,5 @@
 import { TokenInfo } from '@uniswap/token-lists';
 import dotenv from 'dotenv';
-import _ from 'lodash';
 import web3Service from 'services/web3-service';
 
 dotenv.config();

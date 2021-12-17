@@ -4,16 +4,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { TokenInfo } from '@uniswap/token-lists';
 import classNames from 'classnames';
 import Box from 'components/Box';
-import Button from 'components/Button';
 import DialogContainer from 'components/DialogContainer';
-import IconButton from 'components/IconButton';
 import Row from 'components/Row';
 import Text from 'components/Text';
-import closeIcon from 'images/close-icon.png';
-import { ReactComponent as SuccessIcon } from 'images/success-icon.svg';
-import { ReactComponent as FailIcon } from 'images/warn-icon.svg';
 import _ from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { SupportedNetwork } from 'types';
 
 type TxBroadcastDialogProps = {
