@@ -1,0 +1,104 @@
+.Box.TransferBox {
+  width: 440px;
+}
+
+.transfer-box-heading {
+  margin-bottom: 20px;
+}
+
+.Box.network-container {
+  width: 156px;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.network-container-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.network-container-muted {
+  margin-bottom: 16px;
+}
+
+.network-container-name {
+  white-space: nowrap;
+  width: 10px;
+  z-index: 10;
+}
+
+.network-container-icon.eth {
+  width: 30px;
+  height: 49px;
+}
+
+.network-container-icon.gravity-bridge {
+  width: 100px;
+  height: 38px;
+}
+
+.change-direction-button-arrow-icon {
+  width: 15px;
+}
+
+.token-selector {
+  background-color: var(--token-selector-background-color);
+  box-shadow: var(--token-selector-shadow);
+  border-radius: 8px;
+  height: 40px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  flex-basis: min-content;
+  cursor: pointer;
+}
+
+.token-selector-token-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.token-selector-token-name {
+  margin: 0 8px;
+  font-size: 0.938rem;
+  white-space: nowrap;
+}
+
+.token-selector-max-button {
+  padding: 4px 9px;
+  background: var(--blue);
+  border-radius: 8px;
+  margin-left: 12px;
+  cursor: pointer;
+}
+
+.token-selector-token-amount-input {
+  color: var(--base-03);
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  text-align: right;
+  width: 150px;
+  padding: 0;
+  flex-grow: 1;
+}
+
+.token-selector-token-amount-input:focus-visible {
+  outline: none;
+}
+
+.token-selector-second-row {
+  display: flex;
+  margin-top: 10px;
+}
+
+.transfer-button-container {
+  margin-top: 16px;
+}
+
+.transfer-button {
+  width: 100%;
+  height: 52px;
+}

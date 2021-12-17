@@ -1,0 +1,25 @@
+.Box {
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.Box.density-1 {
+  padding: 16px;
+}
+
+.dark .Box {
+  background: var(--base-07);
+}
+
+.dark .Box.depth-1 {
+  background: var(--base-06);
+}
+
+.light .Box {
+  background: var(--base-00);
+}
+
+.light .Box.depth-1 {
+  background: var(--base-01);
+}

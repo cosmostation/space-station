@@ -2,8 +2,8 @@ import { ChainInfo } from '@keplr-wallet/types';
 
 const gravityBridge: ChainInfo = {
   chainName: 'GravityBridge',
-  chainId: 'cgbtestnet1',
-  rest: 'http://220.76.21.184:20301',
+  chainId: 'gravity-bridge-1',
+  rest: 'https://lcd-gravity-bridge.cosmostation.io',
   rpc: 'http://220.76.21.184:20302',
   stakeCurrency: {
     coinDenom: 'GRAVITON',
@@ -14,12 +14,12 @@ const gravityBridge: ChainInfo = {
     coinType: 118
   },
   bech32Config: {
-    bech32PrefixAccAddr: 'cosmos',
-    bech32PrefixAccPub: 'cosmospub',
-    bech32PrefixValAddr: 'cosmosvaloper',
-    bech32PrefixValPub: 'cosmosvaloperpub',
-    bech32PrefixConsAddr: 'cosmosvalcons',
-    bech32PrefixConsPub: 'cosmosvalconspub'
+    bech32PrefixAccAddr: 'gravity',
+    bech32PrefixAccPub: 'gravitypub',
+    bech32PrefixValAddr: 'gravityvaloper',
+    bech32PrefixValPub: 'gravityvaloperpub',
+    bech32PrefixConsAddr: 'gravityvalcons',
+    bech32PrefixConsPub: 'gravityvalconspub'
   },
   currencies: [
     {
@@ -34,7 +34,12 @@ const gravityBridge: ChainInfo = {
       coinMinimalDenom: 'ugraviton',
       coinDecimals: 6
     }
-  ]
+  ],
+  gasPriceStep: {
+    low: 0,
+    average: 0,
+    high: 0
+  }
 };
 
 const chainInfoMap: Record<string, ChainInfo> = {

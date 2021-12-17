@@ -1,0 +1,39 @@
+.Text {
+  color: var(--base-00);
+  font-size: 1.125rem;
+  line-height: 1.125rem;
+  font-family: Questrial, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+.Text.tiny {
+  font-size: 0.75rem;
+  line-height: 0.75rem;
+}
+
+.Text.small {
+  font-size: 0.938rem;
+  line-height: 0.938rem;
+}
+
+.Text.big {
+  font-size: 1.75rem;
+  line-height: 1.813rem;
+}
+
+.dark .Text {
+  color: var(--base-00);
+}
+
+.dark .Text.muted {
+  color: var(--base-03);
+}
+
+.light .Text {
+  color: var(--base-05);
+}
+
+.light .Text.muted {
+  color: var(--base-03);
+}

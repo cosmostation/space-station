@@ -1,0 +1,41 @@
+.Box.TxBroadcasting {
+  width: 380px;
+  height: fit-content;
+  margin-top: 90px;
+  z-index: 1000;
+}
+
+.tx-broadcasting-content {
+  height: 366px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tx-broadcasting-progress {
+  color: var(--blue);
+}
+
+.tx-broadcasting-success {
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  border: 3px solid var(--blue);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tx-broadcasting-fail {
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  border: 3px solid var(--red);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tx-broadcasting-message {
+  margin-top: 40px;
+}

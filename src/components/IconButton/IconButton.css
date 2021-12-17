@@ -1,0 +1,76 @@
+.IconButton {
+  border: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  /* inherit font & color from ancestor */
+  color: inherit;
+  font: inherit;
+
+  /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+  line-height: normal;
+
+  /* Corrects font smoothing for webkit */
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+
+  /* Corrects inability to style clickable `input` types in iOS */
+  -webkit-appearance: none;
+
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.IconButton:focus-visible {
+  outline: none;
+}
+
+.IconButton.big {
+  width: 36px;
+  height: 36px;
+}
+
+.IconButton.small {
+  width: 28px;
+  height: 28px;
+}
+
+.dark .IconButton.primary,
+.light .IconButton.primary {
+  background-color: var(--blue);
+}
+
+.dark .IconButton.primary:hover,
+.light .IconButton.primary:hover {
+  background-color: var(--blue);
+}
+
+.IconButton img {
+  width: 12px;
+}
+
+.Button:disabled {
+  background-color: var(--base-05);
+  color: var(--base-04);
+  cursor: not-allowed;
+}
+
+.dark .IconButton {
+  background-color: var(--base-07);
+}
+
+.dark .IconButton:hover {
+  background-color: var(--base-06);
+}
+
+.light .IconButton {
+  background-color: var(--base-00);
+}
+
+.light .IconButton:hover {
+  background-color: var(--base-01);
+}

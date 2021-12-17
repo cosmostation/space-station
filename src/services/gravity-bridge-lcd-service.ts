@@ -22,6 +22,12 @@ async function getAccountInfo (address: string): Promise<AccountInfoResponse> {
   return _.get(response, 'data.account') as AccountInfoResponse;
 }
 
+async function getBalance (address: string): Promise<any> {
+  const url = `${LCD_ENDPOINT}/cosmos/bank/v1beta1/balances/${address}`;
+  const response = await axios.get(url);
+  return _.get(response, 'data.balances');
+}
+
 function getTx (txHash: string): Promise<unknown> {
   const url = `${LCD_ENDPOINT}/cosmos/tx/v1beta1/txs/${txHash}`;
   return axios.get(url)
@@ -38,6 +44,7 @@ async function broadcastProtoTx (txBytes: Uint8Array, broadCastMode: cosmos.tx.v
 
 export default {
   getAccountInfo,
+  getBalance,
   getTx,
   broadcastProtoTx,
 };

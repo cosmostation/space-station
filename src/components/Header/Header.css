@@ -1,0 +1,85 @@
+.header {
+  padding: 12px 0;
+  min-width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container {
+  padding: 0 25px;
+}
+
+.logo {
+  width: 180px;
+  height: 24px;
+}
+
+.buttons-container {
+  padding: 0 20px;
+  display: flex;
+}
+
+.button {
+  background-color: var(--header-base-color);
+  color: var(--header-font-color);
+  border: none;
+  border-radius: 8px;
+}
+
+.button:hover {
+  background-color: var(--header-active-color);
+}
+
+.connect-button {
+  width: 160px;
+  height: 36px;
+  margin-right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.wallet-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+}
+
+.connected-button {
+  padding: 0 8px;
+  height: 36px;
+  margin-right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.balance-container {
+  height: 20px;
+  padding: 0 8px;
+  background-color: var(--header-accent-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connected-icon {
+  width: 8px;
+  height: 8px;
+  margin: 0 12px;
+  background-color: var(--green);
+  border-radius: 50%;
+}
+
+.blockies {
+  width: 16px;
+  height: 16px;
+  margin: 0 12px;
+  border-radius: 50%;
+}

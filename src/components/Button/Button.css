@@ -1,0 +1,43 @@
+.Button {
+  border: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  /* inherit font & color from ancestor */
+  color: inherit;
+  font: inherit;
+
+  /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+  line-height: normal;
+
+  /* Corrects font smoothing for webkit */
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+
+  /* Corrects inability to style clickable `input` types in iOS */
+  -webkit-appearance: none;
+
+  border-radius: 8px;
+  background-color: var(--blue);
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+}
+
+.Button:disabled,
+.Button.primary:disabled {
+  background-color: var(--base-05);
+  color: var(--base-04);
+  cursor: not-allowed;
+}
+
+.light .Button:disabled {
+  background-color: var(--base-02);
+}
+
+.Button.primary {
+  background-color: var(--blue);
+}

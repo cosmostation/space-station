@@ -1,23 +1,9 @@
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
-import { ChainInfo, Keplr, Key, Window } from '@keplr-wallet/types';
+import { ChainInfo, Keplr, Window } from '@keplr-wallet/types';
 import { cosmos } from 'constants/gravity-main';
 import Long from 'long';
-
-export type DirectSignDoc = {
-  chainId: string;
-  bodyBytes: Uint8Array;
-  authInfoBytes: Uint8Array;
-  accountNumber: Long;
-}
-
-export interface IKeplrService {
-  readonly connect: (chainId: string) => Promise<void>;
-  readonly getPublicKey: (chainId: string) => Promise<Key>;
-  readonly suggestExperimentalChain: (chainInfo: ChainInfo) => Promise<void>;
-  readonly sign: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
-  readonly sendTx: (chainId: string, txBytes: Uint8Array, mode: BroadcastMode) => Promise<Uint8Array>;
-}
+import { AccountChangeEventHandler, DirectSignDoc, GravityBridgeAccount, IGravityBridgeWallet } from 'types';
 
 const keplr = new Promise<Keplr>((resolve, reject) => {
   window.onload = () => {
@@ -35,9 +21,14 @@ async function connect (chainId: string): Promise<void> {
   return keplr.enable(chainId);
 }
 
-async function getPublicKey (chainId: string): Promise<Key> {
+async function getAccount (chainId: string): Promise<GravityBridgeAccount> {
   const keplr = await detectKeplrProvider();
-  return keplr.getKey(chainId);
+  const key = await keplr.getKey(chainId);
+  return {
+    address: key.bech32Address,
+    balance: '0',
+    pubKey: key.pubKey
+  };
 }
 
 async function suggestExperimentalChain (chainInfo: ChainInfo): Promise<void> {
@@ -61,12 +52,19 @@ async function sendTx (chainId: string, txBytes: Uint8Array, mode: BroadcastMode
   return keplr.sendTx(chainId, txBytes, mode);
 }
 
-const keplrService: IKeplrService = {
+async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
+  window.addEventListener('keplr_keystorechange', () => {
+    handler(undefined);
+  })
+}
+
+const keplrWallet: IGravityBridgeWallet = {
   connect,
-  getPublicKey,
+  getAccount,
   suggestExperimentalChain,
   sign,
-  sendTx
+  sendTx,
+  onAccountChange,
 };
 
-export default keplrService;
+export default keplrWallet;

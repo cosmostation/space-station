@@ -11,7 +11,7 @@ function createTxBody (messages: google.protobuf.IAny[], memo: string = '') {
   return new cosmos.tx.v1beta1.TxBody({ messages, memo });
 }
 
-function getAuthInfo (publicKey: Uint8Array, sequence: Long, feeAmount: string, gasLimit: Long | null, mode: cosmos.tx.signing.v1beta1.SignMode) {
+function getAuthInfo (publicKey: Uint8Array, sequence: Long, feeAmount: string, gasLimit: Long, mode: cosmos.tx.signing.v1beta1.SignMode) {
   const publicKeyProto = new cosmos.crypto.secp256k1.PubKey({ key: publicKey });
 
   const signerInfo = new cosmos.tx.v1beta1.SignerInfo({
@@ -38,7 +38,7 @@ function getSignDoc (
   chainId: string,
   txBody: cosmos.tx.v1beta1.ITxBody,
   authInfo: cosmos.tx.v1beta1.AuthInfo,
-  accountNumber: number
+  accountNumber: Long
 ): cosmos.tx.v1beta1.SignDoc {
   const bodyBytes = cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
   const authInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
@@ -47,13 +47,14 @@ function getSignDoc (
     chain_id: chainId,
     body_bytes: bodyBytes,
     auth_info_bytes: authInfoBytes,
-    account_number: new Long(accountNumber)
+    account_number: accountNumber
   });
   return signDoc;
 }
 
 function createTxRawBytes (directSignResponse: DirectSignResponse): Uint8Array {
-  const _signature = Buffer.from(directSignResponse.signature.signature, 'hex');
+  const _signature = Buffer.from(directSignResponse.signature.signature, 'base64');
+  console.log(_signature);
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: directSignResponse.signed.bodyBytes,
     auth_info_bytes: directSignResponse.signed.authInfoBytes,

@@ -1,0 +1,12 @@
+.Row {
+  display: flex;
+  align-items: center;
+}
+
+.Row + .Row {
+  margin-top: 16px;
+}
+
+.Row.depth-1 + .Row.depth-1 {
+  margin-top: 8px;
+}

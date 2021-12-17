@@ -1,0 +1,20 @@
+.toast-explorer-link {
+  padding: 4px 8px;
+  margin-top: 10px;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid #81858B;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+
+.toast-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.toast-message {
+  font-size: 0.938rem;
+  line-height: 1.2rem;
+}
