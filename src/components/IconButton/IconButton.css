@@ -56,7 +56,7 @@
   stroke: var(--app-font-color);
 }
 
-.Button:disabled {
+.IconButton:disabled {
   background-color: var(--base-05);
   color: var(--base-04);
   cursor: not-allowed;

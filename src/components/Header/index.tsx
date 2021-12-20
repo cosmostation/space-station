@@ -15,8 +15,9 @@ import Blockies from 'react-blockies';
 import ethWalletManager from 'services/eth-wallet-manager';
 import gravityBridgeWalletManager from 'services/gravity-bridge-wallet-manager';
 import balanceService from 'services/number-service';
+import toastService from 'services/toast-service';
 import themeStore, { ThemeType } from 'stores/theme-store';
-import { Account } from 'types';
+import { Account, MetaMaskPendingRequestError, NoEthWalletError } from 'types';
 
 const Header: React.FC<any> = () => {
   const changeTheme = useCallback(() => {
@@ -90,8 +91,16 @@ interface EthConnectionButtonProps {
 }
 
 const EthConnectButton: React.FC<EthConnectionButtonProps> = (ethConnectionButtonProps) => {
-  const connect = useCallback(() => {
-    ethWalletManager.connect();
+  const connect = useCallback(async () => {
+    try {
+      await ethWalletManager.connect();
+    } catch (error) {
+      if (error instanceof MetaMaskPendingRequestError) {
+        toastService.showPendingMetaMaskRequestToast();
+      } else if (error instanceof NoEthWalletError) {
+        toastService.showNoEthWalletToast();
+      }
+    }
   }, []);
 
   const { ethAccount } = ethConnectionButtonProps;

@@ -2,21 +2,21 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import _ from 'lodash';
 import {
   AccountChangeEventHandler,
-  ConnectEventHandler,
-  DisconnectEventHandler,
+  EthWalletType,
+  IMetaMaskWallet,
   MetaMaskProvider,
-  MetaMaskWallet,
   NetworkChangeEventHandler,
+  NoEthWalletError,
 } from 'types';
 
 function isMetaMaskProvider (provider: unknown): provider is MetaMaskProvider {
-  return (provider as MetaMaskProvider).isMetaMask === true;
+  return _.get(provider, 'isMetaMask', false);
 }
 
 async function getMetaMaskProvider (): Promise<MetaMaskProvider> {
   const provider: any = await detectEthereumProvider();
   if (!isMetaMaskProvider(provider)) {
-    throw new Error('Not found Meta mask');
+    throw new NoEthWalletError();
   }
   return provider;
 }
@@ -26,19 +26,19 @@ async function getChainId (): Promise<string> {
   return provider.request({ method: 'eth_chainId' });
 }
 
-async function isConnected (): Promise<boolean> {
+async function hasPermission (): Promise<boolean> {
   const provider: MetaMaskProvider = await getMetaMaskProvider();
   const permissions = await provider.request({ method: 'wallet_getPermissions' });
   return !_.isEmpty(permissions);
 }
 
-async function connect (chainId: string): Promise<string> {
+async function requestPermission (): Promise<boolean> {
   const provider: MetaMaskProvider = await getMetaMaskProvider();
-  const _chainId = await provider.request({ method: 'eth_chainId' });
-  if (_chainId !== chainId) {
-    await changeChainId(chainId);
-  }
-  return getAccountInfo()
+  const permissions = await provider.request({
+    method: 'wallet_requestPermissions',
+    params: [{ eth_accounts: {} }],
+  });
+  return !_.isEmpty(permissions);
 }
 
 async function changeChainId (chainId: string): Promise<void> {
@@ -61,11 +61,6 @@ async function getEthBalance (address: string): Promise<number> {
   return _.toNumber(balance);
 }
 
-async function onConnect (handler: ConnectEventHandler): Promise<void> {
-  const metaMaskProvider = await getMetaMaskProvider();
-  metaMaskProvider.on('connect', handler);
-}
-
 async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
   const metaMaskProvider = await getMetaMaskProvider();
   metaMaskProvider.on('accountsChanged', handler);
@@ -76,23 +71,17 @@ async function onNetworkChange (handler: NetworkChangeEventHandler): Promise<voi
   metaMaskProvider.on('chainChanged', handler);
 }
 
-async function onDisconnect (handler: DisconnectEventHandler): Promise<void> {
-  const metaMaskProvider = await getMetaMaskProvider();
-  metaMaskProvider.on('disconnect', handler);
-}
-
-const metaMaskWallet: MetaMaskWallet = {
+const metaMaskWallet: IMetaMaskWallet = {
+  walletType: EthWalletType.MetaMask,
   getMetaMaskProvider,
   getChainId,
-  connect,
-  isConnected,
+  requestPermission,
+  hasPermission,
   changeChainId,
   getAccountInfo,
   getEthBalance,
-  onConnect,
   onAccountChange,
   onNetworkChange,
-  onDisconnect
 };
 
 export default metaMaskWallet;

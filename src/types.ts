@@ -4,6 +4,7 @@ import { ChainInfo } from '@keplr-wallet/types';
 import { cosmos } from 'constants/gravity-main';
 import { EventEmitter } from 'events';
 import Long from 'long';
+import Web3Helper from 'services/web3-manager';
 import { AbstractProvider, RequestArguments } from 'web3-core';
 import { ContractSendMethod } from 'web3-eth-contract';
 
@@ -28,35 +29,43 @@ export interface GravityBridgeAccount extends Account {
 
 export interface EthAccount extends Account {}
 
+export type EthWallet = EthWalletManager;
 export enum EthWalletType {
   MetaMask = 'metaMask'
 }
 
-export type ConnectEventHandler = (data: any) => void;
-export type AccountChangeEventHandler = (data: any) => void;
+export type AccountChangeEventHandler = (accounts: string[]) => void;
 export type NetworkChangeEventHandler = (data: any) => void;
-export type DisconnectEventHandler = (data: any) => void;
 
-export interface IEthWallet {
-  isConnected: () => Promise<boolean>;
-  connect: (chainId: string) => Promise<string>;
+export interface EthWalletManager {
+  installed: Promise<boolean>;
+  web3: Web3Helper | null;
+  init: () => Promise<void>;
+  checkConnection: (chainId: string) => Promise<EthAccount | null>;
+  connect: (chainId: string) => Promise<EthAccount | null>;
+  getAccount: () => Promise<EthAccount>;
+  getCurrentChainId: () => Promise<string>;
+  updateNetwork: (chainId: string) => Promise<boolean>;
+  registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
+  registerNetworkChangeHandler: (handler: NetworkChangeEventHandler) => void;
+}
+
+export interface IMetaMaskWallet {
+  walletType: EthWalletType,
+  hasPermission: () => Promise<boolean>;
+  requestPermission: () => Promise<boolean>;
   getChainId: () => Promise<string>;
   changeChainId: (chainId: string) => Promise<void>;
   getAccountInfo: () => Promise<string>;
   getEthBalance: (address: string) => Promise<number>;
-  onConnect?: (handler: ConnectEventHandler) => any;
-  onAccountChange?: (handler: AccountChangeEventHandler) => any;
-  onNetworkChange?: (handler: NetworkChangeEventHandler) => any;
-  onDisconnect?: (handler: DisconnectEventHandler) => any;
+  onAccountChange: (handler: AccountChangeEventHandler) => Promise<void>;
+  onNetworkChange: (handler: NetworkChangeEventHandler) => Promise<void>;
+  getMetaMaskProvider: () => Promise<MetaMaskProvider>;
 }
 
 export interface MetaMaskProvider extends AbstractProvider, EventEmitter {
   isMetaMask?: boolean;
   request (args: RequestArguments): Promise<any>;
-}
-
-export interface MetaMaskWallet extends IEthWallet {
-  getMetaMaskProvider: () => Promise<MetaMaskProvider>;
 }
 
 export type DirectSignDoc = {
@@ -66,7 +75,7 @@ export type DirectSignDoc = {
   accountNumber: Long;
 }
 
-export interface IGravityBridgeWallet {
+export interface IKeplrWallet {
   connect: (chainId: string) => Promise<void>;
   getAccount: (chainId: string) => Promise<GravityBridgeAccount>;
   sign: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
@@ -88,3 +97,6 @@ export type gravityBridgetContractMethods = {
   sendToCosmos: (erc20Address: string, gravityBridgeAddress: string, amount: string) => ContractSendMethod;
   deployERC20: (cosmosDenom: string, tokenName: string, symbol: string, decimal: number) => ContractSendMethod;
 }
+
+export class NoEthWalletError extends Error {};
+export class MetaMaskPendingRequestError extends Error {};

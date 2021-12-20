@@ -3,7 +3,7 @@ import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { ChainInfo, Keplr, Window } from '@keplr-wallet/types';
 import { cosmos } from 'constants/gravity-main';
 import Long from 'long';
-import { AccountChangeEventHandler, DirectSignDoc, GravityBridgeAccount, IGravityBridgeWallet } from 'types';
+import { AccountChangeEventHandler, DirectSignDoc, GravityBridgeAccount, IKeplrWallet } from 'types';
 
 const keplr = new Promise<Keplr>((resolve, reject) => {
   window.onload = () => {
@@ -53,12 +53,10 @@ async function sendTx (chainId: string, txBytes: Uint8Array, mode: BroadcastMode
 }
 
 async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
-  window.addEventListener('keplr_keystorechange', () => {
-    handler(undefined);
-  })
+  (window as any).addEventListener('keplr_keystorechange', handler);
 }
 
-const keplrWallet: IGravityBridgeWallet = {
+const keplrWallet: IKeplrWallet = {
   connect,
   getAccount,
   suggestExperimentalChain,

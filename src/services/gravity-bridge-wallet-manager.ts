@@ -4,11 +4,11 @@ import _ from 'lodash';
 import gravityBridgeLcdService from 'services/gravity-bridge-lcd-service';
 import keplrWallet from 'services/keplr-wallet';
 import gravityBridgeAccountStore from 'stores/gravity-bridge-account-store';
-import { IGravityBridgeWallet } from 'types';
+import { IKeplrWallet } from 'types';
 
 dotenv.config();
 
-let currentWallet: IGravityBridgeWallet = keplrWallet;
+let currentWallet: IKeplrWallet = keplrWallet;
 
 async function connect (): Promise<void> {
   const hasNetwork = await checkNetwork();

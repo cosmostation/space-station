@@ -1,4 +1,5 @@
 import { TokenInfo } from '@uniswap/token-lists';
+import NoEthWalletToast from 'components/Toast/NoEthWalletToast';
 import PendingMetaMaskRequestToast from 'components/Toast/PendingMetaMaskReqeustToast';
 import TxFailToast from 'components/Toast/TxFailToast';
 import TxSuccessToast from 'components/Toast/TxSuccessToast';
@@ -27,8 +28,13 @@ function showPendingMetaMaskRequestToast () {
   toast(<PendingMetaMaskRequestToast/>, { icon: () => <img src={FailIcon} alt="fail" className="toast-icon"/> });
 }
 
+function showNoEthWalletToast () {
+  toast(<NoEthWalletToast/>, { icon: () => <img src={FailIcon} alt="fail" className="toast-icon"/> });
+}
+
 export default {
   showTxSuccessToast,
   showTxFailToast,
   showPendingMetaMaskRequestToast,
+  showNoEthWalletToast,
 }

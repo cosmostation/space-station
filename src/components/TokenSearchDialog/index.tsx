@@ -11,7 +11,7 @@ import defaultTokenIcon from 'images/default-token-icon.png';
 import { ReactComponent as WarnIcon } from 'images/warn-icon.svg';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import web3Service from 'services/web3-service';
+import ethWalletManager from 'services/eth-wallet-manager';
 import { erc20ContractMethods } from 'types';
 import { Contract } from 'web3-eth-contract';
 
@@ -44,14 +44,6 @@ function filterTokenList (tokenList: TokenInfo[], searchText: string): TokenInfo
   })
 }
 
-async function convertERC20Info (address: string, contract: Contract): Promise<TokenInfo> {
-  const name = await (contract.methods as erc20ContractMethods).name().call();
-  const symbol = await (contract.methods as erc20ContractMethods).symbol().call();
-  const decimals = await (contract.methods as erc20ContractMethods).decimals().call();
-  // TODO: support multiple chain ID
-  return { chainId: 1, name, symbol, decimals, address };
-}
-
 const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, className, select, close }) => {
   const [searchText, setSearchText] = useState<string>('');
   const [candidates, setCandidate] = useState<TokenInfo[]>([]);
@@ -72,12 +64,13 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, className, sele
       if (tokenInfo) {
         setCandidate([tokenInfo]);
       } else {
-        web3Service.getERC20Info(value)
-          .then((contract) => convertERC20Info(value, contract))
-          .then((tokenInfo) => setCandidate([tokenInfo]))
-          .catch((error) => {
-            console.error(error);
-            setCandidate([]);
+        ethWalletManager.getERC20Info(value)
+          .then((tokenInfo) => {
+            if (tokenInfo) {
+              setCandidate([tokenInfo])
+            } else {
+              setCandidate([]);
+            }
           });
       }
     } else {

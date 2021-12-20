@@ -21,9 +21,9 @@ import ethIcon from 'images/ethereum-icon.png';
 import gravityBridgeIcon from 'images/gravity-bridge-icon.png';
 import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
+import ethWalletManager from 'services/eth-wallet-manager';
 import numberService from 'services/number-service';
 import toastService from 'services/toast-service';
-import transferService from 'services/transfer-service';
 import { SupportedNetwork } from 'types';
 
 const TransferBox: React.FC = () => {
@@ -34,6 +34,7 @@ const TransferBox: React.FC = () => {
   const [tokenSearcherOpened, setTokenSearcherOpened] = useState<boolean>(false);
   const [txConfirmOpened, setTxConfirmOpened] = useState<boolean>(false);
   const [txBroadcastingOpened, setTxBroadcastingOpened] = useState<boolean>(false);
+  const [erc20BalanceUpdateCounter, setErc20BalanceUpdateCounter] = useState<number>(0);
 
   const gravityBridgeAccount = useGravityBridgeAccount();
   const ethAccount = useEthAccount();
@@ -41,7 +42,8 @@ const TransferBox: React.FC = () => {
     fromNetwork,
     fromNetwork === SupportedNetwork.Eth ? ethAccount?.address : gravityBridgeAccount?.address,
     selectedToken,
-    18
+    6,
+    erc20BalanceUpdateCounter
   );
 
   const walletConnected: boolean = gravityBridgeAccount !== undefined && ethAccount !== undefined;
@@ -69,8 +71,10 @@ const TransferBox: React.FC = () => {
   }, [setAmount]);
 
   const onOpenTokenSearcher = useCallback(() => {
-    setTokenSearcherOpened(true);
-  }, [setTokenSearcherOpened]);
+    if (walletConnected) {
+      setTokenSearcherOpened(true);
+    }
+  }, [setTokenSearcherOpened , walletConnected]);
 
   const onSelectToken = useCallback((token: TokenInfo) => {
     setSelectedToken(token);
@@ -92,12 +96,13 @@ const TransferBox: React.FC = () => {
     setTxConfirmOpened(false);
     setTxBroadcastingOpened(true);
     if (toNetwork === SupportedNetwork.GravityBridge && ethAccount && selectedToken) {
-      transferService.transferToCosmos(
+      ethWalletManager.sendToCosmos(
         ethAccount.address,
         selectedToken,
         numberService.convertWithoutDecimal(amount, selectedToken.decimals)
       ).then((txHash) => {
           toastService.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
+          setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
         }).catch((error) => {
           toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
         }).finally(() => setTxBroadcastingOpened(false))
@@ -145,7 +150,7 @@ const TransferBox: React.FC = () => {
       <Row>
         <Box className="token-selector-container" density={1} depth={1}>
           <Row depth={1}>
-            <div className="token-selector" onClick={onOpenTokenSearcher}>
+            <div className={classNames("token-selector", { disabled: !walletConnected })} onClick={onOpenTokenSearcher}>
               <img
                 className="token-selector-token-icon"
                 src={selectedToken?.logoURI ? selectedToken.logoURI : defaultTokenIcon}
@@ -154,7 +159,7 @@ const TransferBox: React.FC = () => {
               <Text className="token-selector-token-name" size="small">
                 {selectedToken?.symbol ? selectedToken.symbol : 'Select Token'}
               </Text>
-              <IconButton size="small">
+              <IconButton size="small" disabled={!walletConnected}>
                 <ArrowNoTailIcon/>
               </IconButton>
             </div>
