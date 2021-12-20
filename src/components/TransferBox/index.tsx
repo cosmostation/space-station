@@ -8,7 +8,6 @@ import Button from 'components/Button';
 import IconButton from 'components/IconButton';
 import Row from 'components/Row';
 import Text from 'components/Text';
-import Toast from 'components/Toast';
 import TokenSearchDialog from 'components/TokenSearchDialog';
 import TxBroadcastingDialog from 'components/TxBroadcastingDialog';
 import TxConfirmDialog from 'components/TxConfirmDialog';
@@ -20,10 +19,10 @@ import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
 import defaultTokenIcon from 'images/default-token-icon.png';
 import ethIcon from 'images/ethereum-icon.png';
 import gravityBridgeIcon from 'images/gravity-bridge-icon.png';
-import selectArrowIcon from 'images/select-arrow-icon.png';
 import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
 import numberService from 'services/number-service';
+import toastService from 'services/toast-service';
 import transferService from 'services/transfer-service';
 import { SupportedNetwork } from 'types';
 
@@ -98,10 +97,9 @@ const TransferBox: React.FC = () => {
         selectedToken,
         numberService.convertWithoutDecimal(amount, selectedToken.decimals)
       ).then((txHash) => {
-          console.log(txHash);
-          Toast.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
+          toastService.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
         }).catch((error) => {
-          Toast.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
+          toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
         }).finally(() => setTxBroadcastingOpened(false))
     }
   }, [ethAccount, selectedToken, amount, toNetwork, setTxBroadcastingOpened]);

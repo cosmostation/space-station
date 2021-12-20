@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import classNames from 'classnames';
 import Header from 'components/Header';
 import TransferBox from 'components/TransferBox';
+import Delegator from 'Delegator';
 import dotenv from 'dotenv';
 import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
@@ -34,7 +35,8 @@ function App () {
       <div className="container">
         <TransferBox />
       </div>
-      <ToastContainer position="top-right" hideProgressBar={true} theme={theme} autoClose={false} />
+      <ToastContainer position="top-right" hideProgressBar={true} theme={theme} />
+      <Delegator/>
     </div>
   );
 }

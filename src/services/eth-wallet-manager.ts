@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
+import _ from 'lodash';
 import metaMaskWallet from 'services/meta-mask-wallet';
+import toastService from 'services/toast-service';
 import web3Service from 'services/web3-service';
 import ethAccountStore from 'stores/eth-account-store';
 import { IEthWallet } from 'types';
@@ -11,10 +13,15 @@ let currentWallet: IEthWallet = metaMaskWallet;
 let currentChainId: string;
 
 async function connect (): Promise<void> {
-  const networkUpdated = await updateNetwork();
-  if (networkUpdated === true && ETH_CHAIN_ID) {
-    await currentWallet.connect(ETH_CHAIN_ID);
-    afterConnected();
+  try {
+    const networkUpdated = await updateNetwork();
+    if (networkUpdated === true && ETH_CHAIN_ID) {
+      await currentWallet.connect(ETH_CHAIN_ID);
+    }
+  } catch (error) {
+    if ((error as any).code !== undefined && (error as any).code === -32002) {
+      toastService.showPendingMetaMaskRequestToast();
+    }
   }
 }
 
@@ -35,11 +42,12 @@ async function updateNetwork (): Promise<boolean> {
 
 async function init () {
   try {
+    registerEventHandler();
     currentChainId = await currentWallet.getChainId();
     if (currentChainId === ETH_CHAIN_ID) {
       const isConnected = await currentWallet.isConnected();
       if (isConnected) {
-        afterConnected();
+        getEthAccount();
       }
     }
   } catch (error) {
@@ -47,30 +55,31 @@ async function init () {
   }
 }
 
-function afterConnected () {
-  getEthAccount();
-  registerEventHandler();
-}
-
 async function getEthAccount (): Promise<void> {
-  try {
-    const address = await currentWallet.getAccountInfo();
-    const balance = await web3Service.getBalance(address);
-    const account = { address, balance };
-    ethAccountStore.updateAccount(account);
-  } catch (error) {
-    console.error((error as any).message);
-    ethAccountStore.updateAccount(undefined);
-  }
+  const address = await currentWallet.getAccountInfo();
+  const balance = await web3Service.getBalance(address);
+  const account = { address, balance };
+  ethAccountStore.updateAccount(account);
 }
 
 async function registerEventHandler (): Promise<void> {
-  if (currentWallet && currentWallet.onAccountChange) {
-    currentWallet.onAccountChange(() => {
+  if (currentWallet && currentWallet.onConnect) {
+    currentWallet.onConnect(() => {
       if (currentChainId !== ETH_CHAIN_ID) {
         ethAccountStore.updateAccount(undefined);
       } else {
         getEthAccount();
+      }
+    })
+  }
+
+  if (currentWallet && currentWallet.onAccountChange) {
+    currentWallet.onAccountChange(async (data) => {
+      const connected = await currentWallet.isConnected();
+      if (connected === true && currentChainId === ETH_CHAIN_ID && !_.isEmpty(data)) {
+        getEthAccount();
+      } else {
+        ethAccountStore.updateAccount(undefined);
       }
     });
   }
@@ -83,6 +92,12 @@ async function registerEventHandler (): Promise<void> {
       } else {
         getEthAccount();
       }
+    })
+  }
+
+  if (currentWallet && currentWallet.onDisconnect) {
+    currentWallet.onDisconnect(() => {
+      ethAccountStore.updateAccount(undefined);
     })
   }
 }

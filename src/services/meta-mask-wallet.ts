@@ -1,6 +1,13 @@
 import detectEthereumProvider from '@metamask/detect-provider';
 import _ from 'lodash';
-import { AccountChangeEventHandler, MetaMaskProvider, MetaMaskWallet, NetworkChangeEventHandler } from 'types';
+import {
+  AccountChangeEventHandler,
+  ConnectEventHandler,
+  DisconnectEventHandler,
+  MetaMaskProvider,
+  MetaMaskWallet,
+  NetworkChangeEventHandler,
+} from 'types';
 
 function isMetaMaskProvider (provider: unknown): provider is MetaMaskProvider {
   return (provider as MetaMaskProvider).isMetaMask === true;
@@ -25,12 +32,13 @@ async function isConnected (): Promise<boolean> {
   return !_.isEmpty(permissions);
 }
 
-async function connect (chainId: string): Promise<void> {
+async function connect (chainId: string): Promise<string> {
   const provider: MetaMaskProvider = await getMetaMaskProvider();
   const _chainId = await provider.request({ method: 'eth_chainId' });
   if (_chainId !== chainId) {
     await changeChainId(chainId);
   }
+  return getAccountInfo()
 }
 
 async function changeChainId (chainId: string): Promise<void> {
@@ -53,6 +61,11 @@ async function getEthBalance (address: string): Promise<number> {
   return _.toNumber(balance);
 }
 
+async function onConnect (handler: ConnectEventHandler): Promise<void> {
+  const metaMaskProvider = await getMetaMaskProvider();
+  metaMaskProvider.on('connect', handler);
+}
+
 async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
   const metaMaskProvider = await getMetaMaskProvider();
   metaMaskProvider.on('accountsChanged', handler);
@@ -63,6 +76,11 @@ async function onNetworkChange (handler: NetworkChangeEventHandler): Promise<voi
   metaMaskProvider.on('chainChanged', handler);
 }
 
+async function onDisconnect (handler: DisconnectEventHandler): Promise<void> {
+  const metaMaskProvider = await getMetaMaskProvider();
+  metaMaskProvider.on('disconnect', handler);
+}
+
 const metaMaskWallet: MetaMaskWallet = {
   getMetaMaskProvider,
   getChainId,
@@ -71,8 +89,10 @@ const metaMaskWallet: MetaMaskWallet = {
   changeChainId,
   getAccountInfo,
   getEthBalance,
+  onConnect,
   onAccountChange,
-  onNetworkChange
+  onNetworkChange,
+  onDisconnect
 };
 
 export default metaMaskWallet;

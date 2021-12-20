@@ -33,10 +33,15 @@ async function checkNetwork (): Promise<boolean> {
 async function getAccount (): Promise<void> {
   try {
     const account = await currentWallet.getAccount(chainInfo.gravityBridge.chainId);
-    const _balance = await gravityBridgeLcdService.getBalance(account.address);
-    let balance = _.find(_balance, ({ denom }) => denom === 'ugraviton');
-    account.balance = _.get(balance, 'amount', '0');
-    gravityBridgeAccountStore.updateAccount(account);
+    try {
+      const _balance = await gravityBridgeLcdService.getBalance(account.address);
+      let balance = _.find(_balance, ({ denom }) => denom === 'ugraviton');
+      account.balance = _.get(balance, 'amount', '0');
+      gravityBridgeAccountStore.updateAccount(account);
+    } catch (error) {
+      account.balance = '0';
+      gravityBridgeAccountStore.updateAccount(account);
+    }
   } catch (error) {
     console.error((error as any).message);
     gravityBridgeAccountStore.updateAccount(undefined);

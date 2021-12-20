@@ -32,18 +32,22 @@ export enum EthWalletType {
   MetaMask = 'metaMask'
 }
 
+export type ConnectEventHandler = (data: any) => void;
 export type AccountChangeEventHandler = (data: any) => void;
 export type NetworkChangeEventHandler = (data: any) => void;
+export type DisconnectEventHandler = (data: any) => void;
 
 export interface IEthWallet {
   isConnected: () => Promise<boolean>;
-  connect: (chainId: string) => Promise<void>;
+  connect: (chainId: string) => Promise<string>;
   getChainId: () => Promise<string>;
   changeChainId: (chainId: string) => Promise<void>;
   getAccountInfo: () => Promise<string>;
   getEthBalance: (address: string) => Promise<number>;
+  onConnect?: (handler: ConnectEventHandler) => any;
   onAccountChange?: (handler: AccountChangeEventHandler) => any;
   onNetworkChange?: (handler: NetworkChangeEventHandler) => any;
+  onDisconnect?: (handler: DisconnectEventHandler) => any;
 }
 
 export interface MetaMaskProvider extends AbstractProvider, EventEmitter {
