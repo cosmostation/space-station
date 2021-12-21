@@ -6,7 +6,7 @@ export default function useGravityBridgeAccount (): Account | undefined {
   const [account, setAccount] = useState<Account>();
   useEffect(() => {
     const subscription = gravityBridgeAccountStore.account$.subscribe(setAccount);
-    return () => subscription.unsubscribe();
+    return (): void => { subscription.unsubscribe(); };
   }, []);
   return account;
 }

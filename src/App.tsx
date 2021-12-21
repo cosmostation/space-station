@@ -9,6 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import themeStore, { ThemeType } from 'stores/theme-store';
 
+import Delegator from './Delegator';
+
 dotenv.config();
 
 export type erc20TokenInfo = {
@@ -20,12 +22,12 @@ export type erc20TokenInfo = {
   logoURI: string
 }
 
-function App () {
+const App: React.FC = () => {
   const [theme, setTheme] = useState<ThemeType>();
 
   useEffect(() => {
     const subscription = themeStore.currentTheme$.subscribe(setTheme);
-    return () => subscription.unsubscribe();
+    return (): void => subscription.unsubscribe();
   }, []);
 
   return (
@@ -34,9 +36,10 @@ function App () {
       <div className="container">
         <TransferBox />
       </div>
+      <Delegator/>
       <ToastContainer position="top-right" hideProgressBar={true} theme={theme} />
     </div>
   );
-}
+};
 
 export default App;

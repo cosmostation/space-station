@@ -15,12 +15,12 @@ const DialogContainer: React.FC<DialogContainerProps> = ({ open, children, close
 
   useEffect(() => {
     const subscription = themeStore.currentTheme$.subscribe(setTheme);
-    return () => subscription.unsubscribe();
+    return (): void => subscription.unsubscribe();
   }, []);
 
   const onClose = useCallback(() => {
     close();
-  }, [close])
+  }, [close]);
 
   return (
     <Dialog open={open} onClose={onClose} className={theme}>
@@ -28,7 +28,7 @@ const DialogContainer: React.FC<DialogContainerProps> = ({ open, children, close
         {children}
       </Dialog.Overlay>
     </Dialog>
-  )
-}
+  );
+};
 
 export default DialogContainer;

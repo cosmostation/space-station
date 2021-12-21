@@ -21,4 +21,4 @@ export default {
   currentTheme$: currentTheme$.asObservable(),
   getCurrentTheme,
   changeTheme
-}
+};

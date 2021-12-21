@@ -7,8 +7,10 @@ const LCD_ENDPOINT = chainInfo.gravityBridge.rest;
 
 type AccountInfoResponse = {
   '@type': string;
+  // eslint-disable-next-line camelcase
   account_number: string;
   address: string;
+  // eslint-disable-next-line camelcase
   pub_key: {
     '@type': string;
     key: string;
@@ -51,5 +53,5 @@ export default {
   getAccountInfo,
   getBalance,
   getTx,
-  broadcastProtoTx,
+  broadcastProtoTx
 };

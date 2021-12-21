@@ -36,7 +36,7 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
 
   return (
     <DialogContainer open={open} close={onClose}>
-      <Box className={classNames(className, "TxConfirm")}>
+      <Box className={classNames(className, 'TxConfirm')}>
         <Row className="space-between">
           <Text size="medium">Transfer Check</Text>
           <IconButton onClick={onClose}>
@@ -97,6 +97,6 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
       </Box>
     </DialogContainer>
   );
-}
+};
 
 export default TxConfirmDialog;

@@ -27,11 +27,12 @@ export interface GravityBridgeAccount extends Account {
   pubKey: Uint8Array;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EthAccount extends Account {}
 
 export type EthWallet = EthWalletManager;
 export enum EthWalletType {
-  MetaMask = 'metaMask'
+  MetaMask = 'MetaMask'
 }
 
 export type AccountChangeEventHandler = (accounts: string[]) => void;
@@ -98,5 +99,5 @@ export type gravityBridgetContractMethods = {
   deployERC20: (cosmosDenom: string, tokenName: string, symbol: string, decimal: number) => ContractSendMethod;
 }
 
-export class NoEthWalletError extends Error {};
-export class MetaMaskPendingRequestError extends Error {};
+export class NoEthWalletError extends Error {}
+export class MetaMaskPendingRequestError extends Error {}

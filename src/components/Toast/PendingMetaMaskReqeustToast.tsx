@@ -10,6 +10,6 @@ const PendingMetaMaskRequestToast: React.FC = () => {
       <Text size="tiny" className="toast-error-detail">Same request is pending</Text>
     </div>
   );
-}
+};
 
 export default PendingMetaMaskRequestToast;

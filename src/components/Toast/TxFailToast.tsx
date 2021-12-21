@@ -21,6 +21,6 @@ const TxFailToast: React.FC<TxFailToastProps> = ({ tokenInfo, amount, toNetwork,
       {errorMessage ? <Text size="tiny" className="toast-error-detail">{errorMessage}</Text> : <></>}
     </div>
   );
-}
+};
 
 export default TxFailToast;

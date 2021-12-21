@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import ethTokenList from './eth.json';
 import goerliTokenList from './goerli.json';
 
-function getTokenList(chainId: string): TokenInfo[] {
+function getTokenList (chainId: string): TokenInfo[] {
   const _chainId = _.toNumber(chainId);
   if (_chainId === 1) {
     return _.get(ethTokenList, 'tokens', []);

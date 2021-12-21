@@ -17,6 +17,6 @@ const Box: React.FC<BoxProps> = ({ className, children, onClick, disabled, type 
       {children}
     </button>
   );
-}
+};
 
 export default Box;

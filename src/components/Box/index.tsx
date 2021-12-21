@@ -16,6 +16,6 @@ const Box: React.FC<BoxProps> = ({ className, children, density, depth }) => {
       {children}
     </div>
   );
-}
+};
 
 export default Box;

@@ -13,8 +13,9 @@ import TxBroadcastingDialog from 'components/TxBroadcastingDialog';
 import TxConfirmDialog from 'components/TxConfirmDialog';
 import dotenv from 'dotenv';
 import useEthAccount from 'hooks/use-eth-account';
+import useEthErc20TokenBalance from 'hooks/use-eth-erc20-token-balance';
 import useGravityBridgeAccount from 'hooks/use-gravity-bridge-account';
-import useTokenBalance from 'hooks/use-token-balance';
+import useGravityBridgeErc20TokenBalance from 'hooks/use-gravity-bridge-erc20-token-balance';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
 import defaultTokenIcon from 'images/default-token-icon.png';
@@ -43,16 +44,12 @@ const TransferBox: React.FC = () => {
 
   const gravityBridgeAccount = useGravityBridgeAccount();
   const ethAccount = useEthAccount();
-  const tokenBalance = useTokenBalance(
-    fromNetwork,
-    fromNetwork === SupportedNetwork.Eth ? ethAccount?.address : gravityBridgeAccount?.address,
-    selectedToken,
-    6,
-    erc20BalanceUpdateCounter
-  );
+  const ethErc20TokenBalance = useEthErc20TokenBalance(ethAccount?.address, selectedToken);
+  const gravityBridgeErc20TokenBalance = useGravityBridgeErc20TokenBalance(gravityBridgeAccount?.address, selectedToken);
+  const tokenBalance = SupportedNetwork.Eth ? ethErc20TokenBalance : gravityBridgeErc20TokenBalance;
 
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
-  const ethWalletConnected: boolean = ethAccount !== undefined
+  const ethWalletConnected: boolean = ethAccount !== undefined;
   const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
@@ -82,11 +79,11 @@ const TransferBox: React.FC = () => {
     if (walletConnected) {
       setTokenSearcherOpened(true);
     }
-  }, [setTokenSearcherOpened , walletConnected]);
+  }, [setTokenSearcherOpened, walletConnected]);
 
   const onSelectToken = useCallback((token: TokenInfo) => {
     setSelectedToken(token);
-  }, [setSelectedToken])
+  }, [setSelectedToken]);
 
   const onCloseTokenSearcher = useCallback(() => {
     setTokenSearcherOpened(false);
@@ -109,11 +106,11 @@ const TransferBox: React.FC = () => {
         selectedToken,
         numberService.convertWithoutDecimal(amount, selectedToken.decimals)
       ).then((txHash) => {
-          toastService.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
-          setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
-        }).catch((error) => {
-          toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
-        }).finally(() => setTxBroadcastingOpened(false))
+        toastService.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
+        setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
+      }).catch((error) => {
+        toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
+      }).finally(() => setTxBroadcastingOpened(false));
     }
   }, [ethAccount, selectedToken, amount, toNetwork, setTxBroadcastingOpened, erc20BalanceUpdateCounter]);
 
@@ -158,7 +155,7 @@ const TransferBox: React.FC = () => {
       <Row>
         <Box className="token-selector-container" density={1} depth={1}>
           <Row depth={1}>
-            <div className={classNames("token-selector", { disabled: !walletConnected })} onClick={onOpenTokenSearcher}>
+            <div className={classNames('token-selector', { disabled: !walletConnected })} onClick={onOpenTokenSearcher}>
               <img
                 className="token-selector-token-icon"
                 src={selectedToken?.logoURI ? selectedToken.logoURI : defaultTokenIcon}
@@ -171,11 +168,13 @@ const TransferBox: React.FC = () => {
                 <ArrowNoTailIcon/>
               </IconButton>
             </div>
-            {selectedToken !== undefined ? (
+            {selectedToken !== undefined
+              ? (
               <div className="token-selector-max-button" onClick={onClickMax}>
                 <Text size="tiny">Max</Text>
               </div>
-            ): (<></>)}
+                )
+              : (<></>)}
             <input
               className="token-selector-token-amount-input"
               value={amount}
@@ -192,12 +191,14 @@ const TransferBox: React.FC = () => {
             />
           </Row>
           <Row depth={1}>
-            {selectedToken !== undefined ? (
+            {selectedToken !== undefined
+              ? (
               <>
                 <Text muted size="tiny">Balance:&nbsp;</Text>
                 <Text size="tiny">{`${tokenBalance} ${selectedToken.symbol}`}</Text>
               </>
-            ): (<></>)}
+                )
+              : (<></>)}
           </Row>
         </Box>
       </Row>
@@ -235,7 +236,7 @@ const TransferBox: React.FC = () => {
         amount={amount}
       />
     </Box>
-  )
-}
+  );
+};
 
 export default TransferBox;

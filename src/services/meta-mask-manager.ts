@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import loggerFactory from 'services/logger-factory';
 import metaMaskWallet from 'services/meta-mask-wallet';
 import Web3Manager from 'services/web3-manager';
 import {
@@ -8,6 +9,8 @@ import {
   MetaMaskPendingRequestError,
   NetworkChangeEventHandler,
 } from 'types';
+
+const logger = loggerFactory.getLogger('[MetaMaskManager]');
 
 export default class MetaMaskManager implements EthWalletManager {
   static async checkInstall (): Promise<boolean> {
@@ -28,6 +31,7 @@ export default class MetaMaskManager implements EthWalletManager {
   async init (): Promise<void> {
     const _installed = await this.installed;
     if (_installed) {
+      logger.info('[init] MetaMask exists');
       const provider = await metaMaskWallet.getMetaMaskProvider();
       this.web3 = new Web3Manager(provider);
     }
@@ -37,17 +41,20 @@ export default class MetaMaskManager implements EthWalletManager {
     try {
       const hasPermission = await metaMaskWallet.hasPermission();
       if (!hasPermission) {
+        logger.info('[checkConnection] No permission');
         return null;
       }
 
       const currentChainId = await metaMaskWallet.getChainId();
       if (currentChainId !== chainId) {
+        logger.info('[checkConnection] Not matched chain ID');
         return null;
       }
 
+      logger.info('[checkConnection] Getting account...');
       return this.getAccount();
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       return null;
     }
   }
@@ -56,22 +63,26 @@ export default class MetaMaskManager implements EthWalletManager {
     try {
       const _installed = await this.installed;
       if (!_installed) {
+        logger.info('[connect] No MetaMask');
         return null;
       }
 
       const hasPermission = await metaMaskWallet.hasPermission();
       if (!hasPermission) {
+        logger.info('[connect] No permission. Requesting permissions...');
         await metaMaskWallet.requestPermission();
       }
 
       const currentChainId = await metaMaskWallet.getChainId();
       if (currentChainId !== chainId) {
+        logger.info('[connect] Not matched chain ID. Requesting update...');
         await metaMaskWallet.changeChainId(chainId);
       }
 
+      logger.info('[connect] Getting account...');
       return this.getAccount();
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       if (isPendingError(error)) {
         throw new MetaMaskPendingRequestError();
       }
@@ -103,7 +114,7 @@ export default class MetaMaskManager implements EthWalletManager {
   }
 
   registerNetworkChangeHandler (handler: NetworkChangeEventHandler): void {
-    metaMaskWallet.onNetworkChange(handler)
+    metaMaskWallet.onNetworkChange(handler);
   }
 }
 

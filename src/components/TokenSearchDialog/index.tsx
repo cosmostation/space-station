@@ -47,11 +47,11 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
       setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
     } else if (isEthAddress(searchText)) {
       findTokenInfo(tokenList, searchText)
-        .then((tokenInfo) => { tokenInfo ? setCandidate([tokenInfo]) : setCandidate([]) })
-        .catch(() => { setCandidate([]) });
+        .then((tokenInfo) => { tokenInfo ? setCandidate([tokenInfo]) : setCandidate([]); })
+        .catch(() => { setCandidate([]); });
     } else {
       const _candidates = filterTokenList(tokenList, searchText);
-      setCandidate(_candidates)
+      setCandidate(_candidates);
     }
   }, [setSearchText, setCandidate, fromNetwork, ethTokenList, gravityBridgeTokenList]);
 
@@ -63,11 +63,11 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
   const onClose = useCallback(() => {
     setSearchText('');
     close();
-  }, [close, setSearchText])
+  }, [close, setSearchText]);
 
   return (
     <DialogContainer open={open} close={onClose}>
-      <Box className={classNames(className, "TokenSearchDialog")}>
+      <Box className={classNames(className, 'TokenSearchDialog')}>
         <div className="token-searcher-heading">
           <Text size="medium">Select a Token</Text>
           <IconButton onClick={onClose}>
@@ -83,14 +83,13 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
             onChange={onSearchTextChange}
           />
         </div>
-        {_.isEmpty(candidates) ? (
-          <div className="no-token-candidate">
-            <WarnIcon />
-            &nbsp;&nbsp;
-            <Text muted size="tiny">No result found</Text>
-          </div>
-        ) : (
-          <ul className="token-candidate-list">
+        {_.isEmpty(candidates)
+          ? (<div className="no-token-candidate">
+              <WarnIcon />
+              &nbsp;&nbsp;
+              <Text muted size="tiny">No result found</Text>
+            </div>)
+          : (<ul className="token-candidate-list">
             {_.map(candidates, (token, i) => (
               <li className="token-list-item" key={`${token.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
                 <img src={token.logoURI ? token.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.symbol} logo`}/>
@@ -100,12 +99,11 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
                 </div>
               </li>
             ))}
-          </ul>
-        )}
+          </ul>)}
       </Box>
     </DialogContainer>
   );
-}
+};
 
 function isEthAddress (searchText: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(searchText);
@@ -113,17 +111,15 @@ function isEthAddress (searchText: string): boolean {
 
 async function findTokenInfo (tokenList: TokenInfo[], address: string): Promise<TokenInfo | undefined | null> {
   const tokenInfo = _.find(tokenList, (tokenInfo: TokenInfo) => tokenInfo.address === address);
-  return tokenInfo
-    ? tokenInfo
-    : ethWalletManager.getERC20Info(address)
+  return tokenInfo || ethWalletManager.getERC20Info(address);
 }
 
 function filterTokenList (tokenList: TokenInfo[], searchText: string): TokenInfo[] {
   return _.filter(tokenList, (tokenInfo) => {
     const lowerValue = _.toLower(searchText);
     return _.includes(_.toLower(tokenInfo.name), lowerValue) ||
-      _.includes(_.toLower(tokenInfo.symbol), lowerValue)
-  })
+      _.includes(_.toLower(tokenInfo.symbol), lowerValue);
+  });
 }
 
 function setCandidateByNetwork (

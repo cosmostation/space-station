@@ -7,20 +7,26 @@ export interface IERC20Token {
   amount?: (string | null);
 }
 
-function createTxBody (messages: google.protobuf.IAny[], memo: string = '') {
+function createTxBody (messages: google.protobuf.IAny[], memo = ''): cosmos.tx.v1beta1.TxBody {
   return new cosmos.tx.v1beta1.TxBody({ messages, memo });
 }
 
-function getAuthInfo (publicKey: Uint8Array, sequence: Long, feeAmount: string, gasLimit: Long, mode: cosmos.tx.signing.v1beta1.SignMode) {
+function getAuthInfo (
+  publicKey: Uint8Array,
+  sequence: Long,
+  feeAmount: string,
+  gasLimit: Long,
+  mode: cosmos.tx.signing.v1beta1.SignMode
+): cosmos.tx.v1beta1.AuthInfo {
   const publicKeyProto = new cosmos.crypto.secp256k1.PubKey({ key: publicKey });
 
   const signerInfo = new cosmos.tx.v1beta1.SignerInfo({
     public_key: new google.protobuf.Any({
       type_url: '/cosmos.crypto.secp256k1.PubKey',
-      value: cosmos.crypto.secp256k1.PubKey.encode(publicKeyProto).finish(),
+      value: cosmos.crypto.secp256k1.PubKey.encode(publicKeyProto).finish()
     }),
     mode_info: { single: { mode } },
-    sequence,
+    sequence
   });
 
   const fee = new cosmos.tx.v1beta1.Fee({
@@ -28,7 +34,7 @@ function getAuthInfo (publicKey: Uint8Array, sequence: Long, feeAmount: string, 
       denom: 'ugraviton',
       amount: feeAmount
     }],
-    gas_limit: gasLimit,
+    gas_limit: gasLimit
   });
 
   return new cosmos.tx.v1beta1.AuthInfo({ signer_infos: [signerInfo], fee });
@@ -54,11 +60,10 @@ function getSignDoc (
 
 function createTxRawBytes (directSignResponse: DirectSignResponse): Uint8Array {
   const _signature = Buffer.from(directSignResponse.signature.signature, 'base64');
-  console.log(_signature);
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: directSignResponse.signed.bodyBytes,
     auth_info_bytes: directSignResponse.signed.authInfoBytes,
-    signatures: [_signature],
+    signatures: [_signature]
   });
   return cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
 }
@@ -67,5 +72,5 @@ export default {
   createTxBody,
   getAuthInfo,
   createTxRawBytes,
-  getSignDoc,
+  getSignDoc
 };

@@ -4,11 +4,11 @@ import { GravityBridgeAccount } from 'types';
 const hasGravityBridgeNetwork$ = new BehaviorSubject<boolean>(false);
 const gravityBridgeAccount$ = new BehaviorSubject<GravityBridgeAccount | undefined>(undefined);
 
-function updateAccount (account: GravityBridgeAccount | undefined) {
+function updateAccount (account: GravityBridgeAccount | undefined): void {
   gravityBridgeAccount$.next(account);
 }
 
-function updateNetwork (hasNetwork: boolean) {
+function updateNetwork (hasNetwork: boolean): void {
   hasGravityBridgeNetwork$.next(hasNetwork);
 }
 
@@ -17,4 +17,4 @@ export default {
   account$: gravityBridgeAccount$.asObservable(),
   updateAccount,
   updateNetwork
-}
+};

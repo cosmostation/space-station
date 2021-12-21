@@ -8,14 +8,8 @@ import { SupportedNetwork } from 'types';
 
 dotenv.config();
 
-const ETH_TX_EXPLORER = process.env.REACT_APP_ETH_TX_EXPLORER
-  ? process.env.REACT_APP_ETH_TX_EXPLORER
-  : '';
-
-const GRAVITY_BRIDGE_TX_EXPLORER = process.env.REACT_APP_GRAVITY_BRIDGE_TX_EXPLORER
-  ? process.env.REACT_APP_GRAVITY_BRIDGE_TX_EXPLORER
-  : '';
-
+const ETH_TX_EXPLORER = process.env.REACT_APP_ETH_TX_EXPLORER || '';
+const GRAVITY_BRIDGE_TX_EXPLORER = process.env.REACT_APP_GRAVITY_BRIDGE_TX_EXPLORER || '';
 
 type TxSuccessToastProps = {
   tokenInfo: TokenInfo;
@@ -27,7 +21,7 @@ type TxSuccessToastProps = {
 const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ tokenInfo, amount, txHash, toNetwork }) => {
   const _toNetwork = toNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge';
   const message = `Succeed to transfer ${amount} ${tokenInfo.symbol} to ${_toNetwork}`;
-  const explorerLink = toNetwork === SupportedNetwork.Eth ? `${GRAVITY_BRIDGE_TX_EXPLORER}/${txHash}` : `${ETH_TX_EXPLORER}/${txHash}`
+  const explorerLink = toNetwork === SupportedNetwork.Eth ? `${GRAVITY_BRIDGE_TX_EXPLORER}/${txHash}` : `${ETH_TX_EXPLORER}/${txHash}`;
   return (
     <>
       <p className="toast-message">{message}</p>
@@ -36,6 +30,6 @@ const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ tokenInfo, amount, txHa
       </a>
     </>
   );
-}
+};
 
 export default TxSuccessToast;

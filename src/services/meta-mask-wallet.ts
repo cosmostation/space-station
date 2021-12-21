@@ -36,7 +36,7 @@ async function requestPermission (): Promise<boolean> {
   const provider: MetaMaskProvider = await getMetaMaskProvider();
   const permissions = await provider.request({
     method: 'wallet_requestPermissions',
-    params: [{ eth_accounts: {} }],
+    params: [{ eth_accounts: {} }]
   });
   return !_.isEmpty(permissions);
 }
@@ -81,7 +81,7 @@ const metaMaskWallet: IMetaMaskWallet = {
   getAccountInfo,
   getEthBalance,
   onAccountChange,
-  onNetworkChange,
+  onNetworkChange
 };
 
 export default metaMaskWallet;

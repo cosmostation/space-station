@@ -18,7 +18,7 @@ export default class Web3Manager {
   web3: Web3;
 
   constructor (provider: AbstractProvider) {
-    this.web3 = new Web3(provider);;
+    this.web3 = new Web3(provider);
   }
 
   async getBalance (address: string): Promise<string> {

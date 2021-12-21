@@ -22,7 +22,7 @@ type TxBroadcastDialogProps = {
 const TxConfirmDialog: React.FC<TxBroadcastDialogProps> = ({ open, className, toNetwork, token, amount }) => {
   return (
     <DialogContainer open={open} close={_.identity}>
-      <Box className={classNames(className, "TxBroadcasting")}>
+      <Box className={classNames(className, 'TxBroadcasting')}>
         <Row className="tx-broadcasting-content">
           <CircularProgress size={80} thickness={2} className="tx-broadcasting-progress" color="inherit"/>
           <Text className="tx-broadcasting-message">
@@ -32,6 +32,6 @@ const TxConfirmDialog: React.FC<TxBroadcastDialogProps> = ({ open, className, to
       </Box>
     </DialogContainer>
   );
-}
+};
 
 export default TxConfirmDialog;

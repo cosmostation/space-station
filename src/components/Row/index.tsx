@@ -15,6 +15,6 @@ const Row: React.FC<RowProps> = ({ className, children, depth }) => {
       {children}
     </div>
   );
-}
+};
 
 export default Row;

@@ -8,6 +8,6 @@ const NoEthWalletToast: React.FC = () => {
       <p className="toast-message">Please install MetaMask!</p>
     </div>
   );
-}
+};
 
 export default NoEthWalletToast;

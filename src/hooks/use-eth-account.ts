@@ -8,7 +8,7 @@ export default function useEthAccount (): EthAccount | undefined {
     const subscription = metaMaskAccountStore.account$.subscribe((account) => {
       setAccount(account);
     });
-    return () => subscription.unsubscribe();
+    return (): void => { subscription.unsubscribe(); };
   }, []);
   return account;
 }

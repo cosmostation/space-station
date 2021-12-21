@@ -51,8 +51,8 @@ const Header: React.FC<any> = () => {
         </IconButton>
       </div>
     </div>
-  )
-}
+  );
+};
 
 interface KeplrConnectionButtonProps {
   gravityBridgeAccount?: Account
@@ -67,24 +67,20 @@ const KelprConnectButton: React.FC<KeplrConnectionButtonProps> = (keplrConnectio
   return (
     <>
       { gravityBridgeAccount
-        ? (
-          <button className="button connected-button">
+        ? (<button className="button connected-button">
             <div className="balance-container">
               <span>{balanceService.convertWithDecimal(gravityBridgeAccount.balance, 6)}GRAVITON</span>
             </div>
             <span className="connected-icon"></span>
             { shortenAddress(gravityBridgeAccount.address, 8, 8) }
-          </button>
-        ) : (
-          <button className="button connect-button" onClick={connect}>
+          </button>)
+        : (<button className="button connect-button" onClick={connect}>
             <img className="wallet-icon" src={keplrIcon} alt="kelpr icon" />
             Connect Keplr
-          </button>
-        )
-      }
+          </button>)}
     </>
   );
-}
+};
 
 interface EthConnectionButtonProps {
   ethAccount?: Account
@@ -107,26 +103,23 @@ const EthConnectButton: React.FC<EthConnectionButtonProps> = (ethConnectionButto
   return (
     <>
       { ethAccount
-        ? (
-          <button className="button connected-button">
+        ? (<button className="button connected-button">
             <div className="balance-container">
               <span>{balanceService.convertWithDecimal(ethAccount.balance, 18)}ETH</span>
             </div>
             <Blockies className="blockies" seed={ethAccount.address} size={8} scale={2}/>
             { shortenAddress(ethAccount.address, 8, 8) }
-          </button>
-        ) : (
-          <button className="button connect-button" onClick={connect}>
+          </button>)
+        : (<button className="button connect-button" onClick={connect}>
             <img className="wallet-icon" src={metaMaskIcon} alt="meta mask icon" />
             Connect Meta Mask
-          </button>
-        )
+          </button>)
       }
     </>
   );
-}
+};
 
-function shortenAddress (str: string, head: number, tail: number) {
+function shortenAddress (str: string, head: number, tail: number): string {
   if (_.size(str) <= head + tail) {
     return str;
   } else {
