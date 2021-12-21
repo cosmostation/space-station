@@ -6,7 +6,7 @@ import {
   IMetaMaskWallet,
   MetaMaskProvider,
   NetworkChangeEventHandler,
-  NoEthWalletError,
+  NoMetaMaskWalletError,
 } from 'types';
 
 function isMetaMaskProvider (provider: unknown): provider is MetaMaskProvider {
@@ -16,7 +16,7 @@ function isMetaMaskProvider (provider: unknown): provider is MetaMaskProvider {
 async function getMetaMaskProvider (): Promise<MetaMaskProvider> {
   const provider: any = await detectEthereumProvider();
   if (!isMetaMaskProvider(provider)) {
-    throw new NoEthWalletError();
+    throw new NoMetaMaskWalletError();
   }
   return provider;
 }

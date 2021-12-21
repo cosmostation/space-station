@@ -4,7 +4,7 @@ import { ChainInfo, Keplr, Window } from '@keplr-wallet/types';
 import { cosmos } from 'constants/gravity-main';
 import Long from 'long';
 import loggerFactory from 'services/logger-factory';
-import { AccountChangeEventHandler, DirectSignDoc, GravityBridgeAccount, IKeplrWallet } from 'types';
+import { AccountChangeEventHandler, DirectSignDoc, GravityBridgeAccount, IKeplrWallet, NoKeplrWalletError } from 'types';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -15,7 +15,7 @@ const logger = loggerFactory.getLogger('[KelprWallet]');
 const keplr = new Promise<Keplr>((resolve, reject) => {
   window.onload = () : void => {
     const _window = window as Window;
-    _window.keplr ? resolve(_window.keplr) : reject(new Error('Not found Keplr'));
+    _window.keplr ? resolve(_window.keplr) : reject(new NoKeplrWalletError("Can't find Keplr wallet."));
   };
 });
 

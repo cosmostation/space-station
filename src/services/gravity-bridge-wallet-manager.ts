@@ -5,7 +5,7 @@ import gravityBridgeLcdService from 'services/gravity-bridge-lcd-service';
 import keplrWallet from 'services/keplr-wallet';
 import loggerFactory from 'services/logger-factory';
 import gravityBridgeAccountStore from 'stores/gravity-bridge-account-store';
-import { IKeplrWallet } from 'types';
+import { GravityBridgeAccount, IKeplrWallet } from 'types';
 
 dotenv.config();
 
@@ -19,49 +19,44 @@ async function init (): Promise<void> {
     await getAccount();
     registerEventHandler();
   } catch (error) {
-    logger.error((error as any).message);
+    logger.error(error);
   }
 }
 
 async function connect (): Promise<void> {
   logger.info('[connect] Connecting...');
-  const hasNetwork = await checkNetwork();
-  if (hasNetwork === true) {
-    getAccount();
-    registerEventHandler();
-  }
+  await checkNetwork();
+  getAccount();
+  registerEventHandler();
 }
 
-async function checkNetwork (): Promise<boolean> {
-  try {
-    logger.info('[checkNetwork] Suggesting experiment chain...');
-    await currentWallet.suggestExperimentalChain(chainInfo.gravityBridge);
-    gravityBridgeAccountStore.updateNetwork(true);
-    return true;
-  } catch (error) {
-    logger.error((error as any).message);
-    gravityBridgeAccountStore.updateNetwork(false);
-    return false;
-  }
+async function checkNetwork (): Promise<void> {
+  logger.info('[checkNetwork] Suggesting experiment chain...');
+  await currentWallet.suggestExperimentalChain(chainInfo.gravityBridge);
+  gravityBridgeAccountStore.updateNetwork(true);
 }
 
 async function getAccount (): Promise<void> {
   try {
     logger.info('[getAccount] Getting account...');
     const account = await currentWallet.getAccount(chainInfo.gravityBridge.chainId);
-    try {
-      logger.info('[getAccount] Getting balance...');
-      const _balance = await gravityBridgeLcdService.getBalance(account.address);
-      const balance = _.find(_balance, ({ denom }) => denom === 'ugraviton');
-      account.balance = _.get(balance, 'amount', '0');
-      gravityBridgeAccountStore.updateAccount(account);
-    } catch (error) {
-      account.balance = '0';
-      gravityBridgeAccountStore.updateAccount(account);
-    }
+    account.balance = await getBalance(account);
+    gravityBridgeAccountStore.updateAccount(account);
   } catch (error) {
-    logger.error((error as any).message);
+    logger.error('[getAccount]', error);
     gravityBridgeAccountStore.updateAccount(undefined);
+  }
+}
+
+async function getBalance (account: GravityBridgeAccount): Promise<string> {
+  try {
+    logger.info('[getBalance] Getting balance...');
+    const _balance = await gravityBridgeLcdService.getBalance(account.address);
+    const balance = _.find(_balance, ({ denom }) => denom === 'ugraviton');
+    return _.get(balance, 'amount', '0');
+  } catch (error) {
+    logger.error('[getBalance]', error);
+    return '0';
   }
 }
 

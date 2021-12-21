@@ -99,5 +99,6 @@ export type gravityBridgetContractMethods = {
   deployERC20: (cosmosDenom: string, tokenName: string, symbol: string, decimal: number) => ContractSendMethod;
 }
 
-export class NoEthWalletError extends Error {}
+export class NoMetaMaskWalletError extends Error {}
 export class MetaMaskPendingRequestError extends Error {}
+export class NoKeplrWalletError extends Error {}

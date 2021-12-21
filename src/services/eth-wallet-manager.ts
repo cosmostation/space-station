@@ -10,7 +10,7 @@ import {
   EthWalletManager,
   EthWalletType,
   NetworkChangeEventHandler,
-  NoEthWalletError,
+  NoMetaMaskWalletError,
 } from 'types';
 
 const logger = loggerFactory.getLogger('[EthWalletManager]');
@@ -54,13 +54,13 @@ async function connect (): Promise<void> {
   const currentWallet = walletManagers[currentWalletType];
   if (!currentWallet) {
     logger.info('[connect] No wallet. Current wallet type: ', currentWalletType);
-    throw new NoEthWalletError();
+    throw new NoMetaMaskWalletError();
   }
 
   const _installed = await currentWallet.installed;
   if (!_installed) {
     logger.info('[connect] No installed wallet. Current wallet type: ', currentWalletType);
-    throw new NoEthWalletError();
+    throw new NoMetaMaskWalletError();
   }
 
   logger.info('[connect] Connecting...');

@@ -17,7 +17,7 @@ import gravityBridgeWalletManager from 'services/gravity-bridge-wallet-manager';
 import balanceService from 'services/number-service';
 import toastService from 'services/toast-service';
 import themeStore, { ThemeType } from 'stores/theme-store';
-import { Account, MetaMaskPendingRequestError, NoEthWalletError } from 'types';
+import { Account, MetaMaskPendingRequestError, NoKeplrWalletError, NoMetaMaskWalletError } from 'types';
 
 const Header: React.FC<any> = () => {
   const changeTheme = useCallback(() => {
@@ -59,8 +59,20 @@ interface KeplrConnectionButtonProps {
 }
 
 const KelprConnectButton: React.FC<KeplrConnectionButtonProps> = (keplrConnectionButtonProps) => {
-  const connect = useCallback(() => {
-    gravityBridgeWalletManager.connect();
+  const connect = useCallback(async () => {
+    try {
+      await gravityBridgeWalletManager.connect();
+    } catch (error) {
+      if (error instanceof NoKeplrWalletError) {
+        toastService.showFailToast("Can't find Keplr",
+          <>
+            Please install Keplr - <a href="https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap" target="_blank" rel="noopener noreferrer">HERE</a>
+          </>
+        );
+      } else {
+        toastService.showFailToast("Can't connect Keplr wallet", 'Please try later');
+      }
+    }
   }, []);
 
   const { gravityBridgeAccount } = keplrConnectionButtonProps;
@@ -92,9 +104,15 @@ const EthConnectButton: React.FC<EthConnectionButtonProps> = (ethConnectionButto
       await ethWalletManager.connect();
     } catch (error) {
       if (error instanceof MetaMaskPendingRequestError) {
-        toastService.showPendingMetaMaskRequestToast();
-      } else if (error instanceof NoEthWalletError) {
-        toastService.showNoEthWalletToast();
+        toastService.showFailToast('Please check Meta Mask', 'Same request is pending.');
+      } else if (error instanceof NoMetaMaskWalletError) {
+        toastService.showFailToast("Can't find Meta Mask",
+          <>
+            Please install MetaMask - <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank" rel="noopener noreferrer">HERE</a>
+          </>
+        );
+      } else {
+        toastService.showFailToast("Can't connect Meta Mask wallet", 'Please try later');
       }
     }
   }, []);

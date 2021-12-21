@@ -9,8 +9,6 @@ import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import themeStore, { ThemeType } from 'stores/theme-store';
 
-import Delegator from './Delegator';
-
 dotenv.config();
 
 export type erc20TokenInfo = {
@@ -36,7 +34,6 @@ const App: React.FC = () => {
       <div className="container">
         <TransferBox />
       </div>
-      <Delegator/>
       <ToastContainer position="top-right" hideProgressBar={true} theme={theme} />
     </div>
   );
