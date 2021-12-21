@@ -11,6 +11,7 @@ import Text from 'components/Text';
 import TokenSearchDialog from 'components/TokenSearchDialog';
 import TxBroadcastingDialog from 'components/TxBroadcastingDialog';
 import TxConfirmDialog from 'components/TxConfirmDialog';
+import dotenv from 'dotenv';
 import useEthAccount from 'hooks/use-eth-account';
 import useGravityBridgeAccount from 'hooks/use-gravity-bridge-account';
 import useTokenBalance from 'hooks/use-token-balance';
@@ -25,6 +26,10 @@ import ethWalletManager from 'services/eth-wallet-manager';
 import numberService from 'services/number-service';
 import toastService from 'services/toast-service';
 import { SupportedNetwork } from 'types';
+
+dotenv.config();
+
+const ETH_CHAIN_ID = process.env.REACT_APP_ETH_CHAIN_ID ? process.env.REACT_APP_ETH_CHAIN_ID : '0x1';
 
 const TransferBox: React.FC = () => {
   const [fromNetwork, setFromNetwork] = useState<SupportedNetwork>(SupportedNetwork.Eth);
@@ -46,7 +51,9 @@ const TransferBox: React.FC = () => {
     erc20BalanceUpdateCounter
   );
 
-  const walletConnected: boolean = gravityBridgeAccount !== undefined && ethAccount !== undefined;
+  const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
+  const ethWalletConnected: boolean = ethAccount !== undefined
+  const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
 
@@ -108,7 +115,7 @@ const TransferBox: React.FC = () => {
           toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
         }).finally(() => setTxBroadcastingOpened(false))
     }
-  }, [ethAccount, selectedToken, amount, toNetwork, setTxBroadcastingOpened]);
+  }, [ethAccount, selectedToken, amount, toNetwork, setTxBroadcastingOpened, erc20BalanceUpdateCounter]);
 
   return (
     <Box className="TransferBox">
@@ -206,6 +213,9 @@ const TransferBox: React.FC = () => {
       </Row>
       <TokenSearchDialog
         open={tokenSearcherOpened}
+        fromNetwork={fromNetwork}
+        gravityBridgeAccount={gravityBridgeAccount?.address}
+        ethChainId={ETH_CHAIN_ID}
         close={onCloseTokenSearcher}
         select={onSelectToken}
       />

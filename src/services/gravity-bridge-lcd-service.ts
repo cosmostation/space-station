@@ -6,14 +6,19 @@ import _ from 'lodash';
 const LCD_ENDPOINT = chainInfo.gravityBridge.rest;
 
 type AccountInfoResponse = {
-  readonly '@type': string;
-  readonly account_number: string;
-  readonly address: string;
-  readonly pub_key: {
-    readonly '@type': string;
-    readonly key: string;
+  '@type': string;
+  account_number: string;
+  address: string;
+  pub_key: {
+    '@type': string;
+    key: string;
   },
-  readonly sequence: string;
+  sequence: string;
+}
+
+type Token = {
+  denom: string;
+  amount: string;
 }
 
 async function getAccountInfo (address: string): Promise<AccountInfoResponse> {
@@ -22,7 +27,7 @@ async function getAccountInfo (address: string): Promise<AccountInfoResponse> {
   return _.get(response, 'data.account') as AccountInfoResponse;
 }
 
-async function getBalance (address: string): Promise<any> {
+async function getBalance (address: string): Promise<Token[]> {
   const url = `${LCD_ENDPOINT}/cosmos/bank/v1beta1/balances/${address}`;
   const response = await axios.get(url);
   return _.get(response, 'data.balances');

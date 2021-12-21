@@ -1,6 +1,5 @@
 import './Toast.css';
 
-import Text from 'components/Text';
 import React from 'react';
 
 const NoEthWalletToast: React.FC = () => {

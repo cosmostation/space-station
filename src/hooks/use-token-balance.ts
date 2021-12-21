@@ -2,7 +2,6 @@ import { TokenInfo } from '@uniswap/token-lists';
 import Big from 'big.js';
 import { useEffect, useState } from 'react';
 import ethWalletManager from 'services/eth-wallet-manager';
-import web3Service from 'services/web3-manager';
 import { SupportedNetwork } from 'types';
 
 export default function useTokenBalance (network: SupportedNetwork, address?: string, tokenInfo?: TokenInfo, rounds?: number, counter?: number): string {
