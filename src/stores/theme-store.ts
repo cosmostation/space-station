@@ -4,14 +4,16 @@ export enum ThemeType {
   Dark = 'dark',
   Light = 'light'
 }
-
-const currentTheme$ = new BehaviorSubject<ThemeType>(ThemeType.Dark);
+const _theme = window.localStorage.getItem('theme');
+const theme = _theme === 'dark' ? ThemeType.Dark : ThemeType.Light;
+const currentTheme$ = new BehaviorSubject<ThemeType>(theme);
 
 function getCurrentTheme (): ThemeType {
   return currentTheme$.getValue();
 }
 
 function changeTheme (theme: ThemeType): void {
+  window.localStorage.setItem('theme', theme);
   currentTheme$.next(theme);
 }
 
