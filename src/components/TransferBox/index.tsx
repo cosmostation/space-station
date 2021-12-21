@@ -48,6 +48,7 @@ const TransferBox: React.FC = () => {
 
   const walletConnected: boolean = gravityBridgeAccount !== undefined && ethAccount !== undefined;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
+  const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
 
   const toggleDirection = useCallback(() => {
     if (fromNetwork === SupportedNetwork.Eth) {
@@ -180,7 +181,7 @@ const TransferBox: React.FC = () => {
               minLength={1}
               maxLength={79}
               pattern="^[0-9]*[.,]?[0-9]*$"
-              disabled={selectedToken === undefined}
+              disabled={selectedToken === undefined || !hasTokenBalance}
             />
           </Row>
           <Row depth={1}>
