@@ -4,7 +4,7 @@ import { ChainInfo } from '@keplr-wallet/types';
 import { cosmos } from 'constants/gravity-main';
 import { EventEmitter } from 'events';
 import Long from 'long';
-import Web3Helper from 'services/web3-manager';
+import Web3Manager from 'services/web3-manager';
 import { AbstractProvider, RequestArguments } from 'web3-core';
 import { ContractSendMethod } from 'web3-eth-contract';
 
@@ -39,7 +39,7 @@ export type NetworkChangeEventHandler = (data: any) => void;
 
 export interface EthWalletManager {
   installed: Promise<boolean>;
-  web3: Web3Helper | null;
+  web3: Web3Manager | null;
   init: () => Promise<void>;
   checkConnection: (chainId: string) => Promise<EthAccount | null>;
   connect: (chainId: string) => Promise<EthAccount | null>;

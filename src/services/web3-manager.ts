@@ -14,7 +14,7 @@ const GRAVITY_BRIDGE_CONTRACT_ADDRESS = process.env.REACT_APP_GRAVITY_BRIDGE_CON
   ? process.env.REACT_APP_GRAVITY_BRIDGE_CONTRACT_ADDRESS
   : '';
 
-export default class Web3Helper {
+export default class Web3Manager {
   web3: Web3;
 
   constructor (provider: AbstractProvider) {

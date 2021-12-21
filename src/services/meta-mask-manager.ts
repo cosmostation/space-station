@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import metaMaskWallet from 'services/meta-mask-wallet';
-import Web3Helper from 'services/web3-manager';
+import Web3Manager from 'services/web3-manager';
 import {
   AccountChangeEventHandler,
   EthAccount,
@@ -19,7 +19,7 @@ export default class MetaMaskManager implements EthWalletManager {
   }
 
   installed: Promise<boolean> = MetaMaskManager.checkInstall();
-  web3: Web3Helper | null = null;
+  web3: Web3Manager | null = null;
 
   constructor () {
     this.init();
@@ -29,7 +29,7 @@ export default class MetaMaskManager implements EthWalletManager {
     const _installed = await this.installed;
     if (_installed) {
       const provider = await metaMaskWallet.getMetaMaskProvider();
-      this.web3 = new Web3Helper(provider);
+      this.web3 = new Web3Manager(provider);
     }
   }
 
