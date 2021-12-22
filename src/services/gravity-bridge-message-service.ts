@@ -1,3 +1,4 @@
+import { TokenInfo } from '@uniswap/token-lists';
 import Big from 'big.js';
 import { cosmos, google, gravity } from 'constants/gravity-main';
 import { IERC20Token } from 'types';
@@ -5,18 +6,22 @@ import { IERC20Token } from 'types';
 function createSendToEthereumMessage (
   sender: string,
   ethAddress: string,
-  erc20Token: IERC20Token,
-  erc20Fee: IERC20Token
+  tokenInfo: TokenInfo,
+  amount: string,
+  feeTokenInfo: TokenInfo,
+  feeAmount: string
 ): google.protobuf.Any {
-  const sendMessage = new gravity.v1.SendToEthereum({
+  const erc20Token = convertTokenInfo(tokenInfo, amount);
+  const feeErc20Token = convertTokenInfo(feeTokenInfo, feeAmount);
+  const sendMessage = new gravity.v1.MsgSendToEthereum({
     sender,
     ethereum_recipient: ethAddress,
-    erc20_token: erc20Token,
-    erc20_fee: erc20Fee
+    amount: erc20Token,
+    bridge_fee: feeErc20Token
   });
 
   return new google.protobuf.Any({
-    type_url: '/gravity.v1.SendToEthereum',
+    type_url: '/gravity.v1.MsgSendToEthereum',
     value: gravity.v1.SendToEthereum.encode(sendMessage).finish()
   });
 }
@@ -47,6 +52,13 @@ function createWithdrawDelegatorRewardMessage (delegator: string, validator: str
     type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
     value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode(message).finish()
   });
+}
+
+function convertTokenInfo (tokenInfo: TokenInfo, amount: string): IERC20Token {
+  return {
+    contract: tokenInfo.address,
+    amount
+  };
 }
 
 export default {

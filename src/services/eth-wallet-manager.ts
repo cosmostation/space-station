@@ -151,15 +151,15 @@ async function getERC20Balance (contractAddress: string, ownerAddress: string): 
   }
 }
 
-async function sendToCosmos (fromAddress: string, tokenInfo: TokenInfo, amount: string): Promise<string> {
-  logger.info('[sendToCosmos] sending ERC20 token to Cosmos', 'from address:', fromAddress, 'token:', tokenInfo, 'amount:', amount);
+async function sendToCosmos (ethAddress: string, gravityBridgeAddress: string, tokenInfo: TokenInfo, amount: string): Promise<string> {
+  logger.info('[sendToCosmos] sending ERC20 token to Cosmos', 'eth address:', ethAddress, 'gravity bridge address:', gravityBridgeAddress, 'token:', tokenInfo, 'amount:', amount);
   const currentWallet = walletManagers[currentWalletType];
   if (!currentWallet || !currentWallet.web3) {
     throw new Error('No connected wallet');
   }
 
-  await currentWallet.web3.approve(fromAddress, tokenInfo.address, GRAVITY_BRIDGE_CONTRACT_ADDRESS, amount);
-  const response = await currentWallet.web3.sendToCosmos(fromAddress, tokenInfo.address, GRAVITY_BRIDGE_CONTRACT_ADDRESS, amount);
+  await currentWallet.web3.approve(ethAddress, tokenInfo.address, GRAVITY_BRIDGE_CONTRACT_ADDRESS, amount);
+  const response = await currentWallet.web3.sendToCosmos(ethAddress, tokenInfo.address, gravityBridgeAddress, amount);
   if (!isSendCosmosResponse(response)) {
     throw new Error('No TX hash');
   }

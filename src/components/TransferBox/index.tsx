@@ -24,6 +24,7 @@ import gravityBridgeIcon from 'images/gravity-bridge-icon.png';
 import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
 import ethWalletManager from 'services/eth-wallet-manager';
+import gravityBridgeWalletManager from 'services/gravity-bridge-wallet-manager';
 import numberService from 'services/number-service';
 import toastService from 'services/toast-service';
 import { SupportedNetwork } from 'types';
@@ -44,9 +45,9 @@ const TransferBox: React.FC = () => {
 
   const gravityBridgeAccount = useGravityBridgeAccount();
   const ethAccount = useEthAccount();
-  const ethErc20TokenBalance = useEthErc20TokenBalance(ethAccount?.address, selectedToken);
-  const gravityBridgeErc20TokenBalance = useGravityBridgeErc20TokenBalance(gravityBridgeAccount?.address, selectedToken);
-  const tokenBalance = SupportedNetwork.Eth ? ethErc20TokenBalance : gravityBridgeErc20TokenBalance;
+  const ethErc20TokenBalance = useEthErc20TokenBalance(ethAccount?.address, selectedToken, erc20BalanceUpdateCounter);
+  const gravityBridgeErc20TokenBalance = useGravityBridgeErc20TokenBalance(gravityBridgeAccount?.address, selectedToken, erc20BalanceUpdateCounter);
+  const tokenBalance = fromNetwork === SupportedNetwork.Eth ? ethErc20TokenBalance : gravityBridgeErc20TokenBalance;
 
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
   const ethWalletConnected: boolean = ethAccount !== undefined;
@@ -100,9 +101,10 @@ const TransferBox: React.FC = () => {
   const onConfirm = useCallback(() => {
     setTxConfirmOpened(false);
     setTxBroadcastingOpened(true);
-    if (toNetwork === SupportedNetwork.GravityBridge && ethAccount && selectedToken) {
+    if (toNetwork === SupportedNetwork.GravityBridge && ethAccount && gravityBridgeAccount && selectedToken) {
       ethWalletManager.sendToCosmos(
         ethAccount.address,
+        gravityBridgeAccount.address,
         selectedToken,
         numberService.convertWithoutDecimal(amount, selectedToken.decimals)
       ).then((txHash) => {
@@ -111,8 +113,19 @@ const TransferBox: React.FC = () => {
       }).catch((error) => {
         toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
       }).finally(() => setTxBroadcastingOpened(false));
+    } else if (toNetwork === SupportedNetwork.Eth && gravityBridgeAccount && ethAccount && selectedToken) {
+      setTxBroadcastingOpened(false);
+      gravityBridgeWalletManager.sendToEth(gravityBridgeAccount, ethAccount.address, selectedToken, amount)
+        .then((txHash) => {
+          toastService.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
+          setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
+        }).catch((error) => {
+          toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
+        }).finally(() => setTxBroadcastingOpened(false));
+    } else {
+      setTxBroadcastingOpened(false);
     }
-  }, [ethAccount, selectedToken, amount, toNetwork, setTxBroadcastingOpened, erc20BalanceUpdateCounter]);
+  }, [ethAccount, gravityBridgeAccount, selectedToken, amount, toNetwork, setTxBroadcastingOpened, erc20BalanceUpdateCounter]);
 
   return (
     <Box className="TransferBox">

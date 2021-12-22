@@ -46,13 +46,13 @@ async function delegate (amount: number): Promise<void> {
   gravityBridgeLcdService.broadcastProtoTx(txBytes, cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC);
 }
 
-async function withdrawReward () {
+async function withdrawReward (): Promise<void> {
   await keplrService.suggestExperimentalChain(chainInfo.gravityBridge);
   const account = await keplrService.getAccount(chainInfo.gravityBridge.chainId);
   const accountInfo = await gravityBridgeLcdService.getAccountInfo(account.address);
   const message = gravityBridgeMessageService.createWithdrawDelegatorRewardMessage(
     account.address,
-    'gravityvaloper18ytfr4s8lfccy048zl00y3akujxqvq75pzczg5',
+    'gravityvaloper18ytfr4s8lfccy048zl00y3akujxqvq75pzczg5'
   );
   const txBody = cosmosTxService.createTxBody([message]);
 
@@ -68,7 +68,7 @@ async function withdrawReward () {
     sequence,
     fee,
     gasLimit,
-    mode,
+    mode
   );
 
   const signDoc = cosmosTxService.getSignDoc(
@@ -112,7 +112,6 @@ const Delegator: React.FC<any> = () => {
       <button onClick={onWithdraw}>Withdraw</button>
     </div>
   );
-}
+};
 
 export default Delegator;
-
