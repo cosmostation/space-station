@@ -28,12 +28,16 @@
 
 .Button:disabled,
 .Button.primary:disabled {
-  background-color: var(--base-05);
   color: var(--base-04);
   cursor: not-allowed;
 }
 
+.dark .Button:disabled {
+  background-color: var(--base-05);
+}
+
 .light .Button:disabled {
+  color: var(--base-01);
   background-color: var(--base-02);
 }
 
@@ -42,6 +46,6 @@
   font-weight: bold;
 }
 
-.Button.primary:hover:not(disabled) {
+.Button.primary:not(:disabled):hover {
   background-color: #00618F;
 }

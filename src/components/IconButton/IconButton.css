@@ -38,16 +38,6 @@
   height: 28px;
 }
 
-.dark .IconButton.primary,
-.light .IconButton.primary {
-  background-color: var(--blue);
-}
-
-.dark .IconButton.primary:hover:not(disabled),
-.light .IconButton.primary:hover:not(disabled) {
-  background-color: #00618F;;
-}
-
 .IconButton img {
   width: 12px;
 }
@@ -76,4 +66,14 @@
 
 .light .IconButton:hover {
   background-color: var(--base-01);
+}
+
+.dark .IconButton.primary,
+.light .IconButton.primary {
+  background-color: var(--blue);
+}
+
+.dark .IconButton.primary:hover:not(:disabled),
+.light .IconButton.primary:hover:not(:disabled) {
+  background-color: #00618F;;
 }

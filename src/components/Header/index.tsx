@@ -3,11 +3,11 @@ import './Header.css';
 import IconButton from 'components/IconButton';
 import useEthAccount from 'hooks/use-eth-account';
 import useGravityBridgeAccount from 'hooks/use-gravity-bridge-account';
-import DarkLogo from 'images/dark-logo.png';
 import { ReactComponent as DarkThemeIcon } from 'images/dark-theme-icon.svg';
 import keplrIcon from 'images/keplr-icon.png';
-import LightLogo from 'images/light-logo.png';
 import { ReactComponent as LightThemeIcon } from 'images/light-theme-icon.svg';
+import { ReactComponent as BlackLogo } from 'images/logo-black.svg';
+import { ReactComponent as WhiteLogo } from 'images/logo-white.svg';
 import metaMaskIcon from 'images/meta-mask-icon.png';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
@@ -19,7 +19,7 @@ import toastService from 'services/toast-service';
 import themeStore from 'stores/theme-store';
 import { Account, MetaMaskPendingRequestError, NoKeplrWalletError, NoMetaMaskWalletError, ThemeType } from 'types';
 
-const Header: React.FC<any> = () => {
+const Header: React.FC = () => {
   const changeTheme = useCallback(() => {
     const currentTheme = themeStore.getCurrentTheme();
     const nextTheme = currentTheme === ThemeType.Dark ? ThemeType.Light : ThemeType.Dark;
@@ -35,8 +35,8 @@ const Header: React.FC<any> = () => {
       <div className="logo-container">
         <>
           { currentTheme === ThemeType.Dark
-            ? <img src={DarkLogo} className="logo" alt="Gravity bridge logo"/>
-            : <img src={LightLogo} className="logo" alt="Gravity bridge logo"/>
+            ? <WhiteLogo className="logo"/>
+            : <BlackLogo className="logo"/>
           }
         </>
       </div>
