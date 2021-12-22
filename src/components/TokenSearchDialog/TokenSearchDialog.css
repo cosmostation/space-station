@@ -1,6 +1,7 @@
 .Box.TokenSearchDialog {
   width: 380px;
-  height: 694px;
+  height: 80vh;
+  max-height: 694px;
   margin-top: 90px;
   z-index: 100;
 }

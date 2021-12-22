@@ -8,11 +8,12 @@ import IconButton from 'components/IconButton';
 import Text from 'components/Text';
 import useEthTokenList from 'hooks/use-eth-token-list';
 import useGravityBridgeTokenList from 'hooks/use-gravity-bridge-token-list';
+import useOnScreen from 'hooks/use-on-screen';
 import closeIcon from 'images/close-icon.png';
 import defaultTokenIcon from 'images/default-token-icon.png';
 import { ReactComponent as WarnIcon } from 'images/warn-icon.svg';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ethWalletManager from 'services/eth-wallet-manager';
 import { SupportedNetwork } from 'types';
 
@@ -26,16 +27,18 @@ type TokenSearchDialogProps = {
   close: () => void;
 }
 
-const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, ethChainId, gravityBridgeAccount, className, select, close }) => {
+const PER_PAGE = 20;
+
+const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, ethChainId, gravityBridgeAccount, className, select, close }) => {
   const [searchText, setSearchText] = useState<string>('');
   const [candidates, setCandidate] = useState<TokenInfo[]>([]);
-  const ethTokenList = useEthTokenList(ethChainId);
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, ethTokenList] = useEthTokenList(ethChainId, page, PER_PAGE);
+
   const gravityBridgeTokenList = useGravityBridgeTokenList(gravityBridgeAccount);
 
   useEffect(() => {
-    setTimeout(() => {
-      setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
-    }, 500);
+    setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
   }, [fromNetwork, ethTokenList, gravityBridgeTokenList]);
 
   const onSearchTextChange = useCallback((event) => {
@@ -62,8 +65,15 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
 
   const onClose = useCallback(() => {
     setSearchText('');
+    setPage(1);
     close();
   }, [close]);
+
+  const onLoadTokenList = useCallback(() => {
+    if (hasMore && fromNetwork === SupportedNetwork.Eth) {
+      setPage(page + 1);
+    }
+  }, [hasMore, fromNetwork, page, setPage]);
 
   return (
     <DialogContainer open={open} close={onClose}>
@@ -99,9 +109,27 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
                 </div>
               </li>
             ))}
+            <TokenLoader loader={onLoadTokenList}/>
           </ul>)}
       </Box>
     </DialogContainer>
+  );
+};
+
+type TokenLoaderProps = {
+  loader: () => unknown;
+}
+
+const TokenLoader: React.FC<TokenLoaderProps> = ({ loader }) => {
+  const ref = useRef(null);
+  const visible = useOnScreen(ref);
+  useEffect(() => {
+    if (visible) {
+      loader();
+    }
+  }, [visible, loader]);
+  return (
+    <span ref={ref}>&nbsp;</span>
   );
 };
 
@@ -147,4 +175,4 @@ function getCandidateByNetwork (network: SupportedNetwork, ethTokenList: TokenIn
   }
 }
 
-export default TokenSearcher;
+export default TokenSearcherDialog;

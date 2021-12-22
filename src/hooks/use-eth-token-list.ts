@@ -5,22 +5,32 @@ import { useEffect, useState } from 'react';
 import ethTokenList from './eth.json';
 import goerliTokenList from './goerli.json';
 
-function getTokenList (chainId: string): TokenInfo[] {
+export default function useEthTokenList (ethChainId: string, page = 1, perPage = 20): [boolean, TokenInfo[]] {
+  const [hasMore, setHasMore] = useState<boolean>(false);
+  const [tokenList, setTokenList] = useState<TokenInfo[]>([]);
+  useEffect(() => {
+    const [hasMore, tokens] = getTokenList(ethChainId, page, perPage);
+    setHasMore(hasMore);
+    setTokenList(tokens);
+  }, [ethChainId, page, perPage]);
+  return [hasMore, tokenList];
+}
+
+function getTokenList (chainId: string, page: number, perPage: number): [boolean, TokenInfo[]] {
   const _chainId = _.toNumber(chainId);
   if (_chainId === 1) {
-    return _.get(ethTokenList, 'tokens', []);
+    const _hasMore = hasMore(ethTokenList, page, perPage);
+    const tokens = _.take<TokenInfo>(ethTokenList, page * perPage);
+    return [_hasMore, tokens];
   } else if (_chainId === 5) {
-    return _.get(goerliTokenList, 'tokens', []);
+    const _hasMore = hasMore(ethTokenList, page, perPage);
+    const tokens = _.take<TokenInfo>(goerliTokenList, page * perPage);
+    return [_hasMore, tokens];
   } else {
-    return [];
+    return [false, []];
   }
 }
 
-export default function useEthTokenList (ethChainId: string): TokenInfo[] {
-  const [tokenList, setTokenList] = useState<TokenInfo[]>([]);
-  useEffect(() => {
-    const tokeList = getTokenList(ethChainId);
-    setTokenList(tokeList);
-  }, [ethChainId]);
-  return tokenList;
+function hasMore (tokenInfo: TokenInfo[], page: number, pageSize: number): boolean {
+  return _.size(tokenInfo) > page * pageSize;
 }
