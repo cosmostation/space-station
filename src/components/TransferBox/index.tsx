@@ -59,14 +59,17 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
   const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
+  const isEnough: boolean = Big(tokenBalance || '0').gte(Big(amount || '0'));
 
   const toggleDirection = useCallback(() => {
     if (fromNetwork === SupportedNetwork.Eth) {
       setToNetwork(SupportedNetwork.Eth);
       setFromNetwork(SupportedNetwork.GravityBridge);
+      setAmount('0');
     } else {
       setToNetwork(SupportedNetwork.GravityBridge);
       setFromNetwork(SupportedNetwork.Eth);
+      setAmount('0');
     }
   }, [fromNetwork]);
 
@@ -210,10 +213,10 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
         <Button
           className={classNames('transfer-button')}
           type="primary"
-          disabled={walletConnected === false || hasAmount === false}
+          disabled={walletConnected === false || hasAmount === false || isEnough === false}
           onClick={onOpenTxConfirm}
         >
-          {walletConnected === false ? 'Connect Wallet' : 'Transfer'}
+          {getButtonText(walletConnected, hasAmount, isEnough)}
         </Button>
       </Row>
       <TokenSearchDialog
@@ -287,6 +290,22 @@ function getIconSource (network: SupportedNetwork, theme: ThemeType): string {
     : theme === ThemeType.Dark
       ? gravityBridgeDarkIcon
       : gravityBridgeLightIcon;
+}
+
+function getButtonText (walletConnected: boolean, hasAmount: boolean, isEnough: boolean): string {
+  if (walletConnected === false) {
+    return 'Connect Wallet';
+  }
+
+  if (hasAmount === false) {
+    return 'Please input transfer amount';
+  }
+
+  if (isEnough === false) {
+    return 'Not enough balance';
+  }
+
+  return 'Transfer';
 }
 
 export default TransferBox;
