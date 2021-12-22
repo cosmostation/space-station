@@ -18,7 +18,7 @@ async function getGravityBridgeErc20TokenBalance (gravityBridgeAddress: string, 
   }
 }
 
-export default function useGravityErc20TokenBalance (address?: string, tokenInfo?: TokenInfo, rounds?: number, counter?: number): string {
+export default function useGravityErc20TokenBalance (address?: string, tokenInfo?: TokenInfo, counter?: number, rounds?: number): string {
   const [balance, setBalance] = useState<string>('0');
   useEffect(() => {
     if (address === undefined || tokenInfo === undefined) {

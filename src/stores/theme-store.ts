@@ -1,9 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
+import { ThemeType } from 'types';
 
-export enum ThemeType {
-  Dark = 'dark',
-  Light = 'light'
-}
 const _theme = window.localStorage.getItem('theme');
 const theme = _theme === 'dark' ? ThemeType.Dark : ThemeType.Light;
 const currentTheme$ = new BehaviorSubject<ThemeType>(theme);

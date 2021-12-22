@@ -8,6 +8,11 @@ import Web3Manager from 'services/web3-manager';
 import { AbstractProvider, RequestArguments } from 'web3-core';
 import { ContractSendMethod } from 'web3-eth-contract';
 
+export enum ThemeType {
+  Dark = 'dark',
+  Light = 'light'
+}
+
 export enum SupportedNetwork {
   Eth = 'eth',
   GravityBridge = 'gravity-bridge'

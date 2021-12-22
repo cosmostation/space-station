@@ -1,8 +1,8 @@
 import './DialogContainer.css';
 
 import { Dialog } from '@headlessui/react';
-import React, { useCallback, useEffect, useState } from 'react';
-import themeStore, { ThemeType } from 'stores/theme-store';
+import useTheme from 'hooks/use-theme';
+import React, { useCallback } from 'react';
 
 type DialogContainerProps = {
   children?: JSX.Element | JSX.Element[] | string;
@@ -11,12 +11,7 @@ type DialogContainerProps = {
 }
 
 const DialogContainer: React.FC<DialogContainerProps> = ({ open, children, close }) => {
-  const [theme, setTheme] = useState<ThemeType>(ThemeType.Dark);
-
-  useEffect(() => {
-    const subscription = themeStore.currentTheme$.subscribe(setTheme);
-    return (): void => subscription.unsubscribe();
-  }, []);
+  const theme = useTheme();
 
   const onClose = useCallback(() => {
     close();

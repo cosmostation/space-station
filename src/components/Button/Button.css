@@ -41,3 +41,7 @@
   background-color: var(--blue);
   font-weight: bold;
 }
+
+.Button.primary:hover:not(disabled) {
+  background-color: #00618F;
+}

@@ -6,7 +6,7 @@ import loggerFactory from 'services/logger-factory';
 
 const logger = loggerFactory.getLogger('[useEthErc20TokenBalance]');
 
-export default function useEthErc20TokenBalance (address?: string, tokenInfo?: TokenInfo, rounds?: number, counter?: number): string {
+export default function useEthErc20TokenBalance (address?: string, tokenInfo?: TokenInfo, counter?: number, rounds?: number): string {
   const [balance, setBalance] = useState<string>('0');
   useEffect(() => {
     if (address === undefined || tokenInfo === undefined) {

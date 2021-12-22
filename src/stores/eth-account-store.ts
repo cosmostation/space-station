@@ -17,4 +17,4 @@ export default {
   updateAccount,
   currentNetwork$: currentNetwork$.asObservable(),
   account$: ethAccount$.asObservable()
-}
+};

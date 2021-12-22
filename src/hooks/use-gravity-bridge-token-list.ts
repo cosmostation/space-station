@@ -5,8 +5,6 @@ import ethWalletManager from 'services/eth-wallet-manager';
 import gravityBridgeLcdService from 'services/gravity-bridge-lcd-service';
 import loggerFactory from 'services/logger-factory';
 
-import goerliTokenList from './goerli.json';
-
 const logger = loggerFactory.getLogger('[useGravityBridgeTokenList]');
 
 async function getGravityBridgeErcTokens (gravityBridgeAddress: string): Promise<TokenInfo[]> {
@@ -36,6 +34,6 @@ export default function useGravityBridgeTokenList (gravityBridgeAddress?: string
     } else {
       setTokenList([]);
     }
-  }, [gravityBridgeAddress, setTokenList]);
+  }, [gravityBridgeAddress]);
   return tokenList;
 }

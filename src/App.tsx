@@ -5,9 +5,9 @@ import classNames from 'classnames';
 import Header from 'components/Header';
 import TransferBox from 'components/TransferBox';
 import dotenv from 'dotenv';
-import React, { useEffect, useState } from 'react';
+import useTheme from 'hooks/use-theme';
+import React from 'react';
 import { ToastContainer } from 'react-toastify';
-import themeStore, { ThemeType } from 'stores/theme-store';
 
 dotenv.config();
 
@@ -21,18 +21,13 @@ export type erc20TokenInfo = {
 }
 
 const App: React.FC = () => {
-  const [theme, setTheme] = useState<ThemeType>();
-
-  useEffect(() => {
-    const subscription = themeStore.currentTheme$.subscribe(setTheme);
-    return (): void => subscription.unsubscribe();
-  }, []);
+  const theme = useTheme();
 
   return (
     <div className={classNames('App', theme)}>
       <Header/>
       <div className="container">
-        <TransferBox />
+        <TransferBox theme={theme}/>
       </div>
       <ToastContainer position="top-right" hideProgressBar={true} theme={theme} />
     </div>

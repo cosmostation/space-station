@@ -36,7 +36,7 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
     setTimeout(() => {
       setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
     }, 100);
-  }, [setCandidate, fromNetwork, ethTokenList, gravityBridgeTokenList]);
+  }, [fromNetwork, ethTokenList, gravityBridgeTokenList]);
 
   const onSearchTextChange = useCallback((event) => {
     const searchText = _.get(event, 'target.value', '');
@@ -53,7 +53,7 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
       const _candidates = filterTokenList(tokenList, searchText);
       setCandidate(_candidates);
     }
-  }, [setSearchText, setCandidate, fromNetwork, ethTokenList, gravityBridgeTokenList]);
+  }, [fromNetwork, ethTokenList, gravityBridgeTokenList]);
 
   const onTokenSelect = useCallback((tokenInfo: TokenInfo) => {
     select(tokenInfo);
@@ -63,7 +63,7 @@ const TokenSearcher: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, et
   const onClose = useCallback(() => {
     setSearchText('');
     close();
-  }, [close, setSearchText]);
+  }, [close]);
 
   return (
     <DialogContainer open={open} close={onClose}>

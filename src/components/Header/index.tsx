@@ -16,8 +16,8 @@ import ethWalletManager from 'services/eth-wallet-manager';
 import gravityBridgeWalletManager from 'services/gravity-bridge-wallet-manager';
 import balanceService from 'services/number-service';
 import toastService from 'services/toast-service';
-import themeStore, { ThemeType } from 'stores/theme-store';
-import { Account, MetaMaskPendingRequestError, NoKeplrWalletError, NoMetaMaskWalletError } from 'types';
+import themeStore from 'stores/theme-store';
+import { Account, MetaMaskPendingRequestError, NoKeplrWalletError, NoMetaMaskWalletError, ThemeType } from 'types';
 
 const Header: React.FC<any> = () => {
   const changeTheme = useCallback(() => {

@@ -78,6 +78,10 @@
   cursor: pointer;
 }
 
+.token-selector-max-button:hover {
+  background-color: #00618F;
+}
+
 .token-selector-max-button .Text {
   color: var(--base-00) !important;
 }

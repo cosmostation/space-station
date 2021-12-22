@@ -43,9 +43,9 @@
   background-color: var(--blue);
 }
 
-.dark .IconButton.primary:hover,
-.light .IconButton.primary:hover {
-  background-color: var(--blue);
+.dark .IconButton.primary:hover:not(disabled),
+.light .IconButton.primary:hover:not(disabled) {
+  background-color: #00618F;;
 }
 
 .IconButton img {
