@@ -5,11 +5,12 @@ import { useEffect, useState } from 'react';
 import ethTokenList from './eth.json';
 import goerliTokenList from './goerli.json';
 
-export default function useEthTokenList (ethChainId: string, page = 1, perPage = 20): [boolean, TokenInfo[]] {
+export default function useEthTokenList (ethChainId: string, page = 1, perPage = 20, searchedTokens: TokenInfo[]): [boolean, TokenInfo[]] {
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [tokenList, setTokenList] = useState<TokenInfo[]>([]);
   useEffect(() => {
     const [hasMore, tokens] = getTokenList(ethChainId, page, perPage);
+    tokens.push(...searchedTokens);
     setHasMore(hasMore);
     setTokenList(tokens);
   }, [ethChainId, page, perPage]);

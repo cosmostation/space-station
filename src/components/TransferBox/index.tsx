@@ -27,9 +27,12 @@ import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
 import ethWalletManager from 'services/eth-wallet-manager';
 import gravityBridgeWalletManager from 'services/gravity-bridge-wallet-manager';
+import loggerFactory from 'services/logger-factory';
 import numberService from 'services/number-service';
 import toastService from 'services/toast-service';
 import { EthAccount, GravityBridgeAccount, SupportedNetwork, ThemeType } from 'types';
+
+const logger = loggerFactory.getLogger('[TransferBox]');
 
 dotenv.config();
 
@@ -256,6 +259,7 @@ function transfer (
   selectedToken?: TokenInfo,
   amount?: string
 ): void {
+  logger.info('[transfer]', 'selectedToken', selectedToken, 'amount', amount);
   if (toNetwork === SupportedNetwork.GravityBridge && ethAccount && gravityBridgeAccount && selectedToken && amount) {
     ethWalletManager.sendToCosmos(
       ethAccount.address,

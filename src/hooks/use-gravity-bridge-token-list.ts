@@ -26,11 +26,17 @@ async function getGravityBridgeErcTokens (gravityBridgeAddress: string): Promise
   }
 }
 
-export default function useGravityBridgeTokenList (gravityBridgeAddress?: string): TokenInfo[] {
+export default function useGravityBridgeTokenList (gravityBridgeAddress?: string, searchedTokens?: TokenInfo[]): TokenInfo[] {
   const [tokenList, setTokenList] = useState<TokenInfo[]>([]);
   useEffect(() => {
     if (gravityBridgeAddress) {
-      getGravityBridgeErcTokens(gravityBridgeAddress).then(setTokenList);
+      getGravityBridgeErcTokens(gravityBridgeAddress)
+        .then((tokeInfos: TokenInfo[]) => {
+          if (searchedTokens) {
+            tokeInfos.push(...searchedTokens);
+          }
+          setTokenList(tokeInfos);
+        });
     } else {
       setTokenList([]);
     }

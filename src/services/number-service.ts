@@ -8,7 +8,7 @@ function convertWithDecimal (value: number | string, decimal: number, round = 4)
 
 function convertWithoutDecimal (value: number | string, decimal: number): string {
   const number = new Big(value);
-  const _decimal = new Big(10).pow(decimal);
+  const _decimal = decimal > 0 ? new Big(10).pow(decimal) : 1;
   return number.times(_decimal).toString();
 }
 

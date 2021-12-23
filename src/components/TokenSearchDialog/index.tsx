@@ -15,7 +15,10 @@ import { ReactComponent as WarnIcon } from 'images/warn-icon.svg';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ethWalletManager from 'services/eth-wallet-manager';
+import loggerFactory from 'services/logger-factory';
 import { SupportedNetwork } from 'types';
+
+const logger = loggerFactory.getLogger('[TokenSearcherDialog]');
 
 type TokenSearchDialogProps = {
   open: boolean;
@@ -31,11 +34,11 @@ const PER_PAGE = 20;
 
 const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, ethChainId, gravityBridgeAccount, className, select, close }) => {
   const [searchText, setSearchText] = useState<string>('');
+  const [searchedTokens, setSearchedTokens] = useState<TokenInfo[]>([]);
   const [candidates, setCandidate] = useState<TokenInfo[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [hasMore, ethTokenList] = useEthTokenList(ethChainId, page, PER_PAGE);
-
-  const gravityBridgeTokenList = useGravityBridgeTokenList(gravityBridgeAccount);
+  const [hasMore, ethTokenList] = useEthTokenList(ethChainId, page, PER_PAGE, searchedTokens);
+  const gravityBridgeTokenList = useGravityBridgeTokenList(gravityBridgeAccount, searchedTokens);
 
   useEffect(() => {
     setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
@@ -50,8 +53,13 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwo
       setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
     } else if (isEthAddress(searchText)) {
       findTokenInfo(tokenList, searchText)
-        .then((tokenInfo) => { tokenInfo ? setCandidate([tokenInfo]) : setCandidate([]); })
-        .catch(() => { setCandidate([]); });
+        .then((tokenInfo) => {
+          logger.info('[onSearchTextChange]', 'tokenInfo', tokenInfo);
+          tokenInfo ? setCandidate([tokenInfo]) : setCandidate([]);
+          if (tokenInfo) {
+            setSearchedTokens([...searchedTokens, tokenInfo]);
+          }
+        }).catch(() => { setCandidate([]); });
     } else {
       const _candidates = filterTokenList(tokenList, searchText);
       setCandidate(_candidates);
@@ -59,6 +67,8 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwo
   }, [fromNetwork, ethTokenList, gravityBridgeTokenList]);
 
   const onTokenSelect = useCallback((tokenInfo: TokenInfo) => {
+    setSearchText('');
+    setPage(1);
     select(tokenInfo);
     close();
   }, [select, close]);
