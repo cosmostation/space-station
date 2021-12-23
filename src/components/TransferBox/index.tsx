@@ -306,7 +306,7 @@ function getButtonText (walletConnected: boolean, hasAmount: boolean, isEnough: 
   }
 
   if (isEnough === false) {
-    return 'Not enough balance';
+    return 'Insufficient balance';
   }
 
   return 'Transfer';

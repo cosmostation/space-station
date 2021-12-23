@@ -64,13 +64,13 @@ const KelprConnectButton: React.FC<KeplrConnectionButtonProps> = (keplrConnectio
       await gravityBridgeWalletManager.connect();
     } catch (error) {
       if (error instanceof NoKeplrWalletError) {
-        toastService.showFailToast("Can't find Keplr",
+        toastService.showFailToast('Kepler extension required',
           <>
             Please install Keplr - <a href="https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap" target="_blank" rel="noopener noreferrer">HERE</a>
           </>
         );
       } else {
-        toastService.showFailToast("Can't connect Keplr wallet", 'Please try later');
+        toastService.showFailToast("Can't connect to Keplr", 'Please try again');
       }
     }
   }, []);
@@ -104,15 +104,15 @@ const EthConnectButton: React.FC<EthConnectionButtonProps> = (ethConnectionButto
       await ethWalletManager.connect();
     } catch (error) {
       if (error instanceof MetaMaskPendingRequestError) {
-        toastService.showFailToast('Please check Meta Mask', 'Same request is pending.');
+        toastService.showFailToast('Please check Metamask', 'Same request is pending.');
       } else if (error instanceof NoMetaMaskWalletError) {
         toastService.showFailToast("Can't find Meta Mask",
           <>
-            Please install MetaMask - <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank" rel="noopener noreferrer">HERE</a>
+            Please install Metamask - <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank" rel="noopener noreferrer">HERE</a>
           </>
         );
       } else {
-        toastService.showFailToast("Can't connect Meta Mask wallet", 'Please try later');
+        toastService.showFailToast('Metamask required', 'Please try again');
       }
     }
   }, []);
@@ -130,7 +130,7 @@ const EthConnectButton: React.FC<EthConnectionButtonProps> = (ethConnectionButto
           </button>)
         : (<button className="button connect-button" onClick={connect}>
             <img className="wallet-icon" src={metaMaskIcon} alt="meta mask icon" />
-            Connect Meta Mask
+            Connect Metamask
           </button>)
       }
     </>

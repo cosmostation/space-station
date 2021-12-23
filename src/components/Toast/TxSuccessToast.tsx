@@ -20,7 +20,7 @@ type TxSuccessToastProps = {
 
 const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ tokenInfo, amount, txHash, toNetwork }) => {
   const _toNetwork = toNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge';
-  const message = `Succeed to transfer ${amount} ${tokenInfo.symbol} to ${_toNetwork}`;
+  const message = `Successfully transferred ${amount} ${tokenInfo.symbol} to ${_toNetwork}`;
   const explorerLink = toNetwork === SupportedNetwork.Eth ? `${GRAVITY_BRIDGE_TX_EXPLORER}/${txHash}` : `${ETH_TX_EXPLORER}/${txHash}`;
   return (
     <>

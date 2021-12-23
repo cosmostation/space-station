@@ -88,7 +88,7 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwo
           <input
             className="token-search-input"
             autoComplete="false"
-            placeholder="Search name or paste address"
+            placeholder="Search name or paste contract address"
             value={searchText}
             onChange={onSearchTextChange}
           />

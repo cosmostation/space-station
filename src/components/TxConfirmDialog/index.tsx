@@ -38,7 +38,7 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
     <DialogContainer open={open} close={onClose}>
       <Box className={classNames(className, 'TxConfirm')}>
         <Row className="space-between">
-          <Text size="medium">Transfer Check</Text>
+          <Text size="medium">Confirm Transfer</Text>
           <IconButton onClick={onClose}>
             <img src={closeIcon} alt="close"/>
           </IconButton>
@@ -68,7 +68,7 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
         <Row>
           <Box density={1} depth={1}>
             <Row>
-              <Text muted size="small">Transfer Info</Text>
+              <Text muted size="small">Transfer Details</Text>
             </Row>
             <Row className="space-between">
               <Text>Token</Text>
