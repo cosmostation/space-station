@@ -112,7 +112,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
     transfer(
       toNetwork,
       erc20BalanceUpdateCounter,
-      setTxConfirmOpened,
+      setTxBroadcastingOpened,
       setErc20BalanceUpdateCounter,
       ethAccount,
       gravityBridgeAccount,
@@ -267,7 +267,9 @@ function transfer (
       setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
     }).catch((error) => {
       toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
-    }).finally(() => setTxBroadcastingOpened(false));
+    }).finally(() => {
+      setTxBroadcastingOpened(false);
+    });
   } else if (toNetwork === SupportedNetwork.Eth && gravityBridgeAccount && ethAccount && selectedToken && amount) {
     setTxBroadcastingOpened(false);
     gravityBridgeWalletManager.sendToEth(gravityBridgeAccount, ethAccount.address, selectedToken, amount)
@@ -276,7 +278,9 @@ function transfer (
         setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
       }).catch((error) => {
         toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
-      }).finally(() => setTxBroadcastingOpened(false));
+      }).finally(() => {
+        setTxBroadcastingOpened(false);
+      });
   } else {
     setTxBroadcastingOpened(false);
   }

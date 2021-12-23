@@ -123,11 +123,12 @@ type TokenLoaderProps = {
 const TokenLoader: React.FC<TokenLoaderProps> = ({ loader }) => {
   const ref = useRef(null);
   const visible = useOnScreen(ref);
+
   useEffect(() => {
     if (visible) {
       loader();
     }
-  }, [visible, loader]);
+  }, [visible]);
   return (
     <span ref={ref}>&nbsp;</span>
   );

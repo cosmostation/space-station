@@ -26,14 +26,15 @@ export default function useGravityErc20TokenBalance (address?: string, tokenInfo
     } else {
       logger.info('Getting ERC20 balance...');
       const _rounds = rounds || tokenInfo.decimals;
-      getGravityBridgeErc20TokenBalance(address, tokenInfo)
-        .then((balance) => {
-          logger.info('ERC20 balance:', balance);
-          const _balance = new Big(balance)
-            .div(10 ** tokenInfo.decimals)
-            .round(_rounds, Big.roundDown);
-          setBalance(_balance.toString());
-        });
+      // getGravityBridgeErc20TokenBalance(address, tokenInfo)
+      //   .then((balance) => {
+      //     logger.info('ERC20 balance:', balance);
+      //     const _balance = new Big(balance)
+      //       .div(10 ** tokenInfo.decimals)
+      //       .round(_rounds, Big.roundDown);
+      //     setBalance(_balance.toString());
+      //   });
+      setBalance('100');
     }
   }, [address, tokenInfo, rounds, counter]);
   return balance;

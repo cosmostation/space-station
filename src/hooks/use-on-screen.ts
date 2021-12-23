@@ -4,7 +4,11 @@ export default function useOnScreen (ref: React.MutableRefObject<Element | null>
   const [isIntersecting, setIntersecting] = useState<boolean>(false);
 
   const observer = new IntersectionObserver(
-    ([entry]) => setIntersecting(entry.isIntersecting)
+    ([entry]) => {
+      if (isIntersecting !== entry.isIntersecting) {
+        setIntersecting(entry.isIntersecting);
+      }
+    }
   );
 
   useEffect(() => {
