@@ -31,5 +31,5 @@
         }],
         "@typescript-eslint/explicit-function-return-type": "error"
     },
-    "ignorePatterns": ["gravity-main.js"]
+    "ignorePatterns": ["**/constants/*.js"]
 }

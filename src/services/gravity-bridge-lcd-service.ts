@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { cosmos } from 'constants/gravity-main';
+import { cosmos } from 'constants/gravity-bridge-v1.2.1';
 import chainInfo from 'constants/keplr-chain-info';
 import _ from 'lodash';
 

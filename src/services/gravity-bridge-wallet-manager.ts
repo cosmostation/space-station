@@ -1,5 +1,5 @@
 import { TokenInfo } from '@uniswap/token-lists';
-import { cosmos } from 'constants/gravity-main';
+import { cosmos } from 'constants/gravity-bridge-v1.2.1';
 import chainInfo from 'constants/keplr-chain-info';
 import dotenv from 'dotenv';
 import _ from 'lodash';
@@ -11,6 +11,7 @@ import keplrWallet from 'services/keplr-wallet';
 import loggerFactory from 'services/logger-factory';
 import gravityBridgeAccountStore from 'stores/gravity-bridge-account-store';
 import { GravityBridgeAccount, IKeplrWallet } from 'types';
+import Big from 'big.js';
 
 dotenv.config();
 
@@ -88,18 +89,25 @@ async function sendToEth (
   }
 
   const accountInfo = await gravityBridgeLcdService.getAccountInfo(gravityBridgeAccount.address);
+  logger.info('[sendToEth] Account Number:', accountInfo.account_number, 'Sequence:', accountInfo.sequence);
+
+  const decimal = new Big(10).pow(_.toNumber(tokenInfo.decimals));
+  const _amount = new Big(amount).times(decimal).toString();
   const message = gravityBridgeMessageService.createSendToEthereumMessage(
     gravityBridgeAccount.address,
     ethAddress,
     tokenInfo,
-    amount,
+    _amount,
     tokenInfo,
     '0'
   );
   const txBody = cosmosTxService.createTxBody([message]);
   const chainId = chainInfo.gravityBridge.chainId;
-  const accountNumber = _.get(accountInfo, 'base_vesting_account.base_account.account_number');
-  const sequence = new Long(_.get(accountInfo, 'base_vesting_account.base_account.sequence'));
+  logger.info(accountInfo);
+  const accountNumber = _.get(accountInfo, 'base_vesting_account.base_account.account_number') ||
+    _.get(accountInfo, 'account_number');
+  const sequence = new Long(_.get(accountInfo, 'base_vesting_account.base_account.sequence')) ||
+  _.get(accountInfo, 'sequence');
   const fee = '0';
   const gasLimit = new Long(200000);
   const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
@@ -111,6 +119,7 @@ async function sendToEth (
     gasLimit,
     mode
   );
+  logger.info('[sendToEth] Auth Info:', authInfo);
 
   const signDoc = cosmosTxService.getSignDoc(
     chainId,
@@ -118,6 +127,7 @@ async function sendToEth (
     authInfo,
     new Long(_.toNumber(accountNumber))
   );
+  logger.info('[sendToEth] Sign Doc:', signDoc);
 
   const signature = await currentWallet.sign(chainId, gravityBridgeAccount.address, signDoc);
   const txBytes = cosmosTxService.createTxRawBytes(signature);
@@ -136,67 +146,9 @@ async function sendToEth (
   return txhash;
 }
 
-async function withdrawReward (gravityBridgeAccount: GravityBridgeAccount): Promise<string> {
-  if (!currentWallet) {
-    throw new Error('No connected wallet');
-  }
-
-  let accountNumber, sequence;
-  try {
-    const accountInfo = await gravityBridgeLcdService.getAccountInfo(gravityBridgeAccount.address);
-    accountNumber = _.get(accountInfo, 'base_vesting_account.base_account.account_number');
-    sequence = new Long(_.get(accountInfo, 'base_vesting_account.base_account.sequence'));
-  } catch (error) {
-    accountNumber = '0';
-    sequence = new Long(0);
-  }
-
-  const message = gravityBridgeMessageService.createWithdrawDelegatorRewardMessage(
-    gravityBridgeAccount.address,
-    'gravityvaloper18ytfr4s8lfccy048zl00y3akujxqvq75pzczg5'
-  );
-  const txBody = cosmosTxService.createTxBody([message]);
-  const chainId = chainInfo.gravityBridge.chainId;
-  const fee = '0';
-  const gasLimit = new Long(200000);
-  const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
-
-  const authInfo = cosmosTxService.getAuthInfo(
-    gravityBridgeAccount.pubKey,
-    sequence,
-    fee,
-    gasLimit,
-    mode
-  );
-
-  const signDoc = cosmosTxService.getSignDoc(
-    chainId,
-    txBody,
-    authInfo,
-    new Long(_.toNumber(accountNumber))
-  );
-
-  const signature = await currentWallet.sign(chainId, gravityBridgeAccount.address, signDoc);
-  const txBytes = cosmosTxService.createTxRawBytes(signature);
-  const result = await gravityBridgeLcdService.broadcastProtoTx(txBytes, cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC);
-
-  logger.info('', result);
-  const code = _.get(result, 'tx_response.code');
-  const txhash = _.get(result, 'tx_response.txhash');
-
-  if (code !== 0) {
-    const rawLog = _.get(result, 'tx_response.raw_log');
-    logger.error(rawLog);
-    throw new Error(rawLog);
-  }
-
-  return txhash;
-}
-
 init();
 
 export default {
   connect,
-  sendToEth,
-  withdrawReward
+  sendToEth
 };

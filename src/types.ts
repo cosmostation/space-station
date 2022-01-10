@@ -1,7 +1,7 @@
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { ChainInfo } from '@keplr-wallet/types';
-import { cosmos } from 'constants/gravity-main';
+import { cosmos } from 'constants/gravity-bridge-v1.2.1';
 import { EventEmitter } from 'events';
 import Long from 'long';
 import Web3Manager from 'services/web3-manager';

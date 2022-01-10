@@ -1,6 +1,9 @@
 import { DirectSignResponse } from '@cosmjs/proto-signing';
-import { cosmos, google } from 'constants/gravity-main';
+import { cosmos, google } from 'constants/gravity-bridge-v1.2.1';
 import Long from 'long';
+import loggerFactory from 'services/logger-factory';
+
+const logger = loggerFactory.getLogger('[GravityBridgeWalletManager]');
 
 export interface IERC20Token {
   contract?: (string | null);
@@ -43,7 +46,7 @@ function getAuthInfo (
 function getSignDoc (
   chainId: string,
   txBody: cosmos.tx.v1beta1.ITxBody,
-  authInfo: cosmos.tx.v1beta1.AuthInfo,
+  authInfo: cosmos.tx.v1beta1.IAuthInfo,
   accountNumber: Long
 ): cosmos.tx.v1beta1.SignDoc {
   const bodyBytes = cosmos.tx.v1beta1.TxBody.encode(txBody).finish();

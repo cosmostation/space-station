@@ -1,7 +1,7 @@
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { ChainInfo, Keplr, Window } from '@keplr-wallet/types';
-import { cosmos } from 'constants/gravity-main';
+import { cosmos } from 'constants/gravity-bridge-v1.2.1';
 import Long from 'long';
 import loggerFactory from 'services/logger-factory';
 import { AccountChangeEventHandler, DirectSignDoc, GravityBridgeAccount, IKeplrWallet, NoKeplrWalletError } from 'types';

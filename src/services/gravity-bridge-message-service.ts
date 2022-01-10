@@ -1,7 +1,8 @@
 import { TokenInfo } from '@uniswap/token-lists';
-import Big from 'big.js';
-import { cosmos, google, gravity } from 'constants/gravity-main';
-import { IERC20Token } from 'types';
+import { cosmos, google, gravity } from 'constants/gravity-bridge-v1.2.1';
+import loggerFactory from 'services/logger-factory';
+
+const logger = loggerFactory.getLogger('[GravityBridgeMessageService]');
 
 function createSendToEthereumMessage (
   sender: string,
@@ -13,56 +14,27 @@ function createSendToEthereumMessage (
 ): google.protobuf.Any {
   const erc20Token = convertTokenInfo(tokenInfo, amount);
   const feeErc20Token = convertTokenInfo(feeTokenInfo, feeAmount);
-  const sendMessage = new gravity.v1.MsgSendToEthereum({
+  const sendMessage = new gravity.v1.MsgSendToEth({
     sender,
-    ethereum_recipient: ethAddress,
+    eth_dest: ethAddress,
     amount: erc20Token,
     bridge_fee: feeErc20Token
   });
+  logger.info('MsgSendToEth', sendMessage);
 
   return new google.protobuf.Any({
-    type_url: '/gravity.v1.MsgSendToEthereum',
-    value: gravity.v1.SendToEthereum.encode(sendMessage).finish()
+    type_url: '/gravity.v1.MsgSendToEth',
+    value: gravity.v1.MsgSendToEth.encode(sendMessage).finish()
   });
 }
 
-function createDelegateMessage (delegator: string, validator: string, amount: number): google.protobuf.Any {
-  const message = new cosmos.staking.v1beta1.MsgDelegate({
-    delegator_address: delegator,
-    validator_address: validator,
-    amount: {
-      denom: 'ugraviton',
-      amount: Big(amount).times(10 ** 6).toString()
-    }
-  });
-
-  return new google.protobuf.Any({
-    type_url: '/cosmos.staking.v1beta1.MsgDelegate',
-    value: cosmos.staking.v1beta1.MsgDelegate.encode(message).finish()
-  });
-}
-
-function createWithdrawDelegatorRewardMessage (delegator: string, validator: string): google.protobuf.Any {
-  const message = new cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward({
-    delegator_address: delegator,
-    validator_address: validator
-  });
-
-  return new google.protobuf.Any({
-    type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-    value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode(message).finish()
-  });
-}
-
-function convertTokenInfo (tokenInfo: TokenInfo, amount: string): IERC20Token {
+function convertTokenInfo (tokenInfo: TokenInfo, amount: string): cosmos.base.v1beta1.ICoin {
   return {
-    contract: tokenInfo.address,
+    denom: `gravity${tokenInfo.address}`,
     amount
   };
 }
 
 export default {
-  createSendToEthereumMessage,
-  createDelegateMessage,
-  createWithdrawDelegatorRewardMessage
+  createSendToEthereumMessage
 };
