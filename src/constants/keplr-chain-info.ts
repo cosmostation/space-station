@@ -2,7 +2,7 @@ import { ChainInfo } from '@keplr-wallet/types';
 
 const gravityBridge: ChainInfo = {
   chainName: 'GravityBridge',
-  chainId: 'gravity-bridge-2',
+  chainId: 'gravity-bridge-3',
   rest: 'https://lcd-gravity-bridge.cosmostation.io',
   rpc: 'http://220.76.21.184:20302',
   stakeCurrency: {
