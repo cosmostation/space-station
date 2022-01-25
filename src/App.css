@@ -12,10 +12,11 @@ html {
   --base-06: #252628;
   --base-07: #1B1C1E;
   --accent: linear-gradient(90deg, #872FEA 0%, #0ACCDE 100%);
+  --accent-deep: linear-gradient(90deg, rgba(138, 43, 234, 0.8) 0%, rgba(5, 210, 221, 0.8) 102.05%);
 }
 
 .dark {
-  --app-background: url(./images/bg-dark.svg) center fixed, linear-gradient(115.04deg, #501882 -9.96%, #000000 46.01%, #0C637E 100.24%);
+  --app-background: url(./images/bg-dark.svg) center fixed no-repeat, linear-gradient(#000000, #000000);
   --app-font-color: var(--base-00);
 
   --header-font-color: var(--base-00);
@@ -35,7 +36,7 @@ html {
 }
 
 .light {
-  --app-background: url(./images/bg-light.svg) center fixed, linear-gradient(var(--base-01), var(--base-01));
+  --app-background: url(./images/bg-light.svg) center fixed no-repeat, linear-gradient(var(--base-01), var(--base-01));
   --app-font-color: var(--base-05);
 
   --header-font-color: var(--base-05);

@@ -77,3 +77,13 @@
 .light .IconButton.primary:hover:not(:disabled) {
   background-color: #00618F;;
 }
+
+.dark .IconButton.secondary,
+.light .IconButton.secondary {
+  background-color: var(--base-04);
+}
+
+.dark .IconButton.secondary:hover:not(:disabled),
+.light .IconButton.secondary:hover:not(:disabled) {
+  background-color: var(--base-05);
+}

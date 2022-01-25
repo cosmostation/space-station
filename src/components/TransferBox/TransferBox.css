@@ -39,8 +39,15 @@
   height: 38px;
 }
 
-.change-direction-button-arrow-icon {
-  width: 15px;
+.toggle-button:hover {
+  animation: 0.2s changedirection forwards;
+}
+
+@keyframes changedirection {
+  25% {transform: rotate(45deg);}
+  50% {transform: rotate(90deg);}
+  79% {transform: rotate(135deg);}
+  100% {transform: rotate(180deg);}
 }
 
 .token-selector {

@@ -40,7 +40,7 @@ const Header: React.FC = () => {
           }
         </>
         <div className="logo-title-container">
-          Spacestation.zone currently only supports transfer to&nbsp;<span className="logo-title-gravity-bridge">Gravity Bridge Chain</span>.
+          spacestation.zone currently only supports transfers to&nbsp;<span className="logo-title-gravity-bridge">Gravity Bridge Chain</span>.
         </div>
       </div>
       <div className="buttons-container">

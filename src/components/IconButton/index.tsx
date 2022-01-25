@@ -9,7 +9,7 @@ type BoxProps = {
   onClick?: (event: any) => void;
   disabled?: boolean;
   size?: 'big' | 'medium' | 'small';
-  type?: 'primary'
+  type?: 'primary' | 'secondary'
 }
 
 const Box: React.FC<BoxProps> = ({ className, children, onClick, disabled, size, type }) => {

@@ -147,7 +147,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
             />
           </div>
         </Box>
-        <IconButton onClick={toggleDirection} type="primary">
+        <IconButton onClick={toggleDirection} type="secondary" className="toggle-button">
           <img src={arrowIcon} alt="toggle"/>
         </IconButton>
         <Box className={classNames(toNetwork, 'network-container')} density={1} depth={1}>
