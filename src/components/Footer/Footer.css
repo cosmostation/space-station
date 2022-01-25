@@ -8,3 +8,9 @@
   color: var(--base-03);
 }
 
+@media all and (width < 768px) {
+  .footer {
+    display: none;
+  }
+}
+

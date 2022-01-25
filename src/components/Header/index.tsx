@@ -46,7 +46,7 @@ const Header: React.FC = () => {
       <div className="buttons-container">
         <KelprConnectButton gravityBridgeAccount={gravityBridgeAccount} />
         <EthConnectButton ethAccount={ethAccount} />
-        <IconButton onClick={changeTheme} size="big">
+        <IconButton onClick={changeTheme} size="big" className="theme-change-button">
           { currentTheme === ThemeType.Dark
             ? <LightThemeIcon />
             : <DarkThemeIcon />

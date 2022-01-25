@@ -110,3 +110,50 @@
   margin: 0 12px;
   border-radius: 50%;
 }
+
+@media all and (width < 768px) {
+  .header {
+    display: block;
+  }
+
+  .buttons-container {
+    display: block;
+    padding: 0;
+    margin: 5px;
+  }
+
+  .connect-button,
+  .button {
+    width: 100%;
+    margin: 5px 0;
+    justify-content: flex-start;
+  }
+
+  .theme-change-button.IconButton {
+    width: 100% !important;
+  }
+
+  .logo-title-container {
+    display: none;
+  }
+}
+
+@media all and (width >= 768px) and (width <= 1024px) {
+  .header {
+    display: block;
+  }
+
+  .buttons-container {
+    justify-content: center;
+  }
+
+  .connect-button,
+  .button {
+    width: 45%;
+    justify-content: flex-start;
+  }
+
+  .logo-title-container {
+    display: none;
+  }
+}

@@ -56,6 +56,7 @@ html {
 
 .App {
   background: var(--app-background);
+  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -70,4 +71,10 @@ html {
 
 .TransferBox {
   margin-top: 70px;
+}
+
+@media all and (width < 768px) {
+  .container {
+    display: block;
+  }
 }
