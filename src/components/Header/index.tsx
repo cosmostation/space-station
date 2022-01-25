@@ -39,6 +39,9 @@ const Header: React.FC = () => {
             : <BlackLogo className="logo"/>
           }
         </>
+        <div className="logo-title-container">
+          Spacestation.zone currently only supports transfer to&nbsp;<span className="logo-title-gravity-bridge">Gravity Bridge Chain</span>.
+        </div>
       </div>
       <div className="buttons-container">
         <KelprConnectButton gravityBridgeAccount={gravityBridgeAccount} />

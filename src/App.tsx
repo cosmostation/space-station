@@ -1,8 +1,9 @@
-import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
 
 import classNames from 'classnames';
 import Header from 'components/Header';
+import Footer from 'components/Footer';
 import TransferBox from 'components/TransferBox';
 import dotenv from 'dotenv';
 import useTheme from 'hooks/use-theme';
@@ -29,6 +30,7 @@ const App: React.FC = () => {
       <div className="container">
         <TransferBox theme={theme}/>
       </div>
+      <Footer/>
       <ToastContainer position="top-right" hideProgressBar={true} theme={theme} />
     </div>
   );

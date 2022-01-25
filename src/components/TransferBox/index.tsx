@@ -11,6 +11,7 @@ import Text from 'components/Text';
 import TokenSearchDialog from 'components/TokenSearchDialog';
 import TxBroadcastingDialog from 'components/TxBroadcastingDialog';
 import TxConfirmDialog from 'components/TxConfirmDialog';
+import UnsupportedWarning from 'components/UnsupportedWarning';
 import dotenv from 'dotenv';
 import useEthAccount from 'hooks/use-eth-account';
 import useEthErc20TokenBalance from 'hooks/use-eth-erc20-token-balance';
@@ -61,8 +62,11 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
   const ethWalletConnected: boolean = ethAccount !== undefined;
   const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
+  const tokenSelected: boolean = selectedToken !== undefined;
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
   const isEnough: boolean = Big(tokenBalance || '0').gte(Big(amount || '0'));
+
+  const notSupportedYet = fromNetwork === SupportedNetwork.GravityBridge;
 
   const toggleDirection = useCallback(() => {
     if (fromNetwork === SupportedNetwork.Eth) {
@@ -88,10 +92,10 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
   }, []);
 
   const onOpenTokenSearcher = useCallback(() => {
-    if (walletConnected) {
+    if (walletConnected && !notSupportedYet) {
       setTokenSearcherOpened(true);
     }
-  }, [walletConnected]);
+  }, [walletConnected, notSupportedYet]);
 
   const onSelectToken = useCallback((token: TokenInfo) => {
     setSelectedToken(token);
@@ -165,7 +169,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
       <Row>
         <Box className="token-selector-container" density={1} depth={1}>
           <Row depth={1}>
-            <div className={classNames('token-selector', { disabled: !walletConnected })} onClick={onOpenTokenSearcher}>
+            <div className={classNames('token-selector', { disabled: !walletConnected || notSupportedYet })} onClick={onOpenTokenSearcher}>
               <img
                 className="token-selector-token-icon"
                 src={selectedToken?.logoURI ? selectedToken.logoURI : defaultTokenIcon}
@@ -174,7 +178,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
               <Text className="token-selector-token-name" size="small">
                 {selectedToken?.symbol ? selectedToken.symbol : 'Select Token'}
               </Text>
-              <IconButton size="small" disabled={!walletConnected}>
+              <IconButton size="small" disabled={!walletConnected || notSupportedYet }>
                 <ArrowNoTailIcon/>
               </IconButton>
             </div>
@@ -213,13 +217,16 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
         </Box>
       </Row>
       <Row>
+        <UnsupportedWarning />
+      </Row>
+      <Row>
         <Button
           className={classNames('transfer-button')}
           type="primary"
           disabled={walletConnected === false || hasAmount === false || isEnough === false}
           onClick={onOpenTxConfirm}
         >
-          {getButtonText(walletConnected, hasAmount, isEnough)}
+          {getButtonText(walletConnected, hasAmount, tokenSelected, isEnough, notSupportedYet)}
         </Button>
       </Row>
       <TokenSearchDialog
@@ -300,17 +307,25 @@ function getIconSource (network: SupportedNetwork, theme: ThemeType): string {
       : gravityBridgeLightIcon;
 }
 
-function getButtonText (walletConnected: boolean, hasAmount: boolean, isEnough: boolean): string {
+function getButtonText (walletConnected: boolean, hasAmount: boolean, tokenSelected: boolean, isEnough: boolean, notSupportedYet: boolean): string {
+  if (notSupportedYet === true) {
+    return 'Support Soon!';
+  }
+
   if (walletConnected === false) {
     return 'Connect Wallet';
   }
 
+  if (tokenSelected === false) {
+    return 'Please Select Token';
+  }
+
   if (hasAmount === false) {
-    return 'Please input transfer amount';
+    return 'Please Input Transfer Amount';
   }
 
   if (isEnough === false) {
-    return 'Insufficient balance';
+    return 'Insufficient Balance';
   }
 
   return 'Transfer';

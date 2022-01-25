@@ -1,0 +1,33 @@
+.unsupported-warning-container {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.unsupported-warning-title-container {
+  margin-bottom: 11px;
+  font-size: 0.938rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unsupported-warning-title {
+  margin-left: 5px;
+}
+
+.unsupported-warning-content {
+  font-size: 0.813rem;
+  line-height: 1.125rem;
+}
+
+.unsupported-warning-muted-content {
+  margin-top: 8px;
+  font-size: 0.813rem;
+  line-height: 1.125rem;
+  color: var(--base-03);
+}
+
+.support-channel-link {
+  text-decoration: none;
+  color: #497EE4;
+}

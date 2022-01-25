@@ -8,11 +8,38 @@
 
 .logo-container {
   padding: 0 25px;
+  display: flex;
+  align-items: center;
 }
 
 .logo {
-  width: 180px;
-  height: 24px;
+  width: 200px;
+  height: 32px;
+}
+
+.logo-title-container {
+  height: 32px;
+  padding: 0 12px;
+  margin-left: 16px;
+  border-radius: 100px;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  font-size: 0.813rem;
+}
+
+.App.light .logo-title-container {
+  background: linear-gradient(var(--base-00), var(--base-00)) padding-box, linear-gradient(90deg, #872FEA 0%, #0ACCDE 100%) border-box;
+  color: var(--base-05);
+}
+
+.App.dark .logo-title-container {
+  background: linear-gradient(var(--base-06), var(--base-06)) padding-box, linear-gradient(90deg, #872FEA 0%, #0ACCDE 100%) border-box;
+  color: var(--base-00);
+}
+
+.logo-title-gravity-bridge {
+  color: #0ACCDE;
 }
 
 .buttons-container {
