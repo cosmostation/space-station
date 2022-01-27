@@ -4,8 +4,17 @@
   bottom: 20px;
   font-size: 0.75rem;
   display: flex;
-  align-items: center;
   color: var(--base-03);
+}
+
+.deployed-on-akash {
+  display: flex;
+  align-items: center;
+}
+
+.copyright {
+  display: flex;
+  align-items: center;
 }
 
 @media all and (width < 768px) {
