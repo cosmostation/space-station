@@ -1,8 +1,8 @@
 import './Footer.css';
 
+import { ReactComponent as AkashLogo } from 'images/akash-logo.svg';
 import React from 'react';
 import dotenv from 'dotenv';
-import { ReactComponent as AkashLogo } from 'images/akash-logo.svg';
 
 dotenv.config();
 

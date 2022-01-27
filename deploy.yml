@@ -1,0 +1,47 @@
+version: "2.0"
+
+services:
+  web:
+    image: cosmostation/gravity-bridge:6.0
+    env:
+      - REACT_APP_ETH_CHAIN_ID=0x1
+      - REACT_APP_GRAVITY_BRIDGE_CONTRACT_ADDRESS=0xa4108aA1Ec4967F8b52220a4f7e94A8201F2D906
+      - REACT_APP_ETH_TX_EXPLORER=https://etherscan.io/tx
+      - REACT_APP_GRAVITY_BRIDGE_TX_EXPLORER=https://www.mintscan.io/cosmos/txs
+      - REACT_APP_DEBUG_LEVEL=debug
+      - SKIP_PREFLIGHT_CHECK=true
+      - REACT_APP_ON_AKASH=true
+    expose:
+      - port: 80
+        as: 80
+        to:
+          - global: true
+        accept:
+          - www.spacestation.zone
+          - spacestation.zone
+profiles:
+  compute:
+    web:
+      resources:
+        cpu:
+          units: 0.2
+        memory:
+          size: 521Mi
+        storage:
+          size: 521Mi
+  placement:
+    westcoast:
+      attributes:
+        host: akash
+      signedBy:
+        anyOf:
+          - "akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63"
+      pricing:
+        web:
+          denom: uakt
+          amount: 1000
+deployment:
+  web:
+    westcoast:
+      profile: web
+      count: 2
