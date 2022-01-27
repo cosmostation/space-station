@@ -42,7 +42,7 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwo
 
   useEffect(() => {
     setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
-  }, [fromNetwork, ethTokenList, gravityBridgeTokenList]);
+  }, [fromNetwork, ethTokenList, gravityBridgeTokenList, searchText]);
 
   const onSearchTextChange = useCallback((event) => {
     const searchText = _.get(event, 'target.value', '');
