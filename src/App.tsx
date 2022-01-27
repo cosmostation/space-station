@@ -29,6 +29,11 @@ const App: React.FC = () => {
       <Header/>
       <div className="container">
         <TransferBox theme={theme}/>
+        <p className="mobile-guide-container">
+          spacestation.zone is currently optimized<br/>
+          for web view only - please access<br/>
+          through a desktop/laptop.<br/>
+        </p>
       </div>
       <Footer/>
       <ToastContainer position="top-right" hideProgressBar={true} theme={theme} />

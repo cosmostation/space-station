@@ -73,8 +73,24 @@ html {
   margin-top: 70px;
 }
 
+.mobile-guide-container {
+  display: none;
+  text-align: center;
+  font-size: 0.938rem;
+  line-height: 1.25rem;
+}
+
 @media all and (width < 768px) {
+  .App.dark {
+    --app-background: url(./images/bg-dark-mobile.svg) center fixed no-repeat, linear-gradient(#000000, #000000);
+  }
+
   .container {
+    align-items: center;
+    height: 80vh;
+  }
+
+  .mobile-guide-container {
     display: block;
   }
 }

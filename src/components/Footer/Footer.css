@@ -10,7 +10,20 @@
 
 @media all and (width < 768px) {
   .footer {
-    display: none;
+    left: 20px;
+    text-align: center;
+    display: block;
+  }
+
+  .deployed-on-akash {
+    display: flex;
+    align-items: center;
+    justify-content: center
+  }
+
+  .copyright {
+    margin-top: 10px;
+    display: block;
   }
 }
 

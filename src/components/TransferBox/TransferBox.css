@@ -124,20 +124,6 @@
 
 @media all and (width < 768px) {
   .Box.TransferBox {
-    width: calc(100% - 40px);
-    padding: 20px;
-    margin-top: 20px;
-  }
-
-  .Box.network-container {
-    width: 30%;
-  }
-
-  .token-selector-container {
-    width: calc(100% - 30px) !important;
-  }
-
-  .token-selector-token-amount-input {
-    width: 30%;
+    display: none;
   }
 }
