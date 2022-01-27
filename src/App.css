@@ -80,6 +80,10 @@ html {
   line-height: 1.25rem;
 }
 
+.mobile-guide-accent {
+  color: #0ACCDE;
+}
+
 @media all and (width < 768px) {
   .App.dark {
     --app-background: url(./images/bg-dark-mobile.svg) center fixed no-repeat, linear-gradient(#000000, #000000);
