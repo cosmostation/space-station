@@ -1,6 +1,5 @@
 import './TxConfirmDialog.css';
 
-import { TokenInfo } from '@uniswap/token-lists';
 import classNames from 'classnames';
 import Box from 'components/Box';
 import Button from 'components/Button';
@@ -12,20 +11,21 @@ import arrowIcon from 'images/arrow-icon.png';
 import closeIcon from 'images/close-icon.png';
 import defaultTokenIcon from 'images/default-token-icon.png';
 import React, { useCallback } from 'react';
-import { SupportedNetwork } from 'types';
+import chainHelper from 'services/util/chain-helper';
+import { IToken, SupportedChain } from 'types';
 
 type TxSenderProps = {
   open: boolean;
   className?: string;
-  fromNetwork: SupportedNetwork;
-  toNetwork: SupportedNetwork;
-  token?: TokenInfo;
+  fromChain: SupportedChain;
+  toChain: SupportedChain;
+  token?: IToken;
   amount: string;
   close: () => void;
   confirm: () => void;
 }
 
-const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork, toNetwork, token, amount, close, confirm }) => {
+const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromChain, toChain, token, amount, close, confirm }) => {
   const onClose = useCallback(() => {
     close();
   }, [close]);
@@ -49,7 +49,7 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
               <Text muted size="small">From</Text>
             </Row>
             <Row>
-              <Text>{fromNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge'}</Text>
+              <Text>{chainHelper.getChainName(fromChain)}</Text>
             </Row>
           </Box>
           <IconButton disabled>
@@ -61,7 +61,7 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
               <Text muted size="small">To</Text>
             </Row>
             <Row>
-              <Text>{toNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge'}</Text>
+              <Text>{chainHelper.getChainName(toChain)}</Text>
             </Row>
           </Box>
         </Row>
@@ -75,11 +75,11 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromNetwork
               <div className="tx-confirm-token-info">
                 <img
                   className="token-confirm-token-icon"
-                  src={token?.logoURI ? token.logoURI : defaultTokenIcon}
+                  src={token?.erc20?.logoURI ? token.erc20?.logoURI : defaultTokenIcon}
                   alt="selected token icon"
                 />
                 <Text className="token-confirm-token-name" size="small">
-                  {token?.symbol ? token.symbol : 'Token Symbol'}
+                  {token?.erc20?.symbol ? token.erc20?.symbol : 'Token Symbol'}
                 </Text>
               </div>
             </Row>

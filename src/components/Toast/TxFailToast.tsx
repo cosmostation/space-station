@@ -1,20 +1,19 @@
 import './Toast.css';
 
-import { TokenInfo } from '@uniswap/token-lists';
 import Text from 'components/Text';
 import React from 'react';
-import { SupportedNetwork } from 'types';
+import { IToken, SupportedChain } from 'types';
 
 type TxFailToastProps = {
-  tokenInfo: TokenInfo;
+  token: IToken;
   amount: string;
-  toNetwork: SupportedNetwork;
+  toChain: SupportedChain;
   errorMessage?: string;
 };
 
-const TxFailToast: React.FC<TxFailToastProps> = ({ tokenInfo, amount, toNetwork, errorMessage }) => {
-  const _toNetwork = toNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge';
-  const message = `Failed to transfer ${amount} ${tokenInfo.symbol} to ${_toNetwork}`;
+const TxFailToast: React.FC<TxFailToastProps> = ({ token, amount, toChain, errorMessage }) => {
+  const _toChain = toChain === SupportedChain.Eth ? 'Ethereum' : 'Gravity Bridge';
+  const message = `Failed to transfer ${amount} ${token.erc20?.symbol} to ${_toChain}`;
   return (
     <div className="toast-message">
       <p>{message}</p>

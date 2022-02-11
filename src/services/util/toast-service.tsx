@@ -1,4 +1,3 @@
-import { TokenInfo } from '@uniswap/token-lists';
 import FailToast from 'components/Toast/FailToast';
 import TxFailToast from 'components/Toast/TxFailToast';
 import TxSuccessToast from 'components/Toast/TxSuccessToast';
@@ -6,18 +5,18 @@ import FailIcon from 'images/fail-icon.png';
 import SuccessIcon from 'images/success-icon.png';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { SupportedNetwork } from 'types';
+import { IToken, SupportedChain } from 'types';
 
-function showTxSuccessToast (tokenInfo: TokenInfo, amount: string, txHash: string, toNetwork: SupportedNetwork): void {
+function showTxSuccessToast (token: IToken, amount: string, txHash: string, toChain: SupportedChain): void {
   toast(
-    <TxSuccessToast tokenInfo={tokenInfo} amount={amount} txHash={txHash} toNetwork={toNetwork}/>,
+    <TxSuccessToast token={token} amount={amount} txHash={txHash} toChain={toChain}/>,
     { icon: () => <img src={SuccessIcon} alt="success" className="toast-icon"/> }
   );
 }
 
-function showTxFailToast (tokenInfo: TokenInfo, amount: string, toNetwork: SupportedNetwork, errorMessage?: string): void {
+function showTxFailToast (token: IToken, amount: string, toChain: SupportedChain, errorMessage?: string): void {
   toast(
-    <TxFailToast tokenInfo={tokenInfo} amount={amount} toNetwork={toNetwork} errorMessage={errorMessage}/>,
+    <TxFailToast token={token} amount={amount} toChain={toChain} errorMessage={errorMessage}/>,
     { icon: () => <img src={FailIcon} alt="fail" className="toast-icon"/> }
   );
 }

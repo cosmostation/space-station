@@ -1,89 +1,74 @@
 import './TokenSearchDialog.css';
 
-import { TokenInfo } from '@uniswap/token-lists';
 import classNames from 'classnames';
 import Box from 'components/Box';
 import DialogContainer from 'components/DialogContainer';
 import IconButton from 'components/IconButton';
 import Text from 'components/Text';
-import useEthTokenList from 'hooks/use-eth-token-list';
-import useGravityBridgeTokenList from 'hooks/use-gravity-bridge-token-list';
-import useOnScreen from 'hooks/use-on-screen';
+import useTokenList from 'hooks/use-token-list';
 import closeIcon from 'images/close-icon.png';
 import defaultTokenIcon from 'images/default-token-icon.png';
 import { ReactComponent as WarnIcon } from 'images/warn-icon.svg';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ethWalletManager from 'services/eth-wallet-manager';
-import loggerFactory from 'services/logger-factory';
-import { SupportedNetwork } from 'types';
+import React, { useCallback, useEffect, useState } from 'react';
+import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import loggerFactory from 'services/util/logger-factory';
+import typeHelper from 'services/util/type-helper';
+import { IToken, SupportedChain, SupportedEthChain } from 'types';
 
 const logger = loggerFactory.getLogger('[TokenSearcherDialog]');
 
 type TokenSearchDialogProps = {
   open: boolean;
-  fromNetwork: SupportedNetwork;
-  ethChainId: string;
-  gravityBridgeAccount?: string;
+  fromChain: SupportedChain;
+  toChain: SupportedChain;
+  fromAddress?: string;
   className?: string;
-  select: (tokenInfo: TokenInfo) => void;
+  select: (token: IToken) => void;
   close: () => void;
 }
 
-const PER_PAGE = 20;
-
-const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwork, ethChainId, gravityBridgeAccount, className, select, close }) => {
+const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromChain, toChain, fromAddress, className, select, close }) => {
   const [searchText, setSearchText] = useState<string>('');
-  const [searchedTokens, setSearchedTokens] = useState<TokenInfo[]>([]);
-  const [candidates, setCandidate] = useState<TokenInfo[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [hasMore, ethTokenList] = useEthTokenList(ethChainId, page, PER_PAGE, searchedTokens);
-  const gravityBridgeTokenList = useGravityBridgeTokenList(gravityBridgeAccount, searchedTokens);
+  const [searchedTokens, setSearchedTokens] = useState<IToken[]>([]);
+  const [candidates, setCandidates] = useState<IToken[]>([]);
+  const tokens = useTokenList(fromChain, toChain, searchedTokens, fromAddress);
 
   useEffect(() => {
-    setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
-  }, [fromNetwork, ethTokenList, gravityBridgeTokenList, searchText]);
+    setCandidates(tokens);
+  }, [tokens]);
 
   const onSearchTextChange = useCallback((event) => {
     const searchText = _.get(event, 'target.value', '');
     setSearchText(searchText);
 
-    const tokenList = getCandidateByNetwork(fromNetwork, ethTokenList, gravityBridgeTokenList);
     if (_.isEmpty(searchText)) {
-      setCandidateByNetwork(fromNetwork, setCandidate, ethTokenList, gravityBridgeTokenList);
+      setCandidates(tokens);
     } else if (isEthAddress(searchText)) {
-      findTokenInfo(tokenList, searchText)
-        .then((tokenInfo) => {
-          logger.info('[onSearchTextChange]', 'tokenInfo', tokenInfo);
-          tokenInfo ? setCandidate([tokenInfo]) : setCandidate([]);
-          if (tokenInfo) {
-            setSearchedTokens([...searchedTokens, tokenInfo]);
+      findTokenInfo(fromChain, tokens, searchText)
+        .then((token) => {
+          logger.info('[onSearchTextChange]', 'token:', token);
+          token ? setCandidates([token]) : setCandidates([]);
+          if (token) {
+            setSearchedTokens([...searchedTokens, token]);
           }
-        }).catch(() => { setCandidate([]); });
+        }).catch(() => { setCandidates([]); });
     } else {
-      const _candidates = filterTokenList(tokenList, searchText);
-      setCandidate(_candidates);
+      const _candidates = filterTokenList(tokens, searchText);
+      setCandidates(_candidates);
     }
-  }, [fromNetwork, ethTokenList, gravityBridgeTokenList]);
+  }, [fromChain, tokens, setCandidates]);
 
-  const onTokenSelect = useCallback((tokenInfo: TokenInfo) => {
+  const onTokenSelect = useCallback((token: IToken) => {
     setSearchText('');
-    setPage(1);
-    select(tokenInfo);
+    select(token);
     close();
   }, [select, close]);
 
   const onClose = useCallback(() => {
     setSearchText('');
-    setPage(1);
     close();
   }, [close]);
-
-  const onLoadTokenList = useCallback(() => {
-    if (hasMore && fromNetwork === SupportedNetwork.Eth) {
-      setPage(page + 1);
-    }
-  }, [hasMore, fromNetwork, page, setPage]);
 
   return (
     <DialogContainer open={open} close={onClose}>
@@ -111,36 +96,19 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromNetwo
             </div>)
           : (<ul className="token-candidate-list">
             {_.map(candidates, (token, i) => (
-              <li className="token-list-item" key={`${token.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
-                <img src={token.logoURI ? token.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.symbol} logo`}/>
-                <div>
-                  <Text size="small">{token.symbol}</Text>
-                  <Text size="tiny" muted className="token-list-token-name">{token.name}</Text>
-                </div>
-              </li>
+              token.isErc20 === true
+                ? (<li className="token-list-item" key={`${token.erc20?.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
+                    <img src={token.erc20?.logoURI ? token.erc20.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.erc20?.symbol} logo`}/>
+                    <div>
+                      <Text size="small">{token.erc20?.symbol}</Text>
+                      <Text size="tiny" muted className="token-list-token-name">{token.erc20?.name}</Text>
+                    </div>
+                  </li>)
+                : ''
             ))}
-            <TokenLoader loader={onLoadTokenList}/>
           </ul>)}
       </Box>
     </DialogContainer>
-  );
-};
-
-type TokenLoaderProps = {
-  loader: () => unknown;
-}
-
-const TokenLoader: React.FC<TokenLoaderProps> = ({ loader }) => {
-  const ref = useRef(null);
-  const visible = useOnScreen(ref);
-
-  useEffect(() => {
-    if (visible) {
-      loader();
-    }
-  }, [visible]);
-  return (
-    <span ref={ref}>&nbsp;</span>
   );
 };
 
@@ -148,42 +116,28 @@ function isEthAddress (searchText: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(searchText);
 }
 
-async function findTokenInfo (tokenList: TokenInfo[], address: string): Promise<TokenInfo | undefined | null> {
-  const tokenInfo = _.find(tokenList, (tokenInfo: TokenInfo) => tokenInfo.address === address);
-  return tokenInfo || ethWalletManager.getERC20Info(address);
+async function findTokenInfo (fromChain: SupportedChain, tokens: IToken[], address: string): Promise<IToken | undefined | null> {
+  const token = _.find(tokens, (tokenInfo: IToken) => tokenInfo.erc20?.address === address);
+  if (token) {
+    return token;
+  } else {
+    if (typeHelper.isSupportedEthChain(fromChain)) {
+      const ercToken = await ethWalletManager.getERC20Info(fromChain as SupportedEthChain, address);
+      if (ercToken) {
+        return typeHelper.convertErc20ToToken(ercToken);
+      }
+    }
+    return null;
+  }
 }
 
-function filterTokenList (tokenList: TokenInfo[], searchText: string): TokenInfo[] {
-  return _.filter(tokenList, (tokenInfo) => {
-    const lowerValue = _.toLower(searchText);
-    return _.includes(_.toLower(tokenInfo.name), lowerValue) ||
-      _.includes(_.toLower(tokenInfo.symbol), lowerValue);
+function filterTokenList (tokens: IToken[], searchText: string): IToken[] {
+  const lowerValue = _.toLower(searchText);
+  return _.filter(tokens, (token) => {
+    return _.includes(_.toLower(token.erc20?.name), lowerValue) ||
+      _.includes(_.toLower(token.erc20?.symbol), lowerValue) ||
+      _.includes(_.toLower(token.cosmos?.name), lowerValue);
   });
-}
-
-function setCandidateByNetwork (
-  network: SupportedNetwork,
-  candidateSetter: (tokenInfos: TokenInfo[]) => void,
-  ethTokenList: TokenInfo[],
-  gravityBridgeTokenList: TokenInfo[]
-): void {
-  if (network === SupportedNetwork.Eth) {
-    candidateSetter(ethTokenList);
-  } else if (network === SupportedNetwork.GravityBridge) {
-    candidateSetter(gravityBridgeTokenList);
-  } else {
-    candidateSetter([]);
-  }
-}
-
-function getCandidateByNetwork (network: SupportedNetwork, ethTokenList: TokenInfo[], gravityBridgeTokenList: TokenInfo[]): TokenInfo[] {
-  if (network === SupportedNetwork.Eth) {
-    return ethTokenList;
-  } else if (network === SupportedNetwork.GravityBridge) {
-    return gravityBridgeTokenList;
-  } else {
-    return [];
-  }
 }
 
 export default TokenSearcherDialog;

@@ -29,6 +29,7 @@
   z-index: 10;
 }
 
+.network-container-icon.goerli,
 .network-container-icon.eth {
   width: 30px;
   height: 49px;
