@@ -65,7 +65,10 @@ async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny
     throw new Error(`No wallet for ${chain}!`);
   }
 
-  const account = await wallet.getAccount(chain);
+  const chainInfo = cosmosChains[chain];
+  const chainId = chainInfo.chainId;
+
+  const account = await wallet.getAccount(chainId);
   if (!account) {
     const errorMessage = `Can't get account for ${chain}!`;
     logger.error('[sign]', errorMessage);
@@ -73,9 +76,6 @@ async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny
   }
 
   const txBody = cosmosTxService.createTxBody(messages);
-  const chainInfo = cosmosChains[chain];
-  const chainId = chainInfo.chainId;
-
   const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
   const fee = '0';
   const gasLimit = new Long(200000);
