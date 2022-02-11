@@ -5,7 +5,7 @@ import { IToken, SupportedChain } from 'types';
 
 const logger = loggerFactory.getLogger('[useTokenBalance]');
 
-export default function useEthErc20TokenBalance (chain: SupportedChain, address?: string, token?: IToken, counter?: number, rounds?: number): string {
+export default function useTokenBalance (chain: SupportedChain, address?: string, token?: IToken, counter?: number, rounds?: number): string {
   const [balance, setBalance] = useState<string>('0');
   useEffect(() => {
     if (address === undefined || token?.erc20 === undefined) {
