@@ -108,6 +108,10 @@ class MetaMaskWallet implements IEthWallet {
   getWeb3 (): Promise<Web3Manager | null> {
     return this.web3;
   }
+
+  isSupportMultiConnection (): boolean {
+    return false;
+  }
 }
 
 function isMetaMaskProvider (provider: unknown): provider is MetaMaskProvider {

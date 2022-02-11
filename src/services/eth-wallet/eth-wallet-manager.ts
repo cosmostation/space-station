@@ -35,14 +35,44 @@ const chinWalletMap: Record<SupportedEthChain, IEthWallet | undefined> = {
   [SupportedEthChain.Goerli]: undefined
 };
 
-async function init (): Promise<void> {
+async function init (ethChain: SupportedEthChain): Promise<void> {
+  const duplicated: Record<string, SupportedEthChain[]> = {};
   for (const chain of _.values(SupportedEthChain)) {
     const walletType = window.localStorage.getItem(chain.toString());
     if (walletType && typeHelper.isEthWalletType(walletType)) {
+      if (walletMap[walletType].isSupportMultiConnection()) {
+        try {
+          await connect(chain as SupportedEthChain, walletType);
+        } catch (error) {
+          logger.error(`[init] Error on chain: ${chain} and wallet type: ${walletType}`, error);
+        }
+      } else {
+        const _walletType = EthWalletType[walletType];
+        if (!duplicated[_walletType]) {
+          duplicated[_walletType] = [];
+        }
+        duplicated[_walletType].push(chain);
+      }
+    }
+  }
+
+  for (const _walletType in duplicated) {
+    const chains = duplicated[_walletType];
+    const walletType = (<any>EthWalletType)[_walletType];
+    if (_.includes(chains, ethChain)) {
       try {
-        await connect(chain as SupportedEthChain, walletType);
+        await connect(ethChain, walletType);
       } catch (error) {
-        logger.error(`[init] Error on chain: ${chain} and wallet type: ${walletType}`, error);
+        logger.error(`[init] Error on chain: ${ethChain} and wallet type: ${walletType}`, error);
+      }
+    } else {
+      try {
+        const chain = _.first(chains);
+        if (chain) {
+          await connect(chain, walletType);
+        }
+      } catch (error) {
+        logger.error(`[init] Error on chain: ${ethChain} and wallet type: ${walletType}`, error);
       }
     }
   }

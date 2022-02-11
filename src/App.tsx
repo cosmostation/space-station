@@ -11,17 +11,20 @@ import React, { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import typeHelper from 'services/util/type-helper';
 import { SupportedChain } from 'types';
 
 dotenv.config();
+const ethChain = SupportedChain.Eth;
 
 const App: React.FC = () => {
   const theme = useTheme();
   useEffect(() => {
     cosmosWalletManager.init();
-    ethWalletManager.init();
+    if (typeHelper.isSupportedEthChain(ethChain)) {
+      ethWalletManager.init(ethChain);
+    }
   }, []);
-  const ethChain = SupportedChain.Goerli;
 
   return (
     <div className={classNames('App', theme)}>

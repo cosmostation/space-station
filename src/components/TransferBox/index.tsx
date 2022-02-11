@@ -13,8 +13,7 @@ import TxConfirmDialog from 'components/TxConfirmDialog';
 import UnsupportedWarning from 'components/UnsupportedWarning';
 import dotenv from 'dotenv';
 import useAccount from 'hooks/use-account';
-import useEthErc20TokenBalance from 'hooks/use-eth-erc20-token-balance';
-import useGravityBridgeErc20TokenBalance from 'hooks/use-gravity-bridge-erc20-token-balance';
+import useTokenBalance from 'hooks/use-token-balance';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
 import defaultTokenIcon from 'images/default-token-icon.png';
@@ -51,9 +50,9 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
 
   const gravityBridgeAccount = useAccount(SupportedChain.GravityBridge);
   const ethAccount = useAccount(ethChain);
-  const ethErc20TokenBalance = useEthErc20TokenBalance(fromChain, ethAccount?.address, selectedToken, erc20BalanceUpdateCounter, 6);
-  const gravityBridgeErc20TokenBalance = useGravityBridgeErc20TokenBalance(gravityBridgeAccount?.address, selectedToken, erc20BalanceUpdateCounter, 6);
-  const tokenBalance = fromChain === ethChain ? ethErc20TokenBalance : gravityBridgeErc20TokenBalance;
+
+  const fromAddress = fromChain === ethChain ? ethAccount : gravityBridgeAccount;
+  const tokenBalance = useTokenBalance(fromChain, fromAddress?.address, selectedToken, erc20BalanceUpdateCounter, 6);
 
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
   const ethWalletConnected: boolean = ethAccount !== undefined;
@@ -63,16 +62,18 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
   const isEnough: boolean = Big(tokenBalance || '0').gte(Big(amount || '0'));
 
-  const notSupportedYet = fromChain === SupportedChain.GravityBridge;
+  const notSupportedYet = false;
 
   const toggleDirection = useCallback(() => {
     if (fromChain === ethChain) {
       setToChain(ethChain);
       setFromChain(SupportedChain.GravityBridge);
+      setSelectedToken(undefined);
       setAmount('0');
     } else {
       setToChain(SupportedChain.GravityBridge);
       setFromChain(ethChain);
+      setSelectedToken(undefined);
       setAmount('0');
     }
   }, [fromChain]);

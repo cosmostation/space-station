@@ -76,7 +76,7 @@ export type AccountChangeEventHandler = (accounts: string[]) => void;
 export type NetworkChangeEventHandler = (data: any) => void;
 
 export interface IEthWalletManager {
-  init (): Promise<void>;
+  init (ethChain: SupportedEthChain): Promise<void>;
   connect (chain: SupportedEthChain, walletType: EthWalletType): Promise<void>;
   getERC20Info (chain: SupportedEthChain, contractAddress: string): Promise<IERC20Token | null>;
   updateAccount (chain: SupportedEthChain): Promise<void>;
@@ -92,6 +92,7 @@ export interface IEthWallet {
   registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
   registerNetworkChangeHandler: (handler: NetworkChangeEventHandler) => void;
   getWeb3: () => Promise<Web3Manager | null>;
+  isSupportMultiConnection: () => boolean;
 }
 
 export interface MetaMaskProvider extends AbstractProvider, EventEmitter {
