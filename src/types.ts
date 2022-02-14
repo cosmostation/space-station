@@ -154,3 +154,16 @@ export type GravityBridgetContractMethods = {
 export class NoMetaMaskWalletError extends Error {}
 export class MetaMaskPendingRequestError extends Error {}
 export class NoKeplrWalletError extends Error {}
+
+export interface Price {
+  readonly currency: string;
+  // eslint-disable-next-line camelcase
+  readonly current_price: number;
+}
+
+export interface PriceInfo {
+  denom: string;
+  // eslint-disable-next-line camelcase
+  last_updated: string;
+  prices: Price[]
+}

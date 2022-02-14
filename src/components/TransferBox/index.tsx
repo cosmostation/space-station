@@ -13,6 +13,7 @@ import TxConfirmDialog from 'components/TxConfirmDialog';
 import UnsupportedWarning from 'components/UnsupportedWarning';
 import dotenv from 'dotenv';
 import useAccount from 'hooks/use-account';
+import usePrice from 'hooks/use-price';
 import useTokenBalance from 'hooks/use-token-balance';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
@@ -53,6 +54,8 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
 
   const fromAddress = fromChain === ethChain ? ethAccount : gravityBridgeAccount;
   const tokenBalance = useTokenBalance(fromChain, fromAddress?.address, selectedToken, erc20BalanceUpdateCounter, 6);
+  const denom = selectedToken?.isErc20 ? selectedToken.erc20?.symbol : selectedToken?.cosmos?.denom;
+  const tokenPrice = usePrice('usd', denom);
 
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
   const ethWalletConnected: boolean = ethAccount !== undefined;

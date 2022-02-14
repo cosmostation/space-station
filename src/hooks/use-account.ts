@@ -10,6 +10,6 @@ export default function useAccount (chain: string): SupportedAccount | undefined
       setAccount(_account);
     });
     return (): void => { subscription.unsubscribe(); };
-  }, []);
+  }, [chain]);
   return account;
 }
