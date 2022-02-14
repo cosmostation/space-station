@@ -1,6 +1,5 @@
 import './TransferBox.css';
 
-import { TokenInfo } from '@uniswap/token-lists';
 import Big from 'big.js';
 import classNames from 'classnames';
 import Box from 'components/Box';
@@ -13,10 +12,8 @@ import TxBroadcastingDialog from 'components/TxBroadcastingDialog';
 import TxConfirmDialog from 'components/TxConfirmDialog';
 import UnsupportedWarning from 'components/UnsupportedWarning';
 import dotenv from 'dotenv';
-import useEthAccount from 'hooks/use-eth-account';
-import useEthErc20TokenBalance from 'hooks/use-eth-erc20-token-balance';
-import useGravityBridgeAccount from 'hooks/use-gravity-bridge-account';
-import useGravityBridgeErc20TokenBalance from 'hooks/use-gravity-bridge-erc20-token-balance';
+import useAccount from 'hooks/use-account';
+import useTokenBalance from 'hooks/use-token-balance';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
 import defaultTokenIcon from 'images/default-token-icon.png';
@@ -26,37 +23,36 @@ import gravityBridgeDarkIcon from 'images/gravity-bridge-icon-dark.png';
 import gravityBridgeLightIcon from 'images/gravity-bridge-icon-light.png';
 import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
-import ethWalletManager from 'services/eth-wallet-manager';
-import gravityBridgeWalletManager from 'services/gravity-bridge-wallet-manager';
-import loggerFactory from 'services/logger-factory';
-import numberService from 'services/number-service';
-import toastService from 'services/toast-service';
-import { EthAccount, GravityBridgeAccount, SupportedNetwork, ThemeType } from 'types';
+import transferer from 'services/transfer/transferer';
+import chainHelper from 'services/util/chain-helper';
+import loggerFactory from 'services/util/logger-factory';
+import toastService from 'services/util/toast-service';
+import { IToken, SupportedChain, ThemeType } from 'types';
 
 const logger = loggerFactory.getLogger('[TransferBox]');
 
 dotenv.config();
 
-const ETH_CHAIN_ID = process.env.REACT_APP_ETH_CHAIN_ID ? process.env.REACT_APP_ETH_CHAIN_ID : '0x1';
 type TransferBoxProps = {
-  theme: ThemeType
+  theme: ThemeType,
+  ethChain: SupportedChain
 }
 
-const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
-  const [fromNetwork, setFromNetwork] = useState<SupportedNetwork>(SupportedNetwork.Eth);
-  const [toNetwork, setToNetwork] = useState<SupportedNetwork>(SupportedNetwork.GravityBridge);
-  const [selectedToken, setSelectedToken] = useState<TokenInfo>();
+const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
+  const [fromChain, setFromChain] = useState<SupportedChain>(ethChain);
+  const [toChain, setToChain] = useState<SupportedChain>(SupportedChain.GravityBridge);
+  const [selectedToken, setSelectedToken] = useState<IToken>();
   const [amount, setAmount] = useState<string>('');
   const [tokenSearcherOpened, setTokenSearcherOpened] = useState<boolean>(false);
   const [txConfirmOpened, setTxConfirmOpened] = useState<boolean>(false);
   const [txBroadcastingOpened, setTxBroadcastingOpened] = useState<boolean>(false);
   const [erc20BalanceUpdateCounter, setErc20BalanceUpdateCounter] = useState<number>(0);
 
-  const gravityBridgeAccount = useGravityBridgeAccount();
-  const ethAccount = useEthAccount();
-  const ethErc20TokenBalance = useEthErc20TokenBalance(ethAccount?.address, selectedToken, erc20BalanceUpdateCounter, 6);
-  const gravityBridgeErc20TokenBalance = useGravityBridgeErc20TokenBalance(gravityBridgeAccount?.address, selectedToken, erc20BalanceUpdateCounter, 6);
-  const tokenBalance = fromNetwork === SupportedNetwork.Eth ? ethErc20TokenBalance : gravityBridgeErc20TokenBalance;
+  const gravityBridgeAccount = useAccount(SupportedChain.GravityBridge);
+  const ethAccount = useAccount(ethChain);
+
+  const fromAddress = fromChain === ethChain ? ethAccount : gravityBridgeAccount;
+  const tokenBalance = useTokenBalance(fromChain, fromAddress?.address, selectedToken, erc20BalanceUpdateCounter, 6);
 
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
   const ethWalletConnected: boolean = ethAccount !== undefined;
@@ -66,19 +62,21 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
   const isEnough: boolean = Big(tokenBalance || '0').gte(Big(amount || '0'));
 
-  const notSupportedYet = fromNetwork === SupportedNetwork.GravityBridge;
+  const notSupportedYet = false;
 
   const toggleDirection = useCallback(() => {
-    if (fromNetwork === SupportedNetwork.Eth) {
-      setToNetwork(SupportedNetwork.Eth);
-      setFromNetwork(SupportedNetwork.GravityBridge);
+    if (fromChain === ethChain) {
+      setToChain(ethChain);
+      setFromChain(SupportedChain.GravityBridge);
+      setSelectedToken(undefined);
       setAmount('0');
     } else {
-      setToNetwork(SupportedNetwork.GravityBridge);
-      setFromNetwork(SupportedNetwork.Eth);
+      setToChain(SupportedChain.GravityBridge);
+      setFromChain(ethChain);
+      setSelectedToken(undefined);
       setAmount('0');
     }
-  }, [fromNetwork]);
+  }, [fromChain]);
 
   const onClickMax = useCallback(() => {
     setAmount(tokenBalance);
@@ -97,7 +95,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
     }
   }, [walletConnected, notSupportedYet]);
 
-  const onSelectToken = useCallback((token: TokenInfo) => {
+  const onSelectToken = useCallback((token: IToken) => {
     setSelectedToken(token);
   }, []);
 
@@ -116,33 +114,36 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
   const onConfirm = useCallback(() => {
     setTxConfirmOpened(false);
     setTxBroadcastingOpened(true);
-    transfer(
-      toNetwork,
-      erc20BalanceUpdateCounter,
-      setTxBroadcastingOpened,
-      setErc20BalanceUpdateCounter,
-      ethAccount,
-      gravityBridgeAccount,
-      selectedToken,
-      amount
-    );
-  }, [toNetwork, ethAccount, gravityBridgeAccount, selectedToken, amount, erc20BalanceUpdateCounter]);
+    if (ethAccount && gravityBridgeAccount && selectedToken?.erc20) {
+      const fromAddress = fromChain === ethChain ? ethAccount.address : gravityBridgeAccount.address;
+      const toAddress = toChain === ethChain ? ethAccount.address : gravityBridgeAccount.address;
+      transferer.transfer(fromChain, toChain, fromAddress, toAddress, selectedToken.erc20, amount, '0')
+        .then((txHash) => {
+          toastService.showTxSuccessToast(selectedToken, amount, txHash, toChain);
+          setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
+        }).catch((error) => {
+          toastService.showTxFailToast(selectedToken, amount, toChain, _.get(error, 'message'));
+        }).finally(() => {
+          setTxBroadcastingOpened(false);
+        });
+    }
+  }, [fromChain, toChain, ethAccount, gravityBridgeAccount, selectedToken, amount, erc20BalanceUpdateCounter]);
 
   return (
     <Box className="TransferBox">
       <Text className="transfer-box-heading" size="big">Transfer</Text>
       <Row className="space-between">
-        <Box className={classNames(fromNetwork, 'network-container')} density={1} depth={1}>
+        <Box className={classNames(fromChain, 'network-container')} density={1} depth={1}>
           <div className="network-container-left">
             <Text className="network-container-muted" muted size="small">From</Text>
             <Text className="network-container-name">
-              {fromNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge'}
+              {chainHelper.getChainName(fromChain)}
             </Text>
           </div>
           <div className="network-container-right">
             <img
-              className={classNames(fromNetwork, 'network-container-icon')}
-              src={getIconSource(fromNetwork, theme)}
+              className={classNames(fromChain, 'network-container-icon')}
+              src={getIconSource(fromChain, theme)}
               alt="from network"
             />
           </div>
@@ -150,17 +151,17 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
         <IconButton onClick={toggleDirection} type="secondary" className="toggle-button">
           <img src={arrowIcon} alt="toggle"/>
         </IconButton>
-        <Box className={classNames(toNetwork, 'network-container')} density={1} depth={1}>
+        <Box className={classNames(toChain, 'network-container')} density={1} depth={1}>
           <div className="network-container-left">
             <Text className="network-container-muted" muted size="small">To</Text>
             <Text className="network-container-name">
-              {toNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge'}
+              {chainHelper.getChainName(toChain)}
             </Text>
           </div>
           <div className="network-container-right">
             <img
-              className={classNames(toNetwork, 'network-container-icon')}
-              src={getIconSource(toNetwork, theme)}
+              className={classNames(toChain, 'network-container-icon')}
+              src={getIconSource(toChain, theme)}
               alt="to network"
             />
           </div>
@@ -172,11 +173,11 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
             <div className={classNames('token-selector', { disabled: !walletConnected || notSupportedYet })} onClick={onOpenTokenSearcher}>
               <img
                 className="token-selector-token-icon"
-                src={selectedToken?.logoURI ? selectedToken.logoURI : defaultTokenIcon}
+                src={selectedToken?.erc20?.logoURI ? selectedToken.erc20.logoURI : defaultTokenIcon}
                 alt="selected token icon"
               />
               <Text className="token-selector-token-name" size="small">
-                {selectedToken?.symbol ? selectedToken.symbol : 'Select Token'}
+                {selectedToken?.erc20?.symbol ? selectedToken.erc20.symbol : 'Select Token'}
               </Text>
               <IconButton size="small" disabled={!walletConnected || notSupportedYet }>
                 <ArrowNoTailIcon/>
@@ -209,7 +210,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
               ? (
               <>
                 <Text muted size="tiny">Balance:&nbsp;</Text>
-                <Text size="tiny">{`${tokenBalance} ${selectedToken.symbol}`}</Text>
+                <Text size="tiny">{`${tokenBalance} ${selectedToken.erc20?.symbol}`}</Text>
               </>
                 )
               : (<></>)}
@@ -231,16 +232,16 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
       </Row>
       <TokenSearchDialog
         open={tokenSearcherOpened}
-        fromNetwork={fromNetwork}
-        gravityBridgeAccount={gravityBridgeAccount?.address}
-        ethChainId={ETH_CHAIN_ID}
+        fromChain={fromChain}
+        toChain={toChain}
+        fromAddress={gravityBridgeAccount?.address}
         close={onCloseTokenSearcher}
         select={onSelectToken}
       />
       <TxConfirmDialog
         open={txConfirmOpened}
-        fromNetwork={fromNetwork}
-        toNetwork={toNetwork}
+        fromChain={fromChain}
+        toChain={toChain}
         token={selectedToken}
         amount={amount}
         close={onCloseTxConfirm}
@@ -248,7 +249,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
       />
       <TxBroadcastingDialog
         open={txBroadcastingOpened}
-        toNetwork={toNetwork}
+        toChain={toChain}
         token={selectedToken}
         amount={amount}
       />
@@ -256,49 +257,8 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
   );
 };
 
-function transfer (
-  toNetwork: SupportedNetwork,
-  erc20BalanceUpdateCounter: number,
-  setTxBroadcastingOpened: (opened: boolean) => void,
-  setErc20BalanceUpdateCounter: (counter: number) => void,
-  ethAccount?: EthAccount,
-  gravityBridgeAccount?: GravityBridgeAccount,
-  selectedToken?: TokenInfo,
-  amount?: string
-): void {
-  logger.info('[transfer]', 'selectedToken', selectedToken, 'amount', amount);
-  if (toNetwork === SupportedNetwork.GravityBridge && ethAccount && gravityBridgeAccount && selectedToken && amount) {
-    ethWalletManager.sendToCosmos(
-      ethAccount.address,
-      gravityBridgeAccount.address,
-      selectedToken,
-      numberService.convertWithoutDecimal(amount, selectedToken.decimals)
-    ).then((txHash) => {
-      toastService.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
-      setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
-    }).catch((error) => {
-      toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
-    }).finally(() => {
-      setTxBroadcastingOpened(false);
-    });
-  } else if (toNetwork === SupportedNetwork.Eth && gravityBridgeAccount && ethAccount && selectedToken && amount) {
-    setTxBroadcastingOpened(false);
-    gravityBridgeWalletManager.sendToEth(gravityBridgeAccount, ethAccount.address, selectedToken, amount)
-      .then((txHash) => {
-        toastService.showTxSuccessToast(selectedToken, amount, txHash, toNetwork);
-        setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
-      }).catch((error) => {
-        toastService.showTxFailToast(selectedToken, amount, toNetwork, _.get(error, 'message'));
-      }).finally(() => {
-        setTxBroadcastingOpened(false);
-      });
-  } else {
-    setTxBroadcastingOpened(false);
-  }
-}
-
-function getIconSource (network: SupportedNetwork, theme: ThemeType): string {
-  return network === SupportedNetwork.Eth
+function getIconSource (network: SupportedChain, theme: ThemeType): string {
+  return network === SupportedChain.Eth || network === SupportedChain.Goerli
     ? theme === ThemeType.Dark
       ? ethLightIcon
       : ethDarkIcon

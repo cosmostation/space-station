@@ -1,6 +1,6 @@
 [
   {
-    "chainId": 5,
+    "chainId": "0x5",
     "name": "WEENUS",
     "symbol": "WEENUS",
     "decimals": 18,

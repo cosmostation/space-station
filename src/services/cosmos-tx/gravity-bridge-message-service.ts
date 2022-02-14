@@ -1,15 +1,15 @@
-import { TokenInfo } from '@uniswap/token-lists';
 import { cosmos, google, gravity } from 'constants/gravity-bridge-v1.2.1';
-import loggerFactory from 'services/logger-factory';
+import loggerFactory from 'services/util/logger-factory';
+import { IERC20Token } from 'types';
 
 const logger = loggerFactory.getLogger('[GravityBridgeMessageService]');
 
 function createSendToEthereumMessage (
   sender: string,
   ethAddress: string,
-  tokenInfo: TokenInfo,
+  tokenInfo: IERC20Token,
   amount: string,
-  feeTokenInfo: TokenInfo,
+  feeTokenInfo: IERC20Token,
   feeAmount: string
 ): google.protobuf.Any {
   const erc20Token = convertTokenInfo(tokenInfo, amount);
@@ -28,7 +28,7 @@ function createSendToEthereumMessage (
   });
 }
 
-function convertTokenInfo (tokenInfo: TokenInfo, amount: string): cosmos.base.v1beta1.ICoin {
+function convertTokenInfo (tokenInfo: IERC20Token, amount: string): cosmos.base.v1beta1.ICoin {
   return {
     denom: `gravity${tokenInfo.address}`,
     amount

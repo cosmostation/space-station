@@ -1,8 +1,7 @@
 import './Header.css';
 
 import IconButton from 'components/IconButton';
-import useEthAccount from 'hooks/use-eth-account';
-import useGravityBridgeAccount from 'hooks/use-gravity-bridge-account';
+import useAccount from 'hooks/use-account';
 import { ReactComponent as DarkThemeIcon } from 'images/dark-theme-icon.svg';
 import keplrIcon from 'images/keplr-icon.png';
 import { ReactComponent as LightThemeIcon } from 'images/light-theme-icon.svg';
@@ -12,29 +11,44 @@ import metaMaskIcon from 'images/meta-mask-icon.png';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
 import Blockies from 'react-blockies';
-import ethWalletManager from 'services/eth-wallet-manager';
-import gravityBridgeWalletManager from 'services/gravity-bridge-wallet-manager';
-import balanceService from 'services/number-service';
-import toastService from 'services/toast-service';
+import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
+import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import balanceService from 'services/util/number-service';
+import toastService from 'services/util/toast-service';
+import typeHelper from 'services/util/type-helper';
 import themeStore from 'stores/theme-store';
-import { Account, MetaMaskPendingRequestError, NoKeplrWalletError, NoMetaMaskWalletError, ThemeType } from 'types';
+import {
+  CosmosWalletType,
+  EthWalletType,
+  IAccount,
+  MetaMaskPendingRequestError,
+  NoKeplrWalletError,
+  NoMetaMaskWalletError,
+  SupportedChain,
+  SupportedCosmosChain,
+  ThemeType,
+} from 'types';
 
-const Header: React.FC = () => {
+type HeaderProps = {
+  theme: ThemeType,
+  ethChain: SupportedChain
+}
+
+const Header: React.FC<HeaderProps> = ({ theme, ethChain }) => {
   const changeTheme = useCallback(() => {
     const currentTheme = themeStore.getCurrentTheme();
     const nextTheme = currentTheme === ThemeType.Dark ? ThemeType.Light : ThemeType.Dark;
     themeStore.changeTheme(nextTheme);
   }, []);
 
-  const currentTheme = themeStore.getCurrentTheme();
-  const gravityBridgeAccount = useGravityBridgeAccount();
-  const ethAccount = useEthAccount();
+  const gravityBridgeAccount = useAccount(SupportedChain.GravityBridge);
+  const ethAccount = useAccount(ethChain);
 
   return (
     <div className="header">
       <div className="logo-container">
         <>
-          { currentTheme === ThemeType.Dark
+          { theme === ThemeType.Dark
             ? <WhiteLogo className="logo"/>
             : <BlackLogo className="logo"/>
           }
@@ -44,10 +58,10 @@ const Header: React.FC = () => {
         </div>
       </div>
       <div className="buttons-container">
-        <KelprConnectButton gravityBridgeAccount={gravityBridgeAccount} />
-        <EthConnectButton ethAccount={ethAccount} />
+        <GravityBridgeConnectButton gravityBridgeAccount={gravityBridgeAccount} />
+        <EthConnectButton ethAccount={ethAccount} ethChain={ethChain} />
         <IconButton onClick={changeTheme} size="big" className="theme-change-button">
-          { currentTheme === ThemeType.Dark
+          { theme === ThemeType.Dark
             ? <LightThemeIcon />
             : <DarkThemeIcon />
           }
@@ -57,14 +71,14 @@ const Header: React.FC = () => {
   );
 };
 
-interface KeplrConnectionButtonProps {
-  gravityBridgeAccount?: Account
+interface GravityBridgeConnectionButtonProps {
+  gravityBridgeAccount?: IAccount
 }
 
-const KelprConnectButton: React.FC<KeplrConnectionButtonProps> = (keplrConnectionButtonProps) => {
+const GravityBridgeConnectButton: React.FC<GravityBridgeConnectionButtonProps> = (gravityBridgeConnectionButtonProps) => {
   const connect = useCallback(async () => {
     try {
-      await gravityBridgeWalletManager.connect();
+      await cosmosWalletManager.connect(SupportedCosmosChain.GravityBridge, CosmosWalletType.Keplr);
     } catch (error) {
       if (error instanceof NoKeplrWalletError) {
         toastService.showFailToast('Kepler extension required',
@@ -78,7 +92,7 @@ const KelprConnectButton: React.FC<KeplrConnectionButtonProps> = (keplrConnectio
     }
   }, []);
 
-  const { gravityBridgeAccount } = keplrConnectionButtonProps;
+  const { gravityBridgeAccount } = gravityBridgeConnectionButtonProps;
   return (
     <>
       { gravityBridgeAccount
@@ -98,16 +112,19 @@ const KelprConnectButton: React.FC<KeplrConnectionButtonProps> = (keplrConnectio
 };
 
 interface EthConnectionButtonProps {
-  ethAccount?: Account
+  ethChain: SupportedChain,
+  ethAccount?: IAccount
 }
 
-const EthConnectButton: React.FC<EthConnectionButtonProps> = (ethConnectionButtonProps) => {
+const EthConnectButton: React.FC<EthConnectionButtonProps> = ({ ethChain, ethAccount }) => {
   const connect = useCallback(async () => {
     try {
-      await ethWalletManager.connect();
+      if (typeHelper.isSupportedEthChain(ethChain)) {
+        await ethWalletManager.connect(ethChain, EthWalletType.MetaMask);
+      }
     } catch (error) {
       if (error instanceof MetaMaskPendingRequestError) {
-        toastService.showFailToast('Please check Metamask', 'Same request is pending.');
+        toastService.showFailToast('Please check Metamask', 'Some requests are pending!');
       } else if (error instanceof NoMetaMaskWalletError) {
         toastService.showFailToast("Can't find Meta Mask",
           <>
@@ -120,7 +137,6 @@ const EthConnectButton: React.FC<EthConnectionButtonProps> = (ethConnectionButto
     }
   }, []);
 
-  const { ethAccount } = ethConnectionButtonProps;
   return (
     <>
       { ethAccount

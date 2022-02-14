@@ -1,10 +1,12 @@
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
-import { ChainInfo, Keplr, Window } from '@keplr-wallet/types';
+import { Keplr, Window } from '@keplr-wallet/types';
 import { cosmos } from 'constants/gravity-bridge-v1.2.1';
+import keplrChainInfo from 'constants/keplr-chain-info';
 import Long from 'long';
-import loggerFactory from 'services/logger-factory';
-import { AccountChangeEventHandler, DirectSignDoc, GravityBridgeAccount, IKeplrWallet, NoKeplrWalletError } from 'types';
+import loggerFactory from 'services/util/logger-factory';
+import { AccountChangeEventHandler, DirectSignDoc, ICosmosSdkAccount, ICosmosWallet, NoKeplrWalletError } from 'types';
+import _ from 'lodash';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -28,7 +30,7 @@ async function connect (chainId: string): Promise<void> {
   return keplr.enable(chainId);
 }
 
-async function getAccount (chainId: string): Promise<GravityBridgeAccount> {
+async function getAccount (chainId: string): Promise<ICosmosSdkAccount> {
   const keplr = await detectKeplrProvider();
   const key = await keplr.getKey(chainId);
   return {
@@ -38,8 +40,15 @@ async function getAccount (chainId: string): Promise<GravityBridgeAccount> {
   };
 }
 
-async function suggestExperimentalChain (chainInfo: ChainInfo): Promise<void> {
+async function addChain (chainId: string): Promise<void> {
+  logger.info(`[addChain] Adding ${chainId}...`);
+  const chainInfo = _.find(keplrChainInfo, { chainId });
   const keplr = await detectKeplrProvider();
+  if (!chainInfo) {
+    const errorMessage = `No Keplr chain info for ${chainId}!`;
+    logger.error('[addChain]', errorMessage);
+    throw new Error(errorMessage);
+  }
   return keplr.experimentalSuggestChain(chainInfo);
 }
 
@@ -65,10 +74,10 @@ async function onAccountChange (handler: AccountChangeEventHandler): Promise<voi
   (window as any).addEventListener(KeplrEvent.AccountChange, handler);
 }
 
-const keplrWallet: IKeplrWallet = {
+const keplrWallet: ICosmosWallet = {
   connect,
   getAccount,
-  suggestExperimentalChain,
+  addChain,
   sign,
   sendTx,
   onAccountChange

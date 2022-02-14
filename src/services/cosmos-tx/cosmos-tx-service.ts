@@ -1,14 +1,6 @@
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos, google } from 'constants/gravity-bridge-v1.2.1';
 import Long from 'long';
-import loggerFactory from 'services/logger-factory';
-
-const logger = loggerFactory.getLogger('[GravityBridgeWalletManager]');
-
-export interface IERC20Token {
-  contract?: (string | null);
-  amount?: (string | null);
-}
 
 function createTxBody (messages: google.protobuf.IAny[], memo = ''): cosmos.tx.v1beta1.TxBody {
   return new cosmos.tx.v1beta1.TxBody({ messages, memo });

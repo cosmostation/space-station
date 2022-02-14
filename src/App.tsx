@@ -1,34 +1,36 @@
-import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 import classNames from 'classnames';
-import Header from 'components/Header';
 import Footer from 'components/Footer';
+import Header from 'components/Header';
 import TransferBox from 'components/TransferBox';
 import dotenv from 'dotenv';
 import useTheme from 'hooks/use-theme';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
+import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
+import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import typeHelper from 'services/util/type-helper';
+import { SupportedChain } from 'types';
 
 dotenv.config();
-
-export type erc20TokenInfo = {
-  chainId: number,
-  address: string,
-  name: string,
-  symbol: string,
-  decimals: number,
-  logoURI: string
-}
+const ethChain = SupportedChain.Eth;
 
 const App: React.FC = () => {
   const theme = useTheme();
+  useEffect(() => {
+    cosmosWalletManager.init();
+    if (typeHelper.isSupportedEthChain(ethChain)) {
+      ethWalletManager.init(ethChain);
+    }
+  }, []);
 
   return (
     <div className={classNames('App', theme)}>
-      <Header/>
+      <Header theme={theme} ethChain={ethChain} />
       <div className="container">
-        <TransferBox theme={theme}/>
+        <TransferBox theme={theme} ethChain={ethChain} />
         <p className="mobile-guide-container">
           spacestation.zone is currently optimized<br/>
           for web view only - please access<br/>

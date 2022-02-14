@@ -1,10 +1,9 @@
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
-import { ChainInfo } from '@keplr-wallet/types';
-import { cosmos } from 'constants/gravity-bridge-v1.2.1';
+import { cosmos, google } from 'constants/gravity-bridge-v1.2.1';
 import { EventEmitter } from 'events';
 import Long from 'long';
-import Web3Manager from 'services/web3-manager';
+import Web3Manager from 'services/eth-wallet/web3-manager';
 import { AbstractProvider, RequestArguments } from 'web3-core';
 import { ContractSendMethod } from 'web3-eth-contract';
 
@@ -13,29 +12,62 @@ export enum ThemeType {
   Light = 'light'
 }
 
-export enum SupportedNetwork {
+export enum SupportedChain {
   Eth = 'eth',
-  GravityBridge = 'gravity-bridge'
+  Goerli = 'goerli',
+  GravityBridge = 'gravityBridge',
+  Osmosis = 'osmosis'
+}
+
+export enum SupportedEthChain {
+  Eth = 'eth',
+  Goerli = 'goerli'
+}
+
+export enum SupportedCosmosChain {
+  GravityBridge = 'gravityBridge',
+  Osmosis = 'osmosis'
 }
 
 export interface IERC20Token {
-  contract?: (string | null);
-  amount?: (string | null);
+  readonly chainId: string;
+  readonly address: string;
+  readonly name?: string;
+  readonly decimals: number;
+  readonly symbol: string;
+  readonly logoURI?: string;
 }
 
-export interface Account {
+export interface ICosmosToken {
+  readonly chainId: string;
+  readonly denom: string;
+  readonly name?: string;
+  readonly decimals: number;
+  readonly logoURI?: string;
+  readonly isIbc?: boolean;
+  readonly isErc20?: boolean;
+}
+
+export type TokenInfo = IERC20Token | ICosmosToken;
+export interface IToken {
+  isErc20: boolean;
+  isCosmos: boolean;
+  erc20?: IERC20Token;
+  cosmos?: ICosmosToken;
+}
+
+export interface IAccount {
   address: string;
   balance: string;
 }
 
-export interface GravityBridgeAccount extends Account {
+export interface ICosmosSdkAccount extends IAccount {
   pubKey: Uint8Array;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface EthAccount extends Account {}
-
-export type EthWallet = EthWalletManager;
+export interface IEthAccount extends IAccount {}
+export type SupportedAccount = ICosmosSdkAccount | IEthAccount;
 export enum EthWalletType {
   MetaMask = 'MetaMask'
 }
@@ -43,35 +75,43 @@ export enum EthWalletType {
 export type AccountChangeEventHandler = (accounts: string[]) => void;
 export type NetworkChangeEventHandler = (data: any) => void;
 
-export interface EthWalletManager {
-  installed: Promise<boolean>;
-  web3: Web3Manager | null;
-  init: () => Promise<void>;
-  checkConnection: (chainId: string) => Promise<EthAccount | null>;
-  connect: (chainId: string) => Promise<EthAccount | null>;
-  getAccount: () => Promise<EthAccount>;
-  getCurrentChainId: () => Promise<string>;
-  updateNetwork: (chainId: string) => Promise<boolean>;
-  registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
-  registerNetworkChangeHandler: (handler: NetworkChangeEventHandler) => void;
+export interface IEthWalletManager {
+  init (ethChain: SupportedEthChain): Promise<void>;
+  connect (chain: SupportedEthChain, walletType: EthWalletType): Promise<void>;
+  getERC20Info (chain: SupportedEthChain, contractAddress: string): Promise<IERC20Token | null>;
+  updateAccount (chain: SupportedEthChain): Promise<void>;
+  getERC20Balance (chain: SupportedEthChain, contractAddress: string, ownerAddress: string): Promise<string>;
+  getWeb3(chain: SupportedEthChain): Promise<Web3Manager | null>;
 }
 
-export interface IMetaMaskWallet {
-  walletType: EthWalletType,
-  hasPermission: () => Promise<boolean>;
-  requestPermission: () => Promise<boolean>;
-  getChainId: () => Promise<string>;
-  changeChainId: (chainId: string) => Promise<void>;
-  getAccountInfo: () => Promise<string>;
-  getEthBalance: (address: string) => Promise<number>;
-  onAccountChange: (handler: AccountChangeEventHandler) => Promise<void>;
-  onNetworkChange: (handler: NetworkChangeEventHandler) => Promise<void>;
-  getMetaMaskProvider: () => Promise<MetaMaskProvider>;
+export interface IEthWallet {
+  connect: (chain: SupportedEthChain) => Promise<void>;
+  checkConnection: (chain: SupportedEthChain) => Promise<boolean>;
+  getAccount: () => Promise<IEthAccount>;
+  updateNetwork: (chain: SupportedEthChain) => Promise<boolean>;
+  registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
+  registerNetworkChangeHandler: (handler: NetworkChangeEventHandler) => void;
+  getWeb3: () => Promise<Web3Manager | null>;
+  isSupportMultiConnection: () => boolean;
 }
 
 export interface MetaMaskProvider extends AbstractProvider, EventEmitter {
   isMetaMask?: boolean;
   request (args: RequestArguments): Promise<any>;
+}
+
+export type EthChainInfo = {
+  chainId: string;
+}
+
+export type CosmosChainInfo = {
+  chainId: string;
+  lcd: string;
+  denom: string;
+}
+
+export enum CosmosWalletType {
+  Keplr = 'Keplr'
 }
 
 export type DirectSignDoc = {
@@ -81,17 +121,24 @@ export type DirectSignDoc = {
   accountNumber: Long;
 }
 
-export interface IKeplrWallet {
+export interface ICosmosWalletManager {
+  init (): Promise<void>;
+  connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void>;
+  sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse>;
+  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode): Promise<string>;
+}
+
+export interface ICosmosWallet {
   connect: (chainId: string) => Promise<void>;
-  getAccount: (chainId: string) => Promise<GravityBridgeAccount>;
+  getAccount: (chainId: string) => Promise<ICosmosSdkAccount>;
   sign: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
   sendTx: (chainId: string, txBytes: Uint8Array, mode: BroadcastMode) => Promise<Uint8Array>;
-  suggestExperimentalChain: (chainInfo: ChainInfo) => Promise<void>;
+  addChain: (chainId: string) => Promise<void>;
   onAccountChange?: (handler: AccountChangeEventHandler) => any;
   onNetworkChange?: (handler: NetworkChangeEventHandler) => any;
 }
 
-export type erc20ContractMethods = {
+export type Erc20ContractMethods = {
   balanceOf: (ethAddress: string) => ContractSendMethod;
   name: () => ContractSendMethod;
   decimals: () => ContractSendMethod;
@@ -99,7 +146,7 @@ export type erc20ContractMethods = {
   approve: (spender: string, amount: string) => ContractSendMethod;
 }
 
-export type gravityBridgetContractMethods = {
+export type GravityBridgetContractMethods = {
   sendToCosmos: (erc20Address: string, gravityBridgeAddress: string, amount: string) => ContractSendMethod;
   deployERC20: (cosmosDenom: string, tokenName: string, symbol: string, decimal: number) => ContractSendMethod;
 }

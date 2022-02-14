@@ -1,10 +1,9 @@
 import './Toast.css';
 
-import { TokenInfo } from '@uniswap/token-lists';
 import Text from 'components/Text';
 import dotenv from 'dotenv';
 import React from 'react';
-import { SupportedNetwork } from 'types';
+import { IToken, SupportedChain } from 'types';
 
 dotenv.config();
 
@@ -12,16 +11,16 @@ const ETH_TX_EXPLORER = process.env.REACT_APP_ETH_TX_EXPLORER || '';
 const GRAVITY_BRIDGE_TX_EXPLORER = process.env.REACT_APP_GRAVITY_BRIDGE_TX_EXPLORER || '';
 
 type TxSuccessToastProps = {
-  tokenInfo: TokenInfo;
+  token: IToken;
   amount: string;
   txHash: string;
-  toNetwork: SupportedNetwork;
+  toChain: SupportedChain;
 }
 
-const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ tokenInfo, amount, txHash, toNetwork }) => {
-  const _toNetwork = toNetwork === SupportedNetwork.Eth ? 'Ethereum' : 'Gravity Bridge';
-  const message = `Successfully transferred ${amount} ${tokenInfo.symbol} to ${_toNetwork}`;
-  const explorerLink = toNetwork === SupportedNetwork.Eth ? `${GRAVITY_BRIDGE_TX_EXPLORER}/${txHash}` : `${ETH_TX_EXPLORER}/${txHash}`;
+const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ token, amount, txHash, toChain }) => {
+  const _toChain = toChain === SupportedChain.Eth ? 'Ethereum' : 'Gravity Bridge';
+  const message = `Successfully transferred ${amount} ${token.erc20?.symbol} to ${_toChain}`;
+  const explorerLink = toChain === SupportedChain.Eth ? `${GRAVITY_BRIDGE_TX_EXPLORER}/${txHash}` : `${ETH_TX_EXPLORER}/${txHash}`;
   return (
     <>
       <p className="toast-message">{message}</p>
