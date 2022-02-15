@@ -1,0 +1,65 @@
+.fee-selector-heading-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.fee-selector-minus-fee-button {
+  padding: 4px 9px;
+  background: var(--blue);
+  border-radius: 8px;
+  margin-left: 12px;
+  cursor: pointer;
+  border: none;
+  outline: none !important;
+}
+
+.fee-selector-minus-fee-button.disabled {
+  cursor: not-allowed;
+}
+
+.fee-selector-minus-fee-button .Text {
+  color: var(--base-00) !important;
+}
+
+.fee-selector-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.fee-selector-fee-button {
+  width: 33%;
+  height: 70px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--base-06);
+  color: var(--base-00);
+  box-sizing: border-box;
+  display: block;
+  cursor: pointer;
+}
+
+.fee-selector-fee-button + .fee-selector-fee-button {
+  margin-left: 8px;
+}
+
+.fee-selector-fee-button.selected,
+.fee-selector-fee-button:hover {
+  background-color: var(--base-07);
+}
+
+.fee-button-text {
+  text-align: left;
+  line-height: 1rem !important;
+}
+
+.App.light .fee-selector-fee-button {
+  background-color: var(--base-01);
+}
+
+.App.light .fee-selector-fee-button.selected,
+.App.light .fee-selector-fee-button:hover {
+  background-color: var(--base-00);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}

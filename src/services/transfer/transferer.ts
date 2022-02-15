@@ -1,4 +1,4 @@
-import { IERC20Token, SupportedChain } from 'types';
+import { Fee, IToken, SupportedChain } from 'types';
 
 import gravityBridgeTransferer from './gravity-bridge-transferer';
 
@@ -7,16 +7,33 @@ async function transfer (
   toChain: SupportedChain,
   fromAddress: string,
   toAddress: string,
-  token: IERC20Token,
+  token: IToken,
   amount: string,
-  fee: string
+  fee?: Fee
 ): Promise<string> {
-  if (fromChain === SupportedChain.GravityBridge || toChain === SupportedChain.GravityBridge) {
-    return gravityBridgeTransferer.transfer(fromChain, toChain, fromAddress, toAddress, token, amount, fee);
+  if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain, token)) {
+    if (token.erc20) {
+      return gravityBridgeTransferer.transfer(fromChain, toChain, fromAddress, toAddress, token.erc20, amount, fee);
+    }
+  }
+  throw new Error('Unsupported Transfer!');
+}
+
+function needExtraFee (fromChain: SupportedChain, toChain: SupportedChain, token: IToken): boolean {
+  return gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain, token) && fromChain === SupportedChain.GravityBridge;
+}
+
+function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: IToken, tokenPrice: string): Fee[] {
+  if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain, token)) {
+    if (token.erc20) {
+      return gravityBridgeTransferer.getFees(fromChain, token.erc20, tokenPrice);
+    }
   }
   throw new Error('Unsupported Transfer!');
 }
 
 export default {
-  transfer
+  transfer,
+  needExtraFee,
+  getFees
 };

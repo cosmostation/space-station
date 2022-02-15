@@ -4,6 +4,7 @@ import Big from 'big.js';
 import classNames from 'classnames';
 import Box from 'components/Box';
 import Button from 'components/Button';
+import FeeSelector from 'components/FeeSelector';
 import IconButton from 'components/IconButton';
 import Row from 'components/Row';
 import Text from 'components/Text';
@@ -13,7 +14,6 @@ import TxConfirmDialog from 'components/TxConfirmDialog';
 import UnsupportedWarning from 'components/UnsupportedWarning';
 import dotenv from 'dotenv';
 import useAccount from 'hooks/use-account';
-import usePrice from 'hooks/use-price';
 import useTokenBalance from 'hooks/use-token-balance';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
@@ -28,9 +28,10 @@ import transferer from 'services/transfer/transferer';
 import chainHelper from 'services/util/chain-helper';
 import loggerFactory from 'services/util/logger-factory';
 import toastService from 'services/util/toast-service';
-import { IToken, SupportedChain, ThemeType } from 'types';
+import { Fee, IToken, SupportedChain, ThemeType } from 'types';
 
 const logger = loggerFactory.getLogger('[TransferBox]');
+const ROUND = 6;
 
 dotenv.config();
 
@@ -48,24 +49,28 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   const [txConfirmOpened, setTxConfirmOpened] = useState<boolean>(false);
   const [txBroadcastingOpened, setTxBroadcastingOpened] = useState<boolean>(false);
   const [erc20BalanceUpdateCounter, setErc20BalanceUpdateCounter] = useState<number>(0);
+  const [extraFee, setExtraFee] = useState<Fee>();
 
   const gravityBridgeAccount = useAccount(SupportedChain.GravityBridge);
   const ethAccount = useAccount(ethChain);
 
   const fromAddress = fromChain === ethChain ? ethAccount : gravityBridgeAccount;
-  const tokenBalance = useTokenBalance(fromChain, fromAddress?.address, selectedToken, erc20BalanceUpdateCounter, 6);
-  const denom = selectedToken?.isErc20 ? selectedToken.erc20?.symbol : selectedToken?.cosmos?.denom;
-  const tokenPrice = usePrice('usd', denom);
+  const tokenBalance = useTokenBalance(fromChain, fromAddress?.address, selectedToken, erc20BalanceUpdateCounter);
 
+  const needExtraFee = selectedToken ? transferer.needExtraFee(fromChain, toChain, selectedToken) : false;
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
   const ethWalletConnected: boolean = ethAccount !== undefined;
   const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
   const tokenSelected: boolean = selectedToken !== undefined;
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
-  const isEnough: boolean = Big(tokenBalance || '0').gte(Big(amount || '0'));
-
+  const noExtraFee = needExtraFee && _.isNil(extraFee);
+  const isEnough: boolean = needExtraFee
+    ? Big(tokenBalance || '0').gte(Big(amount || '0').add(extraFee?.amount || '0'))
+    : Big(tokenBalance || '0').gte(Big(amount || '0'));
   const notSupportedYet = false;
+
+  logger.info(amount);
 
   const toggleDirection = useCallback(() => {
     if (fromChain === ethChain) {
@@ -86,9 +91,9 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   }, [tokenBalance]);
 
   const onUpdateAmount = useCallback((event) => {
-    const value = _.get(event, 'target.value', '');
-    if (/^[0-9]*[.,]?[0-9]*$/.test(value)) {
-      setAmount(value);
+    const amount = _.get(event, 'target.value', '');
+    if (/^[0-9]*[.,]?[0-9]*$/.test(amount)) {
+      setAmount(amount);
     }
   }, []);
 
@@ -99,12 +104,27 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   }, [walletConnected, notSupportedYet]);
 
   const onSelectToken = useCallback((token: IToken) => {
+    logger.info('Selected Token:', token);
     setSelectedToken(token);
+    setExtraFee(undefined);
   }, []);
 
   const onCloseTokenSearcher = useCallback(() => {
     setTokenSearcherOpened(false);
   }, []);
+
+  const onSelectExtraFee = useCallback((fee: Fee) => {
+    logger.info('Extra Fee:', fee);
+    setExtraFee(fee);
+  }, []);
+
+  const onSubtractFee = useCallback((fee: Fee) => {
+    logger.info('Subtract:', amount, fee);
+    const _amount = Big(amount || '0').sub(fee.amount);
+    _amount.gte(0)
+      ? setAmount(_amount.toString())
+      : setAmount('0');
+  }, [amount]);
 
   const onOpenTxConfirm = useCallback(() => {
     setTxConfirmOpened(true);
@@ -120,7 +140,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
     if (ethAccount && gravityBridgeAccount && selectedToken?.erc20) {
       const fromAddress = fromChain === ethChain ? ethAccount.address : gravityBridgeAccount.address;
       const toAddress = toChain === ethChain ? ethAccount.address : gravityBridgeAccount.address;
-      transferer.transfer(fromChain, toChain, fromAddress, toAddress, selectedToken.erc20, amount, '0')
+      transferer.transfer(fromChain, toChain, fromAddress, toAddress, selectedToken, amount, extraFee)
         .then((txHash) => {
           toastService.showTxSuccessToast(selectedToken, amount, txHash, toChain);
           setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
@@ -213,12 +233,28 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
               ? (
               <>
                 <Text muted size="tiny">Balance:&nbsp;</Text>
-                <Text size="tiny">{`${tokenBalance} ${selectedToken.erc20?.symbol}`}</Text>
+                <Text size="tiny">{`${Big(tokenBalance).round(ROUND, Big.roundDown)} ${selectedToken.erc20?.symbol}`}</Text>
               </>
                 )
               : (<></>)}
           </Row>
         </Box>
+      </Row>
+      <Row>
+        {needExtraFee && selectedToken
+          ? (<FeeSelector
+              fromChain={fromChain}
+              toChain={toChain}
+              selectedToken={selectedToken}
+              currency="usd"
+              balance={tokenBalance}
+              amount={amount}
+              select={onSelectExtraFee}
+              selectedFee={extraFee}
+              subtractFee={onSubtractFee}
+            />)
+          : ''
+        }
       </Row>
       <Row>
         <UnsupportedWarning />
@@ -227,10 +263,10 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
         <Button
           className={classNames('transfer-button')}
           type="primary"
-          disabled={walletConnected === false || hasAmount === false || isEnough === false}
+          disabled={walletConnected === false || hasAmount === false || isEnough === false || noExtraFee === true}
           onClick={onOpenTxConfirm}
         >
-          {getButtonText(walletConnected, hasAmount, tokenSelected, isEnough, notSupportedYet)}
+          {getButtonText(walletConnected, hasAmount, tokenSelected, isEnough, notSupportedYet, noExtraFee)}
         </Button>
       </Row>
       <TokenSearchDialog
@@ -270,7 +306,25 @@ function getIconSource (network: SupportedChain, theme: ThemeType): string {
       : gravityBridgeLightIcon;
 }
 
-function getButtonText (walletConnected: boolean, hasAmount: boolean, tokenSelected: boolean, isEnough: boolean, notSupportedYet: boolean): string {
+function getAdjustedAmount (amount: string, fee: Fee, balance: string): string {
+  const total = Big(amount).add(fee.amount);
+  if (total.gt(balance)) {
+    const _amount = Big(balance).sub(fee.amount);
+    return _amount.gte(0)
+      ? _amount.toString()
+      : '0';
+  }
+  return amount;
+}
+
+function getButtonText (
+  walletConnected: boolean,
+  hasAmount: boolean,
+  tokenSelected: boolean,
+  isEnough: boolean,
+  notSupportedYet: boolean,
+  needExtraFee: boolean
+): string {
   if (notSupportedYet === true) {
     return 'Support Soon!';
   }
@@ -289,6 +343,10 @@ function getButtonText (walletConnected: boolean, hasAmount: boolean, tokenSelec
 
   if (isEnough === false) {
     return 'Insufficient Balance';
+  }
+
+  if (needExtraFee === true) {
+    return 'Please Select Fee!';
   }
 
   return 'Transfer';

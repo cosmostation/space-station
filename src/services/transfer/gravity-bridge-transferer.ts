@@ -6,7 +6,7 @@ import gravityBridgeMessageService from 'services/cosmos-tx/gravity-bridge-messa
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import ethWalletManger from 'services/eth-wallet/eth-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
-import { IERC20Token, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
+import { Fee, IERC20Token, IToken, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
 
 const logger = loggerFactory.getLogger('[GravityBridgeTransferer]');
 
@@ -15,6 +15,12 @@ const CONTRACTS = {
   [SupportedEthChain.Goerli]: '0xace45Cd2d490a0A180e50144D8dd0c7EB9A4215f'
 };
 
+function isGravityBridgeTransfer (from: SupportedChain, to: SupportedChain, token: IToken): boolean {
+  const isSupportedChains = (from === SupportedChain.GravityBridge && (to === SupportedChain.Eth || to === SupportedChain.Goerli)) ||
+    (to === SupportedChain.GravityBridge && (from === SupportedChain.Eth || from === SupportedChain.Goerli));
+  return isSupportedChains && token.isErc20;
+}
+
 async function transfer (
   from: SupportedChain,
   to: SupportedChain,
@@ -22,7 +28,7 @@ async function transfer (
   toAddress: string,
   token: IERC20Token,
   amount: string,
-  fee: string
+  fee?: Fee
 ): Promise<string> {
   logger.info(
     `[transfer] sending ERC20 token to ${to}`,
@@ -98,7 +104,7 @@ async function transferFromGravityBridge (
   toAddress: string,
   token: IERC20Token,
   amount: string,
-  fee: string
+  fee?: Fee
 ): Promise<string> {
   logger.info(
     `[transferFromGravityBridge] Sending to ${to}...`,
@@ -108,15 +114,19 @@ async function transferFromGravityBridge (
     'fee:', fee
   );
 
-  const decimal = new Big(10).pow(_.toNumber(token.decimals));
+  const decimal = new Big(10).pow(token.decimals);
   const _amount = new Big(amount).times(decimal).toString();
+  // const feeAmount = fee
+  //   ? new Big(fee.amount).times(decimal).toString()
+  //   : '0';
+  const feeAmount = '0';
   const message = gravityBridgeMessageService.createSendToEthereumMessage(
     fromAddress,
     toAddress,
     token,
     _amount,
     token,
-    fee
+    feeAmount
   );
 
   const signature = await cosmosWalletManager.sign(SupportedCosmosChain.GravityBridge, [message]);
@@ -140,6 +150,31 @@ function isSendCosmosResponse (response: unknown): response is sendToCosmosRespo
   return (response as sendToCosmosResponse).transactionHash !== undefined;
 }
 
+function getFees (fromChain: SupportedChain, token: IERC20Token, tokenPrice: string): Fee[] {
+  if (fromChain === SupportedChain.GravityBridge) {
+    return _.map([10, 200, 500], (usdFee, i) => ({
+      id: i,
+      label: getFeeLabel(usdFee),
+      denom: token.symbol,
+      amount: Big(usdFee).div(tokenPrice).round(6, Big.roundUp).toString(),
+      amountInCurrency: usdFee.toString()
+    }));
+  } else {
+    return [];
+  }
+}
+
+function getFeeLabel (usdFee: number): string {
+  switch (usdFee) {
+    case 10: return 'Within a day';
+    case 200: return 'Within an hour';
+    case 500: return 'Instantly';
+    default: return 'Unknown';
+  }
+}
+
 export default {
-  transfer
+  isGravityBridgeTransfer,
+  transfer,
+  getFees
 };

@@ -69,6 +69,7 @@ async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny
   const chainId = chainInfo.chainId;
 
   const account = await wallet.getAccount(chainId);
+  logger.info('[sign] Account from wallet:', account);
   if (!account) {
     const errorMessage = `Can't get account for ${chain}!`;
     logger.error('[sign]', errorMessage);
@@ -157,7 +158,7 @@ async function getAccountInfo (chain: SupportedCosmosChain, address: string): Pr
     logger.info('[getAccountInfo] Account Info:', accountInfo);
     const accountNumber = _.get(accountInfo, 'base_vesting_account.base_account.account_number') ||
       _.get(accountInfo, 'account_number');
-    const sequence = new Long(_.get(accountInfo, 'base_vesting_account.base_account.sequence')) ||
+    const sequence = _.get(accountInfo, 'base_vesting_account.base_account.sequence') ||
       _.get(accountInfo, 'sequence');
 
     return [accountNumber, sequence];

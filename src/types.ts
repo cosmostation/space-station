@@ -167,3 +167,11 @@ export interface PriceInfo {
   last_updated: string;
   prices: Price[]
 }
+
+export interface Fee {
+  id: number;
+  label: string;
+  denom: string;
+  amount: string;
+  amountInCurrency: string;
+}
