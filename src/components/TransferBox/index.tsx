@@ -70,8 +70,6 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
     : Big(tokenBalance || '0').gte(Big(amount || '0'));
   const notSupportedYet = false;
 
-  logger.info(amount);
-
   const toggleDirection = useCallback(() => {
     if (fromChain === ethChain) {
       setToChain(ethChain);

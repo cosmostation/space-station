@@ -116,10 +116,9 @@ async function transferFromGravityBridge (
 
   const decimal = new Big(10).pow(token.decimals);
   const _amount = new Big(amount).times(decimal).toString();
-  // const feeAmount = fee
-  //   ? new Big(fee.amount).times(decimal).toString()
-  //   : '0';
-  const feeAmount = '0';
+  const feeAmount = fee
+    ? new Big(fee.amount).times(decimal).toString()
+    : '0';
   const message = gravityBridgeMessageService.createSendToEthereumMessage(
     fromAddress,
     toAddress,
@@ -156,7 +155,7 @@ function getFees (fromChain: SupportedChain, token: IERC20Token, tokenPrice: str
       id: i,
       label: getFeeLabel(usdFee),
       denom: token.symbol,
-      amount: Big(usdFee).div(tokenPrice).round(6, Big.roundUp).toString(),
+      amount: Big(usdFee).div(tokenPrice).round(6, Big.roundDown).toString(),
       amountInCurrency: usdFee.toString()
     }));
   } else {

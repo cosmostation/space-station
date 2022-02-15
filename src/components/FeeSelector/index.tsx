@@ -55,9 +55,15 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
         <div className="fee-selector-button-container">
           {_.map(fees, (fee) => (
             <button key={fee.id} className={classNames('fee-selector-fee-button', { selected: fee.id === selectedFee?.id })} onClick={onClickFee.bind(null, fee)}>
-              <Text size="tiny" className="fee-button-text">{fee.label}</Text>
-              <Text size="tiny" className="fee-button-text">{fee.amount} {_.upperCase(fee.denom)}</Text>
-              <Text size="tiny" className="fee-button-text" muted>${fee.amountInCurrency}</Text>
+              <Text size="tiny" className="fee-button-text">
+                {fee.label}
+              </Text>
+              <Text size="tiny" className="fee-button-text">
+                {fee.amount} {_.upperCase(fee.denom)}
+              </Text>
+              <Text size="tiny" className="fee-button-text" muted>
+                ${fee.amountInCurrency}
+              </Text>
           </button>
           ))}
         </div>
