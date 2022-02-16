@@ -64,7 +64,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
   const tokenSelected: boolean = selectedToken !== undefined;
-  const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
+  const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).round(ROUND, Big.roundDown).gt('0');
   const isEnough: boolean = needBridgeFee
     ? Big(tokenBalance || '0').gte(Big(amount || '0').add(bridgeFee?.amount || '0'))
     : Big(tokenBalance || '0').gte(Big(amount || '0'));
@@ -98,8 +98,11 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
 
   const onUpdateAmount = useCallback((event) => {
     const amount = _.get(event, 'target.value', '');
-    if (/^[0-9]*[.,]?[0-9]*$/.test(amount)) {
-      setAmount(amount);
+    if (/^[0-9]+[.]?[0-9]*$/.test(amount)) {
+      const [, decimals] = _.split(amount, '.');
+      if (_.size(decimals) <= ROUND) {
+        setAmount(amount);
+      }
     }
   }, []);
 
@@ -223,7 +226,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
               min="0"
               minLength={1}
               maxLength={79}
-              pattern="^[0-9]*[.,]?[0-9]*$"
+              pattern="^[0-9]+[.]?[0-9]*$"
               disabled={selectedToken === undefined || !hasTokenBalance}
             />
           </Row>
