@@ -19,7 +19,7 @@ async function transfer (
   throw new Error('Unsupported Transfer!');
 }
 
-function needExtraFee (fromChain: SupportedChain, toChain: SupportedChain, token: IToken): boolean {
+function needBridgeFee (fromChain: SupportedChain, toChain: SupportedChain, token: IToken): boolean {
   return gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain, token) && fromChain === SupportedChain.GravityBridge;
 }
 
@@ -34,6 +34,6 @@ function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: ITo
 
 export default {
   transfer,
-  needExtraFee,
+  needBridgeFee,
   getFees
 };

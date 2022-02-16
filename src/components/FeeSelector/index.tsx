@@ -7,9 +7,12 @@ import Row from 'components/Row';
 import Text from 'components/Text';
 import usePrice from 'hooks/use-price';
 import _ from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import transferer from 'services/transfer/transferer';
+import loggerFactory from 'services/util/logger-factory';
 import { Fee, IToken, SupportedChain } from 'types';
+
+const logger = loggerFactory.getLogger('[FeeSelector]');
 
 type FeeSelectorProps = {
   fromChain: SupportedChain,
@@ -19,11 +22,10 @@ type FeeSelectorProps = {
   balance: string,
   amount: string,
   select: (fee: Fee) => void,
-  selectedFee?: Fee,
-  subtractFee: (fee: Fee) => void
+  selectedFee?: Fee
 }
 
-const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedToken, currency, select, selectedFee, subtractFee }) => {
+const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedToken, currency, amount, balance, select, selectedFee }) => {
   const denom = selectedToken?.isErc20
     ? selectedToken.erc20?.symbol
     : selectedToken?.cosmos?.denom;
@@ -31,34 +33,41 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
   const _tokenPrice = new Big(tokenPrice?.current_price || '1').toString();
   const fees = transferer.getFees(fromChain, toChain, selectedToken, _tokenPrice);
 
+  useEffect(() => {
+    if (selectedFee) {
+      const fee = _.find(fees, { id: selectedFee.id });
+      if (fee && !isSameFee(fee, selectedFee)) {
+        select(fee);
+      }
+    } else if (!_.isEmpty(fees)) {
+      select(fees[0]);
+    }
+  }, [fromChain, selectedToken, selectedFee, fees]);
+
   const onClickFee = useCallback((fee) => {
     select(fee);
   }, []);
-
-  const onSubtractFee = useCallback(() => {
-    if (selectedFee) {
-      subtractFee(selectedFee);
-    }
-  }, [selectedToken, selectedFee, subtractFee]);
 
   return (
     <Box className="fee-selector-container" density={1} depth={1}>
       <Row depth={1}>
         <div className="fee-selector-heading-container">
-          <Text size="small" muted>Transaction Fee</Text>
-          <button className={classNames('fee-selector-minus-fee-button', { disabled: _.isNil(selectedFee) })} onClick={onSubtractFee}>
-            <Text size="tiny">-Fee</Text>
-          </button>
+          <Text size="small" muted>Bridge Fee</Text>
         </div>
       </Row>
       <Row depth={1}>
         <div className="fee-selector-button-container">
           {_.map(fees, (fee) => (
-            <button key={fee.id} className={classNames('fee-selector-fee-button', { selected: fee.id === selectedFee?.id })} onClick={onClickFee.bind(null, fee)}>
-              <Text size="tiny" className="fee-button-text">
+            <button
+              key={fee.id}
+              className={classNames('fee-selector-fee-button', { selected: fee.id === selectedFee?.id })}
+              onClick={onClickFee.bind(null, fee)}
+              disabled={Big(fee.amount).add(amount).gt(balance)}
+            >
+              <Text size="tiny" className="fee-button-text" muted={Big(fee.amount).add(amount).gt(balance)}>
                 {fee.label}
               </Text>
-              <Text size="tiny" className="fee-button-text">
+              <Text size="tiny" className="fee-button-text" muted={Big(fee.amount).add(amount).gt(balance)}>
                 {fee.amount} {_.upperCase(fee.denom)}
               </Text>
               <Text size="tiny" className="fee-button-text" muted>
@@ -71,5 +80,9 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
     </Box>
   );
 };
+
+function isSameFee (feeA: Fee, feeB: Fee): boolean {
+  return _.join(_.values(feeA), ':') === _.join(_.values(feeB), ':');
+}
 
 export default FeeSelector;

@@ -83,8 +83,10 @@ async function transferToGravityBridge (
     }
 
     const contractAddress = CONTRACTS[from];
-    await web3.approve(fromAddress, token.address, contractAddress, amount);
-    const response = await web3.sendToCosmos(contractAddress, fromAddress, token.address, toAddress, amount);
+    const decimal = new Big(10).pow(token.decimals);
+    const _amount = new Big(amount).times(decimal).toString();
+    await web3.approve(fromAddress, token.address, contractAddress, _amount);
+    const response = await web3.sendToCosmos(contractAddress, fromAddress, token.address, toAddress, _amount);
     if (!isSendCosmosResponse(response)) {
       throw new Error('No TX hash');
     }

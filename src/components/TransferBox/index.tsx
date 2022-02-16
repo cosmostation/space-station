@@ -11,7 +11,6 @@ import Text from 'components/Text';
 import TokenSearchDialog from 'components/TokenSearchDialog';
 import TxBroadcastingDialog from 'components/TxBroadcastingDialog';
 import TxConfirmDialog from 'components/TxConfirmDialog';
-import UnsupportedWarning from 'components/UnsupportedWarning';
 import dotenv from 'dotenv';
 import useAccount from 'hooks/use-account';
 import useTokenBalance from 'hooks/use-token-balance';
@@ -49,7 +48,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   const [txConfirmOpened, setTxConfirmOpened] = useState<boolean>(false);
   const [txBroadcastingOpened, setTxBroadcastingOpened] = useState<boolean>(false);
   const [erc20BalanceUpdateCounter, setErc20BalanceUpdateCounter] = useState<number>(0);
-  const [extraFee, setExtraFee] = useState<Fee>();
+  const [bridgeFee, setBridgeFee] = useState<Fee>();
 
   const gravityBridgeAccount = useAccount(SupportedChain.GravityBridge);
   const ethAccount = useAccount(ethChain);
@@ -57,16 +56,17 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   const fromAddress = fromChain === ethChain ? ethAccount : gravityBridgeAccount;
   const tokenBalance = useTokenBalance(fromChain, fromAddress?.address, selectedToken, erc20BalanceUpdateCounter);
 
-  const needExtraFee = selectedToken ? transferer.needExtraFee(fromChain, toChain, selectedToken) : false;
+  const needBridgeFee = selectedToken ? transferer.needBridgeFee(fromChain, toChain, selectedToken) : false;
+  const noBridgeFee = needBridgeFee && _.isNil(bridgeFee);
+
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
   const ethWalletConnected: boolean = ethAccount !== undefined;
   const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
   const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
   const tokenSelected: boolean = selectedToken !== undefined;
   const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).gt('0');
-  const noExtraFee = needExtraFee && _.isNil(extraFee);
-  const isEnough: boolean = needExtraFee
-    ? Big(tokenBalance || '0').gte(Big(amount || '0').add(extraFee?.amount || '0'))
+  const isEnough: boolean = needBridgeFee
+    ? Big(tokenBalance || '0').gte(Big(amount || '0').add(bridgeFee?.amount || '0'))
     : Big(tokenBalance || '0').gte(Big(amount || '0'));
   const notSupportedYet = false;
 
@@ -85,8 +85,15 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   }, [fromChain]);
 
   const onClickMax = useCallback(() => {
-    setAmount(tokenBalance);
-  }, [tokenBalance]);
+    if (needBridgeFee && bridgeFee) {
+      const _amount = Big(tokenBalance).sub(bridgeFee.amount);
+      _amount.gte(0)
+        ? setAmount(_amount.toString())
+        : setAmount('0');
+    } else {
+      setAmount(tokenBalance);
+    }
+  }, [needBridgeFee, bridgeFee, amount, tokenBalance]);
 
   const onUpdateAmount = useCallback((event) => {
     const amount = _.get(event, 'target.value', '');
@@ -104,7 +111,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   const onSelectToken = useCallback((token: IToken) => {
     logger.info('Selected Token:', token);
     setSelectedToken(token);
-    setExtraFee(undefined);
+    setBridgeFee(undefined);
   }, []);
 
   const onCloseTokenSearcher = useCallback(() => {
@@ -113,16 +120,8 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
 
   const onSelectExtraFee = useCallback((fee: Fee) => {
     logger.info('Extra Fee:', fee);
-    setExtraFee(fee);
+    setBridgeFee(fee);
   }, []);
-
-  const onSubtractFee = useCallback((fee: Fee) => {
-    logger.info('Subtract:', amount, fee);
-    const _amount = Big(amount || '0').sub(fee.amount);
-    _amount.gte(0)
-      ? setAmount(_amount.toString())
-      : setAmount('0');
-  }, [amount]);
 
   const onOpenTxConfirm = useCallback(() => {
     setTxConfirmOpened(true);
@@ -138,7 +137,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
     if (ethAccount && gravityBridgeAccount && selectedToken?.erc20) {
       const fromAddress = fromChain === ethChain ? ethAccount.address : gravityBridgeAccount.address;
       const toAddress = toChain === ethChain ? ethAccount.address : gravityBridgeAccount.address;
-      transferer.transfer(fromChain, toChain, fromAddress, toAddress, selectedToken, amount, extraFee)
+      transferer.transfer(fromChain, toChain, fromAddress, toAddress, selectedToken, amount, bridgeFee)
         .then((txHash) => {
           toastService.showTxSuccessToast(selectedToken, amount, txHash, toChain);
           setErc20BalanceUpdateCounter(erc20BalanceUpdateCounter + 1);
@@ -239,7 +238,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
         </Box>
       </Row>
       <Row>
-        {needExtraFee && selectedToken
+        {needBridgeFee && selectedToken
           ? (<FeeSelector
               fromChain={fromChain}
               toChain={toChain}
@@ -248,23 +247,19 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
               balance={tokenBalance}
               amount={amount}
               select={onSelectExtraFee}
-              selectedFee={extraFee}
-              subtractFee={onSubtractFee}
+              selectedFee={bridgeFee}
             />)
           : ''
         }
       </Row>
       <Row>
-        <UnsupportedWarning />
-      </Row>
-      <Row>
         <Button
           className={classNames('transfer-button')}
           type="primary"
-          disabled={walletConnected === false || hasAmount === false || isEnough === false || noExtraFee === true}
+          disabled={walletConnected === false || hasAmount === false || isEnough === false || noBridgeFee === true}
           onClick={onOpenTxConfirm}
         >
-          {getButtonText(walletConnected, hasAmount, tokenSelected, isEnough, notSupportedYet, noExtraFee)}
+          {getButtonText(walletConnected, hasAmount, tokenSelected, isEnough, notSupportedYet, noBridgeFee)}
         </Button>
       </Row>
       <TokenSearchDialog
@@ -321,7 +316,7 @@ function getButtonText (
   tokenSelected: boolean,
   isEnough: boolean,
   notSupportedYet: boolean,
-  needExtraFee: boolean
+  needBridgeFee: boolean
 ): string {
   if (notSupportedYet === true) {
     return 'Support Soon!';
@@ -343,7 +338,7 @@ function getButtonText (
     return 'Insufficient Balance';
   }
 
-  if (needExtraFee === true) {
+  if (needBridgeFee === true) {
     return 'Please Select Fee!';
   }
 

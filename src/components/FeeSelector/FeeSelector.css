@@ -49,6 +49,11 @@
   background-color: var(--base-07);
 }
 
+.fee-selector-fee-button:disabled {
+  cursor: not-allowed;
+  background-color: var(--base-06) !important;
+}
+
 .fee-button-text {
   text-align: left;
   line-height: 1rem !important;
@@ -62,4 +67,13 @@
 .App.light .fee-selector-fee-button:hover {
   background-color: var(--base-00);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.App.light .fee-selector-fee-button:disabled {
+  background-color: var(--base-01) !important;
+  box-shadow: none !important;
+}
+
+.App.light .fee-selector-fee-button:disabled .fee-button-text {
+  color: var(--base-02);
 }
