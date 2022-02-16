@@ -151,7 +151,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
           setTxBroadcastingOpened(false);
         });
     }
-  }, [fromChain, toChain, ethAccount, gravityBridgeAccount, selectedToken, amount, erc20BalanceUpdateCounter]);
+  }, [fromChain, toChain, ethAccount, gravityBridgeAccount, selectedToken, amount, erc20BalanceUpdateCounter, bridgeFee]);
 
   return (
     <Box className="TransferBox">
