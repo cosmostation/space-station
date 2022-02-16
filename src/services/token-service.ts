@@ -57,7 +57,7 @@ async function getErc20TokensOnGravityBridge (toChain: SupportedChain, address?:
     const tokens = await lcdService.getBalance(SupportedCosmosChain.GravityBridge, address);
     const erc20Tokens = _.filter(tokens, (token) => _.startsWith(token.denom, GRAVITY_BRIDGE_ERC20_PREFIX));
     const requests = _.map(erc20Tokens, async (balance): Promise<IToken | null> => {
-      const address = _.toLower(_.last(_.split(balance.denom, GRAVITY_BRIDGE_PREFIX)));
+      const address = _.last(_.split(balance.denom, GRAVITY_BRIDGE_PREFIX));
       if (address) {
         const token = getTokenFromConstants(toChain, address);
         if (token) {
@@ -109,7 +109,7 @@ async function getErc20TokenBalanceOnGravityBridge (address: string, token: IERC
     logger.info('[getErc20TokenBalanceOnGravityBridge] Getting ERC20 balance on Gravity Bridge...');
     const decimals = token.decimals;
     const balances = await lcdService.getBalance(SupportedCosmosChain.GravityBridge, address);
-    const erc20Balances = _.find(balances, (balance) => _.toLower(balance.denom) === `gravity${token.address}`);
+    const erc20Balances = _.find(balances, (balance) => balance.denom === `gravity${token.address}`);
     if (erc20Balances?.amount) {
       const _balance = new Big(erc20Balances.amount)
         .div(10 ** decimals)
