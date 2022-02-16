@@ -85,13 +85,14 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   }, [fromChain]);
 
   const onClickMax = useCallback(() => {
+    const _tokenBalance = Big(tokenBalance).round(ROUND, Big.roundDown);
     if (needBridgeFee && bridgeFee) {
-      const _amount = Big(tokenBalance).sub(bridgeFee.amount);
+      const _amount = _tokenBalance.sub(bridgeFee.amount).round(ROUND, Big.roundDown);
       _amount.gte(0)
         ? setAmount(_amount.toString())
         : setAmount('0');
     } else {
-      setAmount(tokenBalance);
+      setAmount(_tokenBalance.toString());
     }
   }, [needBridgeFee, bridgeFee, amount, tokenBalance]);
 
@@ -112,6 +113,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
     logger.info('Selected Token:', token);
     setSelectedToken(token);
     setBridgeFee(undefined);
+    setAmount('');
   }, []);
 
   const onCloseTokenSearcher = useCallback(() => {
