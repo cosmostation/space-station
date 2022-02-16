@@ -32,6 +32,7 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
   const tokenPrice = usePrice(currency, denom);
   const _tokenPrice = new Big(tokenPrice?.current_price || '1').toString();
   const fees = transferer.getFees(fromChain, toChain, selectedToken, _tokenPrice);
+  logger.info('Fees:', fees);
 
   useEffect(() => {
     if (selectedFee) {
@@ -48,6 +49,15 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
     select(fee);
   }, []);
 
+  const disableds: boolean[] = _.map(fees, (fee) => {
+    try {
+      return Big(fee.amount).add(amount || '0').gt(balance);
+    } catch (error) {
+      logger.error(error, fee);
+      return true;
+    }
+  });
+
   return (
     <Box className="fee-selector-container" density={1} depth={1}>
       <Row depth={1}>
@@ -57,17 +67,17 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
       </Row>
       <Row depth={1}>
         <div className="fee-selector-button-container">
-          {_.map(fees, (fee) => (
+          {_.map(fees, (fee, i) => (
             <button
               key={fee.id}
               className={classNames('fee-selector-fee-button', { selected: fee.id === selectedFee?.id })}
               onClick={onClickFee.bind(null, fee)}
-              disabled={Big(fee.amount).add(amount).gt(balance)}
+              disabled={disableds[i]}
             >
-              <Text size="tiny" className="fee-button-text" muted={Big(fee.amount).add(amount).gt(balance)}>
+              <Text size="tiny" className="fee-button-text" muted={disableds[i]}>
                 {fee.label}
               </Text>
-              <Text size="tiny" className="fee-button-text" muted={Big(fee.amount).add(amount).gt(balance)}>
+              <Text size="tiny" className="fee-button-text" muted={disableds[i]}>
                 {fee.amount} {_.upperCase(fee.denom)}
               </Text>
               <Text size="tiny" className="fee-button-text" muted>

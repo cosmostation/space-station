@@ -62,13 +62,12 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   const gravityBridgeWalletConnected: boolean = gravityBridgeAccount !== undefined;
   const ethWalletConnected: boolean = ethAccount !== undefined;
   const walletConnected: boolean = gravityBridgeWalletConnected && ethWalletConnected;
-  const hasAmount: boolean = !_.isEmpty(amount) && new Big(amount).gt('0');
+  const hasAmount: boolean = Big(amount || '0').gt('0');
   const tokenSelected: boolean = selectedToken !== undefined;
-  const hasTokenBalance: boolean = !_.isEmpty(tokenBalance) && new Big(tokenBalance).round(ROUND, Big.roundDown).gt('0');
+  const hasTokenBalance: boolean = Big(tokenBalance || '0').round(ROUND, Big.roundDown).gt('0');
   const isEnough: boolean = needBridgeFee
     ? Big(tokenBalance || '0').gte(Big(amount || '0').add(bridgeFee?.amount || '0'))
     : Big(tokenBalance || '0').gte(Big(amount || '0'));
-  const notSupportedYet = false;
 
   const toggleDirection = useCallback(() => {
     if (fromChain === ethChain) {
@@ -107,10 +106,10 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
   }, []);
 
   const onOpenTokenSearcher = useCallback(() => {
-    if (walletConnected && !notSupportedYet) {
+    if (walletConnected) {
       setTokenSearcherOpened(true);
     }
-  }, [walletConnected, notSupportedYet]);
+  }, [walletConnected]);
 
   const onSelectToken = useCallback((token: IToken) => {
     logger.info('Selected Token:', token);
@@ -195,7 +194,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
       <Row>
         <Box className="token-selector-container" density={1} depth={1}>
           <Row depth={1}>
-            <div className={classNames('token-selector', { disabled: !walletConnected || notSupportedYet })} onClick={onOpenTokenSearcher}>
+            <div className={classNames('token-selector', { disabled: !walletConnected })} onClick={onOpenTokenSearcher}>
               <img
                 className="token-selector-token-icon"
                 src={selectedToken?.erc20?.logoURI ? selectedToken.erc20.logoURI : defaultTokenIcon}
@@ -204,7 +203,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
               <Text className="token-selector-token-name" size="small">
                 {selectedToken?.erc20?.symbol ? selectedToken.erc20.symbol : 'Select Token'}
               </Text>
-              <IconButton size="small" disabled={!walletConnected || notSupportedYet }>
+              <IconButton size="small" disabled={!walletConnected }>
                 <ArrowNoTailIcon/>
               </IconButton>
             </div>
@@ -264,7 +263,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
           disabled={walletConnected === false || hasAmount === false || isEnough === false || noBridgeFee === true}
           onClick={onOpenTxConfirm}
         >
-          {getButtonText(walletConnected, hasAmount, tokenSelected, isEnough, notSupportedYet, noBridgeFee)}
+          {getButtonText(walletConnected, hasAmount, tokenSelected, isEnough, noBridgeFee)}
         </Button>
       </Row>
       <TokenSearchDialog
@@ -304,29 +303,13 @@ function getIconSource (network: SupportedChain, theme: ThemeType): string {
       : gravityBridgeLightIcon;
 }
 
-function getAdjustedAmount (amount: string, fee: Fee, balance: string): string {
-  const total = Big(amount).add(fee.amount);
-  if (total.gt(balance)) {
-    const _amount = Big(balance).sub(fee.amount);
-    return _amount.gte(0)
-      ? _amount.toString()
-      : '0';
-  }
-  return amount;
-}
-
 function getButtonText (
   walletConnected: boolean,
   hasAmount: boolean,
   tokenSelected: boolean,
   isEnough: boolean,
-  notSupportedYet: boolean,
   needBridgeFee: boolean
 ): string {
-  if (notSupportedYet === true) {
-    return 'Support Soon!';
-  }
-
   if (walletConnected === false) {
     return 'Connect Wallet';
   }
