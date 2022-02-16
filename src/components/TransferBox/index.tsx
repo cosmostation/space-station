@@ -280,6 +280,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme, ethChain }) => {
         toChain={toChain}
         token={selectedToken}
         amount={amount}
+        bridgeFee={bridgeFee}
         close={onCloseTxConfirm}
         confirm={onConfirm}
       />

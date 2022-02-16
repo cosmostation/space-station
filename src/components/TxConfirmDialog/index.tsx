@@ -10,9 +10,10 @@ import Text from 'components/Text';
 import arrowIcon from 'images/arrow-icon.png';
 import closeIcon from 'images/close-icon.png';
 import defaultTokenIcon from 'images/default-token-icon.png';
+import _ from 'lodash';
 import React, { useCallback } from 'react';
 import chainHelper from 'services/util/chain-helper';
-import { IToken, SupportedChain } from 'types';
+import { Fee, IToken, SupportedChain } from 'types';
 
 type TxSenderProps = {
   open: boolean;
@@ -21,11 +22,12 @@ type TxSenderProps = {
   toChain: SupportedChain;
   token?: IToken;
   amount: string;
+  bridgeFee?: Fee;
   close: () => void;
   confirm: () => void;
 }
 
-const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromChain, toChain, token, amount, close, confirm }) => {
+const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromChain, toChain, token, amount, bridgeFee, close, confirm }) => {
   const onClose = useCallback(() => {
     close();
   }, [close]);
@@ -87,6 +89,13 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromChain, 
               <Text>Amount</Text>
               <Text>{amount}</Text>
             </Row>
+            {!_.isNil(bridgeFee)
+              ? <Row className="space-between">
+                  <Text>Bridge Fee</Text>
+                  <Text>{bridgeFee.amount}</Text>
+                </Row>
+              : <></>
+            }
           </Box>
         </Row>
         <Row>
