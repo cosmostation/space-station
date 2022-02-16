@@ -46,8 +46,9 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
   }, [fromChain, selectedToken, selectedFee, fees]);
 
   const onClickFee = useCallback((fee) => {
+    logger.info('Selected Fee:', fee);
     select(fee);
-  }, []);
+  }, [select]);
 
   const disableds: boolean[] = _.map(fees, (fee) => {
     try {
