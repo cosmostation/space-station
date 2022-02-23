@@ -47,8 +47,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     image: EthChainLogo,
     supportedWallets: [EthWalletType.MetaMask],
     toChains: [SupportedChain.GravityBridge],
-    head: 6,
-    tail: 4
+    head: 8,
+    tail: 8
   },
   [SupportedChain.GravityBridge]: {
     chain: SupportedChain.GravityBridge,
@@ -57,7 +57,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.Eth, SupportedChain.Osmosis],
     head: 8,
-    tail: 4
+    tail: 8
   },
   [SupportedChain.Osmosis]: {
     chain: SupportedChain.Osmosis,
@@ -65,8 +65,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     image: OsmosisChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.GravityBridge],
-    head: 6,
-    tail: 4
+    head: 8,
+    tail: 8
   }
 };
 
