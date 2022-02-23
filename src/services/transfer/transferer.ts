@@ -1,35 +1,35 @@
-import { Fee, IToken, SupportedChain } from 'types';
+import { Fee, IToken, ITransfer, SupportedChain } from 'types';
 
 import gravityBridgeTransferer from './gravity-bridge-transferer';
+import ibcTransferer from './ibc-transferer';
 
-async function transfer (
-  fromChain: SupportedChain,
-  toChain: SupportedChain,
-  fromAddress: string,
-  toAddress: string,
-  token: IToken,
-  amount: string,
-  fee?: Fee
-): Promise<string> {
-  if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain, token)) {
-    if (token.erc20) {
-      return gravityBridgeTransferer.transfer(fromChain, toChain, fromAddress, toAddress, token.erc20, amount, fee);
+async function transfer (entity: ITransfer): Promise<string> {
+  if (gravityBridgeTransferer.isGravityBridgeTransfer(entity.fromChain, entity.toChain)) {
+    if (entity.token.erc20) {
+      return gravityBridgeTransferer.transfer(entity);
+    }
+  } else if (ibcTransferer.isIbcTransfer(entity.fromChain, entity.toChain)) {
+    if (entity.token.cosmos) {
+      return ibcTransferer.transfer(entity);
     }
   }
   throw new Error('Unsupported Transfer!');
 }
 
-function needBridgeFee (fromChain: SupportedChain, toChain: SupportedChain, token: IToken): boolean {
-  return gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain, token) && fromChain === SupportedChain.GravityBridge;
+function needBridgeFee (fromChain: SupportedChain, toChain: SupportedChain): boolean {
+  if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain)) {
+    return fromChain === SupportedChain.GravityBridge;
+  }
+  return false;
 }
 
 function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: IToken, tokenPrice: string): Fee[] {
-  if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain, token)) {
+  if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain)) {
     if (token.erc20) {
       return gravityBridgeTransferer.getFees(fromChain, token.erc20, tokenPrice);
     }
   }
-  throw new Error('Unsupported Transfer!');
+  return [];
 }
 
 export default {

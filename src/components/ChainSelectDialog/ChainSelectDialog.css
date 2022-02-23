@@ -1,0 +1,42 @@
+.Box.ChainSelectDialog {
+  width: 380px;
+  height: fit-content;
+  max-height: 694px;
+  margin-top: 180px;
+  z-index: 100;
+}
+
+.chain-select-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chain-select-list {
+  overflow-y: auto;
+  max-height: calc(100% - 48px - 40px - 24px);
+}
+
+.chain-list-item {
+  height: 50px;
+  padding: 0 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.chain-list-item:hover {
+  background-color: var(--token-list-item-hover-color);
+}
+
+.chain-list-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  margin-right: 8px;
+}
+
+.chain-list-chain-name {
+  margin-top: 2px;
+}

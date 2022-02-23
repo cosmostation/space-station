@@ -1,6 +1,6 @@
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
-import { cosmos, google } from 'constants/gravity-bridge-v1.2.1';
+import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import { EventEmitter } from 'events';
 import Long from 'long';
 import Web3Manager from 'services/eth-wallet/web3-manager';
@@ -14,14 +14,12 @@ export enum ThemeType {
 
 export enum SupportedChain {
   Eth = 'eth',
-  Goerli = 'goerli',
   GravityBridge = 'gravityBridge',
   Osmosis = 'osmosis'
 }
 
 export enum SupportedEthChain {
   Eth = 'eth',
-  Goerli = 'goerli'
 }
 
 export enum SupportedCosmosChain {
@@ -40,12 +38,11 @@ export interface IERC20Token {
 
 export interface ICosmosToken {
   readonly chainId: string;
-  readonly denom: string;
   readonly name?: string;
+  readonly denom: string;
   readonly decimals: number;
+  readonly symbol?: string;
   readonly logoURI?: string;
-  readonly isIbc?: boolean;
-  readonly isErc20?: boolean;
 }
 
 export type TokenInfo = IERC20Token | ICosmosToken;
@@ -108,6 +105,7 @@ export type CosmosChainInfo = {
   chainId: string;
   lcd: string;
   denom: string;
+  ibcChannels: { [key in SupportedCosmosChain]?: string }
 }
 
 export enum CosmosWalletType {
@@ -174,4 +172,24 @@ export interface Fee {
   denom: string;
   amount: string;
   amountInCurrency: string;
+}
+
+export interface ITransfer {
+  fromChain: SupportedChain,
+  toChain: SupportedChain,
+  token: IToken,
+  fromAddress: string,
+  toAddress: string,
+  amount: string,
+  bridgeFee?: Fee
+}
+
+export type ChainViewInfo = {
+  chain: SupportedChain
+  name: string
+  image: string
+  supportedWallets: Array<EthWalletType | CosmosWalletType>
+  toChains: SupportedChain[]
+  head: number
+  tail: number
 }

@@ -2,6 +2,7 @@ import './Toast.css';
 
 import Text from 'components/Text';
 import React from 'react';
+import chainHelper from 'services/util/chain-helper';
 import { IToken, SupportedChain } from 'types';
 
 type TxFailToastProps = {
@@ -12,8 +13,8 @@ type TxFailToastProps = {
 };
 
 const TxFailToast: React.FC<TxFailToastProps> = ({ token, amount, toChain, errorMessage }) => {
-  const _toChain = toChain === SupportedChain.Eth ? 'Ethereum' : 'Gravity Bridge';
-  const message = `Failed to transfer ${amount} ${token.erc20?.symbol} to ${_toChain}`;
+  const tokenSymbol = token?.erc20?.symbol || token?.cosmos?.symbol || 'Unknown Token';
+  const message = `Failed to transfer ${amount} ${tokenSymbol} to ${chainHelper.getChainName(toChain)}`;
   return (
     <div className="toast-message">
       <p>{message}</p>

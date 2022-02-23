@@ -28,6 +28,9 @@ type TxSenderProps = {
 }
 
 const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromChain, toChain, token, amount, bridgeFee, close, confirm }) => {
+  const logoURI = token?.erc20?.logoURI || token?.cosmos?.logoURI || defaultTokenIcon;
+  const tokenSymbol = token?.erc20?.symbol || token?.cosmos?.symbol || 'Unknown Token';
+
   const onClose = useCallback(() => {
     close();
   }, [close]);
@@ -77,11 +80,11 @@ const TxConfirmDialog: React.FC<TxSenderProps> = ({ open, className, fromChain, 
               <div className="tx-confirm-token-info">
                 <img
                   className="token-confirm-token-icon"
-                  src={token?.erc20?.logoURI ? token.erc20?.logoURI : defaultTokenIcon}
+                  src={logoURI}
                   alt="selected token icon"
                 />
                 <Text className="token-confirm-token-name" size="small">
-                  {token?.erc20?.symbol ? token.erc20?.symbol : 'Token Symbol'}
+                  {tokenSymbol}
                 </Text>
               </div>
             </Row>

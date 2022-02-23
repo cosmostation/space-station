@@ -26,13 +26,11 @@ const walletMap: Record<EthWalletType, IEthWallet> = {
 };
 
 const chainWalletTypeMap: Record<SupportedEthChain, EthWalletType | undefined> = {
-  [SupportedEthChain.Eth]: undefined,
-  [SupportedEthChain.Goerli]: undefined
+  [SupportedEthChain.Eth]: undefined
 };
 
 const chinWalletMap: Record<SupportedEthChain, IEthWallet | undefined> = {
-  [SupportedEthChain.Eth]: undefined,
-  [SupportedEthChain.Goerli]: undefined
+  [SupportedEthChain.Eth]: undefined
 };
 
 async function init (ethChain: SupportedEthChain): Promise<void> {
@@ -93,7 +91,7 @@ async function connect (chain: SupportedEthChain, walletType: EthWalletType): Pr
   const account = await wallet.getAccount();
   if (account) {
     logger.info('[connect] Account:', account);
-    accountStore.updateAccount(chain, account);
+    accountStore.updateAccount(chain, account, walletType);
     registerEventHandler(chain);
   }
 }
@@ -116,9 +114,9 @@ function accountChangeEventHandler (chain: SupportedEthChain, wallet: IEthWallet
     logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
     if (!_.isEmpty(accounts)) {
       const account = await wallet.getAccount();
-      accountStore.updateAccount(chain, account);
+      accountStore.updateAccount(chain, account, undefined);
     } else {
-      accountStore.updateAccount(chain, undefined);
+      accountStore.updateAccount(chain, undefined, undefined);
     }
   };
 }
@@ -128,10 +126,10 @@ function networkChangeEventHandler (chain: SupportedEthChain, wallet: IEthWallet
   return async (chainId: string): Promise<void> => {
     logger.info('[accountChangeEventHandler] Updated chain ID:', chainId);
     if (chainId !== chainInfo.chainId) {
-      accountStore.updateAccount(chain, undefined);
+      accountStore.updateAccount(chain, undefined, undefined);
     } else {
       const account = await wallet.getAccount();
-      accountStore.updateAccount(chain, account);
+      accountStore.updateAccount(chain, account, undefined);
     }
   };
 }
@@ -161,7 +159,7 @@ async function updateAccount (chain: SupportedEthChain): Promise<void> {
     if (wallet) {
       await wallet.updateNetwork(chain);
       const account = await wallet.getAccount();
-      accountStore.updateAccount(chain, account);
+      accountStore.updateAccount(chain, account, undefined);
     }
   } catch (error) {
     logger.error(error);

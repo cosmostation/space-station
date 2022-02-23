@@ -1,6 +1,6 @@
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import cosmosChains from 'constants/cosmos-chains';
-import { cosmos, google } from 'constants/gravity-bridge-v1.2.1';
+import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import dotenv from 'dotenv';
 import _ from 'lodash';
 import Long from 'long';
@@ -55,7 +55,7 @@ async function connect (chain: SupportedCosmosChain, walletType: CosmosWalletTyp
   await wallet.addChain(chainInfo.chainId);
   const account = await wallet.getAccount(chainInfo.chainId);
   account.balance = await getBalance(chain, account.address);
-  accountStore.updateAccount(chain, account);
+  accountStore.updateAccount(chain, account, walletType);
 }
 
 async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse> {
@@ -77,6 +77,8 @@ async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny
   }
 
   const txBody = cosmosTxService.createTxBody(messages);
+  logger.info('[sign] txBody:', txBody);
+
   const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
   const fee = '0';
   const gasLimit = new Long(200000);

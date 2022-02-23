@@ -1,3 +1,15 @@
+.App.dark {
+  --token-selector-background-color: var(--base-07);
+  --token-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  --theme-button-background-color: var(--base-06);
+}
+
+.App.light {
+  --token-selector-background-color: var(--base-00);
+  --token-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  --theme-button-background-color: var(--base-01);
+}
+
 .Box.TransferBox {
   width: 440px;
 }
@@ -6,50 +18,8 @@
   margin-bottom: 20px;
 }
 
-.Box.network-container {
-  width: 156px;
-  height: 50px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.network-container-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.network-container-muted {
-  margin-bottom: 16px;
-}
-
-.network-container-name {
-  white-space: nowrap;
-  width: 10px;
-  z-index: 10;
-}
-
-.network-container-icon.goerli,
-.network-container-icon.eth {
-  width: 30px;
-  height: 49px;
-}
-
-.network-container-icon.gravityBridge,
-.network-container-icon.gravity-bridge {
-  width: 100px;
-  height: 38px;
-}
-
-.toggle-button:hover {
-  animation: 0.2s changedirection forwards;
-}
-
-@keyframes changedirection {
-  25% {transform: rotate(45deg);}
-  50% {transform: rotate(90deg);}
-  79% {transform: rotate(135deg);}
-  100% {transform: rotate(180deg);}
+.theme-change-button {
+  background: var(--theme-button-background-color) !important;
 }
 
 .token-selector {

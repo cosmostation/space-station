@@ -1,5 +1,5 @@
 import { DirectSignResponse } from '@cosmjs/proto-signing';
-import { cosmos, google } from 'constants/gravity-bridge-v1.2.1';
+import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import Long from 'long';
 
 function createTxBody (messages: google.protobuf.IAny[], memo = ''): cosmos.tx.v1beta1.TxBody {
@@ -42,7 +42,14 @@ function getSignDoc (
   accountNumber: Long
 ): cosmos.tx.v1beta1.SignDoc {
   const bodyBytes = cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
-  const authInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
+  let authInfoBytes;
+  try {
+    authInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('!!!!!!!authInfoBytes:', error);
+    throw error;
+  }
 
   const signDoc = new cosmos.tx.v1beta1.SignDoc({
     chain_id: chainId,

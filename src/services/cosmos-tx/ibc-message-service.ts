@@ -1,26 +1,36 @@
+import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import { ibc } from 'constants/ibc-v2.0.3';
-import { google, cosmos } from 'constants/gravity-bridge-v1.2.1';
+import Long from 'long';
 import loggerFactory from 'services/util/logger-factory';
+import { ICosmosToken } from 'types';
 
 const logger = loggerFactory.getLogger('[IbcMessageService]');
+const TIMEOUT_HEIGHT = 800;
 
 function createIbcSendMessage (
   sender: string,
   receiver: string,
-  token: cosmos.base.v1beta1.Coin,
+  token: ICosmosToken,
+  amount: string,
   sourcePort: string,
   sourceChannel: string,
-  timeoutHeight: ibc.core.client.v1.IHeight
+  revisionNumber: string,
+  revisionHeight: string
 ): google.protobuf.Any {
+  const coin = new cosmos.base.v1beta1.Coin({ denom: token.denom, amount });
+  const timeoutHeight: ibc.core.client.v1.IHeight = {
+    revision_number: Long.fromString(revisionNumber),
+    revision_height: Long.fromString(revisionHeight).add(TIMEOUT_HEIGHT)
+  };
   const transferMessage = new ibc.applications.transfer.v1.MsgTransfer({
     sender,
     receiver,
-    token,
+    token: coin,
     source_port: sourcePort,
     source_channel: sourceChannel,
     timeout_height: timeoutHeight
   });
-  logger.info('MsgTransfer', transferMessage);
+  logger.info('[createIbcSendMessage] MsgTransfer:', transferMessage);
 
   return new google.protobuf.Any({
     type_url: '/ibc.applications.transfer.v1.MsgTransfer',

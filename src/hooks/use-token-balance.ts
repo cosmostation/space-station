@@ -8,10 +8,12 @@ const logger = loggerFactory.getLogger('[useTokenBalance]');
 export default function useTokenBalance (chain: SupportedChain, address?: string, token?: IToken, counter?: number): string {
   const [balance, setBalance] = useState<string>('0');
   useEffect(() => {
-    if (address === undefined || token?.erc20 === undefined) {
+    if (address === undefined || (token?.erc20 === undefined && token?.cosmos === undefined)) {
       setBalance('0');
     } else {
-      tokenService.getTokenBalance(chain, token, address, token.erc20.decimals)
+      logger.info('chain:', chain, 'address:', address, 'token:', token);
+      const decimals = token?.erc20?.decimals || token?.cosmos?.decimals || 6;
+      tokenService.getTokenBalance(chain, token, address, decimals)
         .then((balance: string) => {
           logger.info('Balance: ' + balance);
           setBalance(balance);

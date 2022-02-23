@@ -1,23 +1,36 @@
 import Big from 'big.js';
+import cosmosChains from 'constants/cosmos-chains';
+import cosmosTokens from 'constants/cosmos-tokens.json';
 import ethTokens from 'constants/eth-tokens.json';
-import goerliTokens from 'constants/goerli-tokens.json';
 import _ from 'lodash';
 import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
 import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import gravityBridgeTransferer from 'services/transfer/gravity-bridge-transferer';
+import ibcTransferer from 'services/transfer/ibc-transferer';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
-import { IERC20Token, IToken, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
+import { ICosmosToken, IERC20Token, IToken, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
 
 const GRAVITY_BRIDGE_PREFIX = 'gravity';
 const GRAVITY_BRIDGE_ERC20_PREFIX = 'gravity0x';
-const logger = loggerFactory.getLogger('[tokenListService]');
+const logger = loggerFactory.getLogger('[tokenService]');
 
 async function getTokens (fromChain: SupportedChain, toChain: SupportedChain, address?: string): Promise<IToken[]> {
   logger.info('[getTokens] Getting tokens...', 'from:', fromChain, 'to:', toChain, 'address:', address);
-  if (fromChain === SupportedChain.GravityBridge && typeHelper.isSupportedEthChain(toChain)) {
-    return getErc20TokensOnGravityBridge(toChain, address);
-  } else if (typeHelper.isSupportedEthChain(fromChain)) {
-    return getErc20TokensOnChain(fromChain);
+  if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain)) {
+    logger.info('[getTokens] Getting tokens for Gravity Bridge transfer...');
+    if (fromChain === SupportedChain.GravityBridge) {
+      return getErc20TokensOnGravityBridge(toChain, address);
+    } else {
+      return getErc20TokensOnChain(fromChain);
+    }
+  } else if (ibcTransferer.isIbcTransfer(fromChain, toChain)) {
+    logger.info('[getTokens] Getting tokens for IBC transfer...');
+    if (typeHelper.isSupportedCosmosChain(fromChain) && address) {
+      return getTokensOnCosmosChain(fromChain, address);
+    } else {
+      return [];
+    }
   } else {
     return [];
   }
@@ -27,9 +40,13 @@ async function getTokenBalance (chain: SupportedChain, token: IToken, address: s
   logger.info('[getTokens] Getting token balance...', 'chain:', chain, 'token:', token, 'address:', address);
   if (token.erc20) {
     if (typeHelper.isSupportedEthChain(chain)) {
-      return getErc20TokenBalance(chain, token.erc20, address, rounds);
+      return getErc20TokenBalance(chain, address, token.erc20, rounds);
     } else if (chain === SupportedChain.GravityBridge) {
       return getErc20TokenBalanceOnGravityBridge(address, token.erc20, rounds);
+    }
+  } else if (token.cosmos) {
+    if (typeHelper.isSupportedCosmosChain(chain)) {
+      return getTokenBalanceOnCosmosChain(chain, address, token.cosmos, rounds);
     }
   }
   return '0';
@@ -39,8 +56,6 @@ async function getErc20TokensOnChain (chain: SupportedChain): Promise<IToken[]> 
   switch (chain) {
     case SupportedChain.Eth: {
       return _.map(ethTokens, (token) => typeHelper.convertErc20ToToken(token));
-    } case SupportedChain.Goerli: {
-      return _.map(goerliTokens, (token) => typeHelper.convertErc20ToToken(token));
     } default: {
       return [];
     }
@@ -80,15 +95,43 @@ async function getErc20TokensOnGravityBridge (toChain: SupportedChain, address?:
   }
 }
 
+async function getTokensOnCosmosChain (chain: SupportedCosmosChain, address: string): Promise<IToken[]> {
+  try {
+    const tokens = await lcdService.getBalance(chain, address);
+    const chainInfo = cosmosChains[chain];
+    const _tokens = _.map(tokens, (token) => {
+      const _token = (<any>cosmosTokens)[token.denom];
+      if (!_token) {
+        return undefined;
+      }
+      return {
+        isCosmos: true,
+        isErc20: false,
+        cosmos: {
+          chainId: chainInfo.chainId,
+          denom: token.denom,
+          decimals: _token.decimals || 6,
+          name: _token.name || 'Unknown',
+          logoURI: _token.logoURI,
+          symbol: _token.symbol
+        }
+      };
+    });
+    return _.compact(_tokens);
+  } catch (error) {
+    logger.error('[getTokensOnCosmosChain]', error);
+    return [];
+  }
+}
+
 function getTokenFromConstants (toChain: SupportedChain, address: string): IERC20Token | undefined {
   switch (toChain) {
     case SupportedChain.Eth: return _.find(ethTokens, { address });
-    case SupportedChain.Goerli: return _.find(goerliTokens, { address });
     default: return undefined;
   }
 }
 
-async function getErc20TokenBalance (chain: SupportedEthChain, token: IERC20Token, address: string, rounds: number): Promise<string> {
+async function getErc20TokenBalance (chain: SupportedEthChain, address: string, token: IERC20Token, rounds: number): Promise<string> {
   try {
     logger.info(`[getErc20TokenBalance] Getting ERC20 balance on ${chain}...`);
     const decimals = token.decimals;
@@ -112,6 +155,26 @@ async function getErc20TokenBalanceOnGravityBridge (address: string, token: IERC
     const erc20Balances = _.find(balances, (balance) => balance.denom === `gravity${token.address}`);
     if (erc20Balances?.amount) {
       const _balance = new Big(erc20Balances.amount)
+        .div(10 ** decimals)
+        .round(rounds, Big.roundDown);
+      return _balance.toString();
+    }
+    return '0';
+  } catch (error) {
+    logger.error(error);
+    return '0';
+  }
+}
+
+async function getTokenBalanceOnCosmosChain (chain: SupportedCosmosChain, address: string, token: ICosmosToken, rounds: number): Promise<string> {
+  try {
+    logger.info(`[getTokenBalanceOnCosmosChain] Getting token balance on ${chain}...`, 'address:', address, 'token:', token);
+    const decimals = token.decimals;
+    const balances = await lcdService.getBalance(chain, address);
+    logger.info('[getTokenBalanceOnCosmosChain] balances:', balances);
+    const balance = _.find(balances, { denom: token.denom });
+    if (balance?.amount) {
+      const _balance = new Big(balance.amount)
         .div(10 ** decimals)
         .round(rounds, Big.roundDown);
       return _balance.toString();
