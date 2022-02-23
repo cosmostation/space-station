@@ -22,7 +22,7 @@
   },
   "ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44": {
     "name": "Graviton",
-    "denom": "ugraviton",
+    "denom": "ibc/E97634A40119F1898989C2A23224ED83FDD0A57EA46B3A094E287288D1672B44",
     "symbol": "GRAVITON",
     "decimals": 6,
     "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-gravity-bridge.svg"
