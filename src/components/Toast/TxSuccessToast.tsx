@@ -18,7 +18,7 @@ type TxSuccessToastProps = {
 
 const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ token, amount, txHash, fromChain, toChain }) => {
   const tokenSymbol = token?.erc20?.symbol || token?.cosmos?.symbol || 'Unknown Token';
-  const message = `Successfully transferred ${amount} ${tokenSymbol} to ${chainHelper.getChainName(toChain)}`;
+  const message = `Your ${amount} ${tokenSymbol} are now in the queue and will be relayed to ${chainHelper.getChainName(toChain)} soon.`;
   const explorerLink = `${chainHelper.getExplorerLink(fromChain)}/${txHash}`;
   return (
     <>
