@@ -3,24 +3,23 @@ import './Toast.css';
 import Text from 'components/Text';
 import dotenv from 'dotenv';
 import React from 'react';
+import chainHelper from 'services/util/chain-helper';
 import { IToken, SupportedChain } from 'types';
 
 dotenv.config();
-
-const ETH_TX_EXPLORER = process.env.REACT_APP_ETH_TX_EXPLORER || '';
-const GRAVITY_BRIDGE_TX_EXPLORER = process.env.REACT_APP_GRAVITY_BRIDGE_TX_EXPLORER || '';
 
 type TxSuccessToastProps = {
   token: IToken;
   amount: string;
   txHash: string;
+  fromChain: SupportedChain;
   toChain: SupportedChain;
 }
 
-const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ token, amount, txHash, toChain }) => {
-  const _toChain = toChain === SupportedChain.Eth ? 'Ethereum' : 'Gravity Bridge';
-  const message = `Successfully transferred ${amount} ${token.erc20?.symbol} to ${_toChain}`;
-  const explorerLink = toChain === SupportedChain.Eth ? `${GRAVITY_BRIDGE_TX_EXPLORER}/${txHash}` : `${ETH_TX_EXPLORER}/${txHash}`;
+const TxSuccessToast: React.FC<TxSuccessToastProps> = ({ token, amount, txHash, fromChain, toChain }) => {
+  const tokenSymbol = token?.erc20?.symbol || token?.cosmos?.symbol || 'Unknown Token';
+  const message = `Your ${amount} ${tokenSymbol} are now in the queue and will be relayed to ${chainHelper.getChainName(toChain)} soon.`;
+  const explorerLink = `${chainHelper.getExplorerLink(fromChain)}/${txHash}`;
   return (
     <>
       <p className="toast-message">{message}</p>

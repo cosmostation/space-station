@@ -1,92 +1,73 @@
 import Big from 'big.js';
-import { cosmos } from 'constants/gravity-bridge-v1.2.1';
+import { cosmos } from 'constants/cosmos-v0.44.5';
 import _ from 'lodash';
 import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
 import gravityBridgeMessageService from 'services/cosmos-tx/gravity-bridge-message-service';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import ethWalletManger from 'services/eth-wallet/eth-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
-import { Fee, IERC20Token, IToken, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
+import typeHelper from 'services/util/type-helper';
+import { Fee, IERC20Token, ITransfer, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
 
 const logger = loggerFactory.getLogger('[GravityBridgeTransferer]');
 
 const CONTRACTS = {
-  [SupportedEthChain.Eth]: '0xa4108aA1Ec4967F8b52220a4f7e94A8201F2D906',
-  [SupportedEthChain.Goerli]: '0xace45Cd2d490a0A180e50144D8dd0c7EB9A4215f'
+  [SupportedEthChain.Eth]: '0xa4108aA1Ec4967F8b52220a4f7e94A8201F2D906'
 };
 
-function isGravityBridgeTransfer (from: SupportedChain, to: SupportedChain, token: IToken): boolean {
-  const isSupportedChains = (from === SupportedChain.GravityBridge && (to === SupportedChain.Eth || to === SupportedChain.Goerli)) ||
-    (to === SupportedChain.GravityBridge && (from === SupportedChain.Eth || from === SupportedChain.Goerli));
-  return isSupportedChains && token.isErc20;
+function isGravityBridgeTransfer (from: SupportedChain, to: SupportedChain): boolean {
+  return (from === SupportedChain.GravityBridge && (to === SupportedChain.Eth)) ||
+    (to === SupportedChain.GravityBridge && (from === SupportedChain.Eth));
 }
 
-async function transfer (
-  from: SupportedChain,
-  to: SupportedChain,
-  fromAddress: string,
-  toAddress: string,
-  token: IERC20Token,
-  amount: string,
-  fee?: Fee
-): Promise<string> {
-  logger.info(
-    `[transfer] sending ERC20 token to ${to}`,
-    'from address:', fromAddress,
-    'to address:', toAddress,
-    'token:', token,
-    'amount:',
-    amount
-  );
+async function transfer (entity: ITransfer): Promise<string> {
+  logger.info('[transfer] Entity:', entity);
 
-  if (to === SupportedChain.GravityBridge) {
-    if (!isSupportedEthChain(from)) {
-      const errorMessage = `Transferring from ${from} is not supported on Gravity Bridge!`;
+  if (entity.toChain === SupportedChain.GravityBridge) {
+    if (!typeHelper.isSupportedEthChain(entity.fromChain)) {
+      const errorMessage = `Transferring from ${entity.fromChain} is not supported on Gravity Bridge!`;
       logger.error('[transfer]', errorMessage);
       throw new Error(errorMessage);
     }
-    return transferToGravityBridge(from, fromAddress, toAddress, token, amount);
-  } else if (from === SupportedChain.GravityBridge) {
-    if (!isSupportedEthChain(to)) {
-      const errorMessage = `Transferring to ${to} is not supported on Gravity Bridge!`;
+    return transferToGravityBridge(entity);
+  } else if (entity.fromChain === SupportedChain.GravityBridge) {
+    if (!typeHelper.isSupportedEthChain(entity.toChain)) {
+      const errorMessage = `Transferring to ${entity.toChain} is not supported on Gravity Bridge!`;
       logger.error('[transfer]', errorMessage);
       throw new Error(errorMessage);
     }
-    return transferFromGravityBridge(to, fromAddress, toAddress, token, amount, fee);
+    return transferFromGravityBridge(entity);
   } else {
-    const errorMessage = `Transferring to ${to} is not supported on Eth`;
+    const errorMessage = `Transferring to ${entity.toChain} is not supported on Eth`;
     logger.error('[transfer]', errorMessage);
     throw new Error(errorMessage);
   }
 }
 
-async function transferToGravityBridge (
-  from: SupportedEthChain,
-  fromAddress: string,
-  toAddress: string,
-  token: IERC20Token,
-  amount: string
-): Promise<string> {
-  logger.info(
-    `[transferToGravityBridge] sending ERC20 token from ${from} to Gravity Bridge`,
-    'from address:', fromAddress,
-    'to address:', toAddress,
-    'token:', token,
-    'amount:', amount
-  );
-  if (isSupportedEthChain(from)) {
-    const web3 = await ethWalletManger.getWeb3(from);
+async function transferToGravityBridge (entity: ITransfer): Promise<string> {
+  logger.info('[transferToGravityBridge] Entity:', entity);
+
+  if (entity.token.erc20 === undefined) {
+    const errorMessage = 'Gravity Transferer only allow ERC20 token!';
+    logger.error('[transferToGravityBridge]', errorMessage);
+    throw new Error(errorMessage);
+  }
+
+  if (typeHelper.isSupportedEthChain(entity.fromChain)) {
+    const web3 = await ethWalletManger.getWeb3(entity.fromChain);
     if (web3 === null) {
       const errorMessage = "Can't get web3 from current wallet!";
       logger.error('[transferToGravityBridge]', errorMessage);
       throw new Error(errorMessage);
     }
 
-    const contractAddress = CONTRACTS[from];
-    const decimal = new Big(10).pow(token.decimals);
-    const _amount = new Big(amount).times(decimal).toString();
-    await web3.approve(fromAddress, token.address, contractAddress, _amount);
-    const response = await web3.sendToCosmos(contractAddress, fromAddress, token.address, toAddress, _amount);
+    const erc20Token = entity.token.erc20;
+    const decimal = new Big(10).pow(erc20Token.decimals);
+    const _amount = new Big(entity.amount).times(decimal).toString();
+
+    const contractAddress = CONTRACTS[entity.fromChain];
+    await web3.approve(entity.fromAddress, erc20Token.address, contractAddress, _amount);
+    const response = await web3.sendToCosmos(contractAddress, entity.fromAddress, erc20Token.address, entity.toAddress, _amount);
     if (!isSendCosmosResponse(response)) {
       throw new Error('No TX hash');
     }
@@ -94,39 +75,33 @@ async function transferToGravityBridge (
     logger.info('[transferToGravityBridge] Sending succeed!', 'TX hash:', response.transactionHash);
     return response.transactionHash;
   } else {
-    const errorMessage = `Transferring from ${from} is not supported on Gravity Bridge`;
+    const errorMessage = `Transferring from ${entity.fromChain} is not supported on Gravity Bridge`;
     logger.error('[transferToGravityBridge]', errorMessage);
     throw new Error(errorMessage);
   }
 }
 
-async function transferFromGravityBridge (
-  to: SupportedEthChain,
-  fromAddress: string,
-  toAddress: string,
-  token: IERC20Token,
-  amount: string,
-  fee?: Fee
-): Promise<string> {
-  logger.info(
-    `[transferFromGravityBridge] Sending to ${to}...`,
-    'eth address:', toAddress,
-    'token:', token,
-    'amount:', amount,
-    'fee:', fee
-  );
+async function transferFromGravityBridge (entity: ITransfer): Promise<string> {
+  logger.info('[transferFromGravityBridge] Entity:', entity);
 
-  const decimal = new Big(10).pow(token.decimals);
-  const _amount = new Big(amount).times(decimal).toString();
-  const feeAmount = fee
-    ? new Big(fee.amount).times(decimal).toString()
+  if (entity.token.erc20 === undefined) {
+    const errorMessage = 'Gravity Transferer only allow ERC20 token!';
+    logger.error('[transferFromGravityBridge]', errorMessage);
+    throw new Error(errorMessage);
+  }
+
+  const erc20Token = entity.token.erc20;
+  const decimal = new Big(10).pow(erc20Token.decimals);
+  const _amount = new Big(entity.amount).times(decimal).toString();
+  const feeAmount = entity.bridgeFee
+    ? new Big(entity.bridgeFee.amount).times(decimal).toString()
     : '0';
   const message = gravityBridgeMessageService.createSendToEthereumMessage(
-    fromAddress,
-    toAddress,
-    token,
+    entity.fromAddress,
+    entity.toAddress,
+    erc20Token,
     _amount,
-    token,
+    erc20Token,
     feeAmount
   );
 
@@ -137,10 +112,6 @@ async function transferFromGravityBridge (
     txBytes,
     cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC
   );
-}
-
-function isSupportedEthChain (chain: unknown): chain is SupportedEthChain {
-  return _.includes(_.keys(CONTRACTS), chain as SupportedEthChain);
 }
 
 type sendToCosmosResponse = {

@@ -19,7 +19,6 @@ import { IToken, SupportedChain, SupportedEthChain } from 'types';
 const logger = loggerFactory.getLogger('[TokenSearcherDialog]');
 
 type TokenSearchDialogProps = {
-  open: boolean;
   fromChain: SupportedChain;
   toChain: SupportedChain;
   fromAddress?: string;
@@ -28,7 +27,7 @@ type TokenSearchDialogProps = {
   close: () => void;
 }
 
-const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromChain, toChain, fromAddress, className, select, close }) => {
+const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ fromChain, toChain, fromAddress, className, select, close }) => {
   const [searchText, setSearchText] = useState<string>('');
   const [searchedTokens, setSearchedTokens] = useState<IToken[]>([]);
   const [candidates, setCandidates] = useState<IToken[]>([]);
@@ -71,7 +70,7 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromChain
   }, [close]);
 
   return (
-    <DialogContainer open={open} close={onClose}>
+    <DialogContainer open={true} close={onClose}>
       <Box className={classNames(className, 'TokenSearchDialog')}>
         <div className="token-searcher-heading">
           <Text size="medium">Select a Token</Text>
@@ -96,15 +95,23 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ open, fromChain
             </div>)
           : (<ul className="token-candidate-list">
             {_.map(candidates, (token, i) => (
-              token.isErc20 === true
-                ? (<li className="token-list-item" key={`${token.erc20?.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
+              token.isErc20
+                ? <li className="token-list-item" key={`${token.erc20?.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
                     <img src={token.erc20?.logoURI ? token.erc20.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.erc20?.symbol} logo`}/>
                     <div>
                       <Text size="small">{token.erc20?.symbol}</Text>
                       <Text size="tiny" muted className="token-list-token-name">{token.erc20?.name}</Text>
                     </div>
-                  </li>)
-                : ''
+                  </li>
+                : token.isCosmos
+                  ? <li className="token-list-item" key={`${token.cosmos?.denom}-${i}`} onClick={onTokenSelect.bind(null, token)}>
+                      <img src={token.cosmos?.logoURI ? token.cosmos.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.cosmos?.symbol} logo`}/>
+                      <div>
+                        <Text size="small">{token.cosmos?.symbol}</Text>
+                        <Text size="tiny" muted className="token-list-token-name">{token.cosmos?.name}</Text>
+                      </div>
+                    </li>
+                  : <></>
             ))}
           </ul>)}
       </Box>

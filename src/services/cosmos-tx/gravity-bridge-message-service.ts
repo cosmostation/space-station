@@ -1,4 +1,5 @@
-import { cosmos, google, gravity } from 'constants/gravity-bridge-v1.2.1';
+import { cosmos, google } from 'constants/cosmos-v0.44.5';
+import { gravity } from 'constants/gravity-bridge-v1.2.1';
 import loggerFactory from 'services/util/logger-factory';
 import { IERC20Token } from 'types';
 

@@ -18,39 +18,19 @@ html {
 .dark {
   --app-background: url(./images/bg-dark.svg) center fixed no-repeat, linear-gradient(#000000, #000000);
   --app-font-color: var(--base-00);
-
-  --header-font-color: var(--base-00);
-  --header-base-color: var(--base-07);
-  --header-active-color: var(--base-06);
-  --header-accent-color: var(--base-05);
-
-  --token-selector-background-color: var(--base-07);
-  --token-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   --toastify-color-dark: var(--base-06);
-
   --input-color: var(--base-03);
   --input-border-color: var(--base-03);
   --input-focus-border-color: var(--base-00);
-
   --token-list-item-hover-color: var(--base-06);
 }
 
 .light {
   --app-background: url(./images/bg-light.svg) center fixed no-repeat, linear-gradient(var(--base-01), var(--base-01));
   --app-font-color: var(--base-05);
-
-  --header-font-color: var(--base-05);
-  --header-base-color: var(--base-00);
-  --header-active-color: var(--base-01);
-  --header-accent-color: var(--base-01);
-
-  --token-selector-background-color: var(--base-00);
-  --token-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-
   --input-color: var(--base-05);
   --input-border-color: var(--base-05);
   --input-focus-border-color: var(--base-05);
-
   --token-list-item-hover-color: var(--base-01);
 }
 

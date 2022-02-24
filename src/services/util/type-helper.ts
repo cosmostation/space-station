@@ -18,6 +18,10 @@ function isEthWalletType (type: string): type is EthWalletType {
   return _.includes(_.values(EthWalletType), type);
 }
 
+function isSupportedCosmosChain (chain: string): chain is SupportedCosmosChain {
+  return _.includes(_.values(SupportedCosmosChain), chain);
+}
+
 function isSupportedEthChain (chain: string): chain is SupportedEthChain {
   return _.includes(_.values(SupportedEthChain), chain);
 }
@@ -29,8 +33,7 @@ function convertErc20ToGravity (erc20Token: IERC20Token): ICosmosToken {
     name: erc20Token.name,
     denom: `gravity${erc20Token.address}`,
     logoURI: erc20Token.logoURI,
-    decimals: erc20Token.decimals,
-    isErc20: true
+    decimals: erc20Token.decimals
   };
 }
 
@@ -57,6 +60,7 @@ function isSameToken (tokenA: IToken, tokenB: IToken): boolean {
 export default {
   isCosmosWalletType,
   isEthWalletType,
+  isSupportedCosmosChain,
   isSupportedEthChain,
   convertErc20ToGravity,
   convertErc20ToToken,

@@ -7,9 +7,9 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { IToken, SupportedChain } from 'types';
 
-function showTxSuccessToast (token: IToken, amount: string, txHash: string, toChain: SupportedChain): void {
+function showTxSuccessToast (token: IToken, amount: string, txHash: string, fromChain: SupportedChain, toChain: SupportedChain): void {
   toast(
-    <TxSuccessToast token={token} amount={amount} txHash={txHash} toChain={toChain}/>,
+    <TxSuccessToast token={token} amount={amount} txHash={txHash} fromChain={fromChain} toChain={toChain}/>,
     { icon: () => <img src={SuccessIcon} alt="success" className="toast-icon"/> }
   );
 }

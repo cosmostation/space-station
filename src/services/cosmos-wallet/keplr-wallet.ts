@@ -1,12 +1,12 @@
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { Keplr, Window } from '@keplr-wallet/types';
-import { cosmos } from 'constants/gravity-bridge-v1.2.1';
+import { cosmos } from 'constants/cosmos-v0.44.5';
 import keplrChainInfo from 'constants/keplr-chain-info';
+import _ from 'lodash';
 import Long from 'long';
 import loggerFactory from 'services/util/logger-factory';
 import { AccountChangeEventHandler, DirectSignDoc, ICosmosSdkAccount, ICosmosWallet, NoKeplrWalletError } from 'types';
-import _ from 'lodash';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -44,12 +44,9 @@ async function addChain (chainId: string): Promise<void> {
   logger.info(`[addChain] Adding ${chainId}...`);
   const chainInfo = _.find(keplrChainInfo, { chainId });
   const keplr = await detectKeplrProvider();
-  if (!chainInfo) {
-    const errorMessage = `No Keplr chain info for ${chainId}!`;
-    logger.error('[addChain]', errorMessage);
-    throw new Error(errorMessage);
+  if (chainInfo) {
+    await keplr.experimentalSuggestChain(chainInfo);
   }
-  return keplr.experimentalSuggestChain(chainInfo);
 }
 
 async function sign (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {

@@ -11,26 +11,22 @@ import React, { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
-import typeHelper from 'services/util/type-helper';
-import { SupportedChain } from 'types';
+import { SupportedEthChain } from 'types';
 
 dotenv.config();
-const ethChain = SupportedChain.Eth;
 
 const App: React.FC = () => {
   const theme = useTheme();
   useEffect(() => {
     cosmosWalletManager.init();
-    if (typeHelper.isSupportedEthChain(ethChain)) {
-      ethWalletManager.init(ethChain);
-    }
+    ethWalletManager.init(SupportedEthChain.Eth);
   }, []);
 
   return (
     <div className={classNames('App', theme)}>
-      <Header theme={theme} ethChain={ethChain} />
+      <Header theme={theme}/>
       <div className="container">
-        <TransferBox theme={theme} ethChain={ethChain} />
+        <TransferBox theme={theme}/>
         <p className="mobile-guide-container">
           spacestation.zone is currently optimized<br/>
           for web view only - please access<br/>

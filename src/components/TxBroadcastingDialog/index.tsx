@@ -20,13 +20,14 @@ type TxBroadcastDialogProps = {
 }
 
 const TxConfirmDialog: React.FC<TxBroadcastDialogProps> = ({ open, className, toChain, token, amount }) => {
+  const tokenSymbol = token?.erc20?.symbol || token?.cosmos?.symbol || 'Unknown Token';
   return (
     <DialogContainer open={open} close={_.identity}>
       <Box className={classNames(className, 'TxBroadcasting')}>
         <Row className="tx-broadcasting-content">
           <CircularProgress size={80} thickness={2} className="tx-broadcasting-progress" color="inherit"/>
           <Text className="tx-broadcasting-message">
-            {`Sending ${amount} ${token?.erc20?.symbol} to ${chainHelper.getChainName(toChain)}...`}
+            {`Sending ${amount} ${tokenSymbol} to ${chainHelper.getChainName(toChain)}...`}
           </Text>
         </Row>
       </Box>
