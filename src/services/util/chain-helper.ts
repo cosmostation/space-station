@@ -1,21 +1,25 @@
 import { SupportedChain } from 'types';
 
+const nameMap: Record<SupportedChain, string> = {
+  [SupportedChain.Eth]: 'Ethereum',
+  [SupportedChain.GravityBridge]: 'Gravity Bridge',
+  [SupportedChain.Osmosis]: 'Osmosis',
+  [SupportedChain.Stargaze]: 'Stargaze'
+};
+
+const linkMap: Record<SupportedChain, string> = {
+  [SupportedChain.Eth]: 'https://etherscan.io/tx',
+  [SupportedChain.GravityBridge]: 'https://www.mintscan.io/gravity-bridge/txs',
+  [SupportedChain.Osmosis]: 'https://www.mintscan.io/osmosis/txs',
+  [SupportedChain.Stargaze]: 'https://www.mintscan.io/stargaze/txs'
+};
+
 function getChainName (chain: SupportedChain): string {
-  switch (chain) {
-    case SupportedChain.Eth: return 'Ethereum';
-    case SupportedChain.GravityBridge: return 'Gravity Bridge';
-    case SupportedChain.Osmosis: return 'Osmosis';
-    default: return 'Unsupported Chain';
-  }
+  return nameMap[chain];
 }
 
 function getExplorerLink (chain: SupportedChain): string {
-  switch (chain) {
-    case SupportedChain.Eth: return 'https://etherscan.io/tx';
-    case SupportedChain.GravityBridge: return 'https://www.mintscan.io/gravity-bridge/txs';
-    case SupportedChain.Osmosis: return 'https://www.mintscan.io/osmosis/txs';
-    default: return '';
-  }
+  return linkMap[chain];
 }
 
 export default {

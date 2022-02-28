@@ -7,8 +7,8 @@ import { IToken, SupportedChain } from 'types';
 
 const logger = loggerFactory.getLogger('[useTokenList]');
 
-export default function useTokenList (fromChain: SupportedChain, toChain: SupportedChain, searchedTokens: IToken[], address?: string): IToken[] {
-  const [tokens, setTokens] = useState<IToken[]>([]);
+export default function useTokenList (fromChain: SupportedChain, toChain: SupportedChain, searchedTokens: IToken[], address?: string): IToken[] | undefined {
+  const [tokens, setTokens] = useState<IToken[]>();
   useEffect(() => {
     if (address) {
       tokenService.getTokens(fromChain, toChain, address)

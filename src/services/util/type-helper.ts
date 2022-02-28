@@ -32,6 +32,7 @@ function convertErc20ToGravity (erc20Token: IERC20Token): ICosmosToken {
     chainId: gravityBridge.chainId,
     name: erc20Token.name,
     denom: `gravity${erc20Token.address}`,
+    symbol: erc20Token.symbol,
     logoURI: erc20Token.logoURI,
     decimals: erc20Token.decimals
   };

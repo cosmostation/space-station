@@ -15,7 +15,8 @@ export enum ThemeType {
 export enum SupportedChain {
   Eth = 'eth',
   GravityBridge = 'gravityBridge',
-  Osmosis = 'osmosis'
+  Osmosis = 'osmosis',
+  Stargaze = 'stargaze'
 }
 
 export enum SupportedEthChain {
@@ -24,7 +25,8 @@ export enum SupportedEthChain {
 
 export enum SupportedCosmosChain {
   GravityBridge = 'gravityBridge',
-  Osmosis = 'osmosis'
+  Osmosis = 'osmosis',
+  Stargaze = 'stargaze'
 }
 
 export interface IERC20Token {
@@ -34,6 +36,8 @@ export interface IERC20Token {
   readonly decimals: number;
   readonly symbol: string;
   readonly logoURI?: string;
+  balance?: string;
+  priceDenom?: string;
 }
 
 export interface ICosmosToken {
@@ -41,8 +45,10 @@ export interface ICosmosToken {
   readonly name?: string;
   readonly denom: string;
   readonly decimals: number;
-  readonly symbol?: string;
+  readonly symbol: string;
   readonly logoURI?: string;
+  balance?: string;
+  priceDenom?: string;
 }
 
 export type TokenInfo = IERC20Token | ICosmosToken;

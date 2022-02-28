@@ -1,5 +1,7 @@
 import './TokenSearchDialog.css';
 
+import CircularProgress from '@mui/material/CircularProgress';
+import Big from 'big.js';
 import classNames from 'classnames';
 import Box from 'components/Box';
 import DialogContainer from 'components/DialogContainer';
@@ -32,12 +34,21 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ fromChain, toCh
   const [searchedTokens, setSearchedTokens] = useState<IToken[]>([]);
   const [candidates, setCandidates] = useState<IToken[]>([]);
   const tokens = useTokenList(fromChain, toChain, searchedTokens, fromAddress);
+  const loading = tokens === undefined;
+
+  logger.info('Tokens: ', tokens);
 
   useEffect(() => {
-    setCandidates(tokens);
+    if (tokens) {
+      setCandidates(tokens);
+    }
   }, [tokens]);
 
   const onSearchTextChange = useCallback((event) => {
+    if (tokens === undefined) {
+      return;
+    }
+
     const searchText = _.get(event, 'target.value', '');
     setSearchText(searchText);
 
@@ -87,33 +98,53 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ fromChain, toCh
             onChange={onSearchTextChange}
           />
         </div>
-        {_.isEmpty(candidates)
-          ? (<div className="no-token-candidate">
+        { loading
+          ? <div className="no-token-candidate">
+              <CircularProgress size={40} thickness={2} className="token-loading-progress" color="inherit"/>
+            </div>
+          : <></>
+        }
+        {loading === false && _.isEmpty(candidates)
+          ? <div className="no-token-candidate">
               <WarnIcon />
-              &nbsp;&nbsp;
+                &nbsp;&nbsp;
               <Text muted size="tiny">No result found</Text>
-            </div>)
-          : (<ul className="token-candidate-list">
-            {_.map(candidates, (token, i) => (
-              token.isErc20
-                ? <li className="token-list-item" key={`${token.erc20?.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
-                    <img src={token.erc20?.logoURI ? token.erc20.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.erc20?.symbol} logo`}/>
-                    <div>
-                      <Text size="small">{token.erc20?.symbol}</Text>
-                      <Text size="tiny" muted className="token-list-token-name">{token.erc20?.name}</Text>
-                    </div>
-                  </li>
-                : token.isCosmos
-                  ? <li className="token-list-item" key={`${token.cosmos?.denom}-${i}`} onClick={onTokenSelect.bind(null, token)}>
-                      <img src={token.cosmos?.logoURI ? token.cosmos.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.cosmos?.symbol} logo`}/>
-                      <div>
-                        <Text size="small">{token.cosmos?.symbol}</Text>
-                        <Text size="tiny" muted className="token-list-token-name">{token.cosmos?.name}</Text>
+            </div>
+          : <></>
+        }
+        {loading === false && !_.isEmpty(candidates)
+          ? <ul className="token-candidate-list">
+              {_.map(candidates, (token, i) => (
+                token.isErc20
+                  ? <li className="token-list-item" key={`${token.erc20?.symbol}-${i}`} onClick={onTokenSelect.bind(null, token)}>
+                      <div className="token-list-left">
+                        <img src={token.erc20?.logoURI ? token.erc20.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.erc20?.symbol} logo`}/>
+                        <div>
+                          <Text size="small">{token.erc20?.symbol}</Text>
+                          <Text size="tiny" muted className="token-list-token-name">{token.erc20?.name}</Text>
+                        </div>
+                      </div>
+                      <div className="token-list-right">
+                        <Text size="small" muted >{Big(token.erc20?.balance || '0').round(6, Big.roundDown).toString()}</Text>
                       </div>
                     </li>
-                  : <></>
-            ))}
-          </ul>)}
+                  : token.isCosmos
+                    ? <li className="token-list-item" key={`${token.cosmos?.denom}-${i}`} onClick={onTokenSelect.bind(null, token)}>
+                        <div className="token-list-left">
+                          <img src={token.cosmos?.logoURI ? token.cosmos.logoURI : defaultTokenIcon} className="token-list-item-icon" alt={`${token.cosmos?.symbol} logo`}/>
+                          <div>
+                            <Text size="small">{token.cosmos?.symbol}</Text>
+                            <Text size="tiny" muted className="token-list-token-name">{token.cosmos?.name}</Text>
+                          </div>
+                        </div>
+                        <div className="token-list-right">
+                          <Text size="small" muted >{Big(token.cosmos?.balance || '0').round(6, Big.roundDown).toString()}</Text>
+                        </div>
+                      </li>
+                    : <></>
+              ))}
+            </ul>
+          : <></>}
       </Box>
     </DialogContainer>
   );

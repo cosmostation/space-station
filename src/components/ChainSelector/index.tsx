@@ -12,6 +12,7 @@ import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
 import EthChainLogo from 'images/eth-chain-logo.png';
 import GbChainLogo from 'images/gb-chain-logo.png';
 import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
+import StargazeChainLogo from 'images/stargaze-chain-logo.png';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
@@ -55,7 +56,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Gravity Bridge',
     image: GbChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
-    toChains: [SupportedChain.Eth, SupportedChain.Osmosis],
+    toChains: [SupportedChain.Eth, SupportedChain.Osmosis, SupportedChain.Stargaze],
     head: 8,
     tail: 8
   },
@@ -63,6 +64,15 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Osmosis,
     name: 'Osmosis',
     image: OsmosisChainLogo,
+    supportedWallets: [CosmosWalletType.Keplr],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Stargaze]: {
+    chain: SupportedChain.Stargaze,
+    name: 'Stargaze',
+    image: StargazeChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
@@ -84,7 +94,7 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
   const toAddress = getAddress(toAccount, toChainInfo);
 
   useEffect(() => {
-    if (!_.includes(fromChainInfo.toChains, toChain) && selectToChain) {
+    if (!_.includes(fromChainInfo.toChains, toChain)) {
       selectToChain(fromChainInfo.toChains[0]);
     }
   }, [fromChain, toChain]);

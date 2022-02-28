@@ -7,41 +7,43 @@ import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import ethWalletManger from 'services/eth-wallet/eth-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
-import { Fee, IERC20Token, ITransfer, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
+import { Fee, IToken, ITransfer, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
 
 const logger = loggerFactory.getLogger('[GravityBridgeTransferer]');
 
-const CONTRACTS = {
+const contracts = {
   [SupportedEthChain.Eth]: '0xa4108aA1Ec4967F8b52220a4f7e94A8201F2D906'
 };
 
+const fromToMap: { [key in SupportedChain]?: { [key in SupportedChain]?: (transfer: ITransfer) => Promise<string> } } = {
+  [SupportedChain.GravityBridge]: {
+    [SupportedChain.Eth]: transferFromGravityBridge
+  },
+  [SupportedChain.Eth]: {
+    [SupportedChain.GravityBridge]: transferToGravityBridge
+  }
+};
+
+type SendToCosmosResponse = {
+  transactionHash: string
+};
+
 function isGravityBridgeTransfer (from: SupportedChain, to: SupportedChain): boolean {
-  return (from === SupportedChain.GravityBridge && (to === SupportedChain.Eth)) ||
-    (to === SupportedChain.GravityBridge && (from === SupportedChain.Eth));
+  const func = _.get(fromToMap, [from, to]);
+  return func !== undefined;
 }
 
 async function transfer (entity: ITransfer): Promise<string> {
   logger.info('[transfer] Entity:', entity);
 
-  if (entity.toChain === SupportedChain.GravityBridge) {
-    if (!typeHelper.isSupportedEthChain(entity.fromChain)) {
-      const errorMessage = `Transferring from ${entity.fromChain} is not supported on Gravity Bridge!`;
-      logger.error('[transfer]', errorMessage);
-      throw new Error(errorMessage);
-    }
-    return transferToGravityBridge(entity);
-  } else if (entity.fromChain === SupportedChain.GravityBridge) {
-    if (!typeHelper.isSupportedEthChain(entity.toChain)) {
-      const errorMessage = `Transferring to ${entity.toChain} is not supported on Gravity Bridge!`;
-      logger.error('[transfer]', errorMessage);
-      throw new Error(errorMessage);
-    }
-    return transferFromGravityBridge(entity);
-  } else {
-    const errorMessage = `Transferring to ${entity.toChain} is not supported on Eth`;
+  const transferFunc = _.get(fromToMap, [entity.fromChain, entity.toChain]);
+  if (!transferFunc) {
+    const errorMessage = `Transferring from ${entity.fromChain} to ${entity.toChain} is not supported on Gravity Bridge!`;
     logger.error('[transfer]', errorMessage);
     throw new Error(errorMessage);
   }
+
+  return transferFunc(entity);
 }
 
 async function transferToGravityBridge (entity: ITransfer): Promise<string> {
@@ -65,7 +67,7 @@ async function transferToGravityBridge (entity: ITransfer): Promise<string> {
     const decimal = new Big(10).pow(erc20Token.decimals);
     const _amount = new Big(entity.amount).times(decimal).toString();
 
-    const contractAddress = CONTRACTS[entity.fromChain];
+    const contractAddress = contracts[entity.fromChain];
     await web3.approve(entity.fromAddress, erc20Token.address, contractAddress, _amount);
     const response = await web3.sendToCosmos(contractAddress, entity.fromAddress, erc20Token.address, entity.toAddress, _amount);
     if (!isSendCosmosResponse(response)) {
@@ -81,30 +83,10 @@ async function transferToGravityBridge (entity: ITransfer): Promise<string> {
   }
 }
 
-async function transferFromGravityBridge (entity: ITransfer): Promise<string> {
-  logger.info('[transferFromGravityBridge] Entity:', entity);
+async function transferFromGravityBridge (transfer: ITransfer): Promise<string> {
+  logger.info('[transferFromGravityBridge] Entity:', transfer);
 
-  if (entity.token.erc20 === undefined) {
-    const errorMessage = 'Gravity Transferer only allow ERC20 token!';
-    logger.error('[transferFromGravityBridge]', errorMessage);
-    throw new Error(errorMessage);
-  }
-
-  const erc20Token = entity.token.erc20;
-  const decimal = new Big(10).pow(erc20Token.decimals);
-  const _amount = new Big(entity.amount).times(decimal).toString();
-  const feeAmount = entity.bridgeFee
-    ? new Big(entity.bridgeFee.amount).times(decimal).toString()
-    : '0';
-  const message = gravityBridgeMessageService.createSendToEthereumMessage(
-    entity.fromAddress,
-    entity.toAddress,
-    erc20Token,
-    _amount,
-    erc20Token,
-    feeAmount
-  );
-
+  const message = gravityBridgeMessageService.createSendToEthereumMessage(transfer);
   const signature = await cosmosWalletManager.sign(SupportedCosmosChain.GravityBridge, [message]);
   const txBytes = cosmosTxService.createTxRawBytes(signature);
   return cosmosWalletManager.broadcast(
@@ -114,26 +96,34 @@ async function transferFromGravityBridge (entity: ITransfer): Promise<string> {
   );
 }
 
-type sendToCosmosResponse = {
-  transactionHash: string
-};
-
-function isSendCosmosResponse (response: unknown): response is sendToCosmosResponse {
-  return (response as sendToCosmosResponse).transactionHash !== undefined;
+function isSendCosmosResponse (response: unknown): response is SendToCosmosResponse {
+  return (response as SendToCosmosResponse).transactionHash !== undefined;
 }
 
-function getFees (fromChain: SupportedChain, token: IERC20Token, tokenPrice: string): Fee[] {
+function getFees (fromChain: SupportedChain, token: IToken, tokenPrice: string): Fee[] {
   if (fromChain === SupportedChain.GravityBridge) {
-    return _.map([10, 200, 500], (usdFee, i) => ({
-      id: i,
-      label: getFeeLabel(usdFee),
-      denom: token.symbol,
-      amount: Big(usdFee).div(tokenPrice).round(6, Big.roundDown).toString(),
-      amountInCurrency: usdFee.toString()
-    }));
-  } else {
-    return [];
+    if (token.erc20) {
+      const erc20Token = token.erc20;
+      return _.map([10, 200, 500], (usdFee, i) => ({
+        id: i,
+        label: getFeeLabel(usdFee),
+        denom: erc20Token.symbol,
+        amount: Big(usdFee).div(tokenPrice).round(6, Big.roundDown).toString(),
+        amountInCurrency: usdFee.toString()
+      }));
+    } else if (token.cosmos) {
+      const cosmosToken = token.cosmos;
+      return _.map([10, 200, 500], (usdFee, i) => ({
+        id: i,
+        label: getFeeLabel(usdFee),
+        denom: cosmosToken.symbol,
+        amount: Big(usdFee).div(tokenPrice).round(6, Big.roundDown).toString(),
+        amountInCurrency: usdFee.toString()
+      }));
+    }
   }
+
+  return [];
 }
 
 function getFeeLabel (usdFee: number): string {
