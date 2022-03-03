@@ -22,13 +22,15 @@ const walletMap: Record<CosmosWalletType, ICosmosWallet> = {
 const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefined> = {
   [SupportedCosmosChain.GravityBridge]: undefined,
   [SupportedCosmosChain.Osmosis]: undefined,
-  [SupportedCosmosChain.Stargaze]: undefined
+  [SupportedCosmosChain.Stargaze]: undefined,
+  [SupportedCosmosChain.Cosmos]: undefined
 };
 
 const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
   [SupportedCosmosChain.GravityBridge]: undefined,
   [SupportedCosmosChain.Osmosis]: undefined,
-  [SupportedCosmosChain.Stargaze]: undefined
+  [SupportedCosmosChain.Stargaze]: undefined,
+  [SupportedCosmosChain.Cosmos]: undefined
 };
 
 async function init (): Promise<void> {
