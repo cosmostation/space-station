@@ -22,5 +22,23 @@
     "symbol": "USDC",
     "decimals": 6,
     "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389"
+  },
+  {
+    "chainId": "0x1",
+    "address": "0xdaf0b40b961CA51Fc914fbabdA8E779619576caD",
+    "name": "Cosmos Atom",
+    "symbol": "ATOM",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-cosmos.svg",
+    "priceDenom": "uatom"
+  },
+  {
+    "chainId": "0x1",
+    "address": "0x4547254E6E3195cE57Bc50352193A25c2F4B8FCf",
+    "name": "Stargaze STARS",
+    "symbol": "STARS",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-stargaze.svg",
+    "priceDenom": "ustars"
   }
 ]

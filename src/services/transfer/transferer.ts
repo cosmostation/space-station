@@ -5,9 +5,7 @@ import ibcTransferer from './ibc-transferer';
 
 async function transfer (entity: ITransfer): Promise<string> {
   if (gravityBridgeTransferer.isGravityBridgeTransfer(entity.fromChain, entity.toChain)) {
-    if (entity.token.erc20) {
-      return gravityBridgeTransferer.transfer(entity);
-    }
+    return gravityBridgeTransferer.transfer(entity);
   } else if (ibcTransferer.isIbcTransfer(entity.fromChain, entity.toChain)) {
     if (entity.token.cosmos) {
       return ibcTransferer.transfer(entity);
@@ -25,9 +23,7 @@ function needBridgeFee (fromChain: SupportedChain, toChain: SupportedChain): boo
 
 function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: IToken, tokenPrice: string): Fee[] {
   if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain)) {
-    if (token.erc20) {
-      return gravityBridgeTransferer.getFees(fromChain, token.erc20, tokenPrice);
-    }
+    return gravityBridgeTransferer.getFees(fromChain, token, tokenPrice);
   }
   return [];
 }

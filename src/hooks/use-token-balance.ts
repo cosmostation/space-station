@@ -1,3 +1,4 @@
+import Big from 'big.js';
 import { useEffect, useState } from 'react';
 import tokenService from 'services/token-service';
 import loggerFactory from 'services/util/logger-factory';
@@ -13,10 +14,11 @@ export default function useTokenBalance (chain: SupportedChain, address?: string
     } else {
       logger.info('chain:', chain, 'address:', address, 'token:', token);
       const decimals = token?.erc20?.decimals || token?.cosmos?.decimals || 6;
-      tokenService.getTokenBalance(chain, token, address, decimals)
+      tokenService.getTokenBalance(chain, token, address)
         .then((balance: string) => {
-          logger.info('Balance: ' + balance);
-          setBalance(balance);
+          const _balance = Big(balance).round(decimals, Big.roundDown).toString();
+          logger.info('Balance: ', _balance);
+          setBalance(_balance);
         }).catch((error) => {
           logger.error(error);
           setBalance('0');

@@ -5,7 +5,8 @@ const gravityBridge: CosmosChainInfo = {
   lcd: 'https://lcd-gravity-bridge.cosmostation.io',
   denom: 'ugraviton',
   ibcChannels: {
-    [SupportedCosmosChain.Osmosis]: 'channel-10'
+    [SupportedCosmosChain.Osmosis]: 'channel-10',
+    [SupportedCosmosChain.Stargaze]: 'channel-7'
   }
 };
 
@@ -18,9 +19,19 @@ const osmosis: CosmosChainInfo = {
   }
 };
 
+const stargaze: CosmosChainInfo = {
+  chainId: 'stargaze-1',
+  lcd: 'https://lcd-stargaze.cosmostation.io',
+  denom: 'ustars',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-6'
+  }
+};
+
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
-  osmosis
+  osmosis,
+  stargaze
 };
 
 export default chainInfoMap;

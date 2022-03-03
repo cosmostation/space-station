@@ -21,12 +21,14 @@ const walletMap: Record<CosmosWalletType, ICosmosWallet> = {
 
 const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefined> = {
   [SupportedCosmosChain.GravityBridge]: undefined,
-  [SupportedCosmosChain.Osmosis]: undefined
+  [SupportedCosmosChain.Osmosis]: undefined,
+  [SupportedCosmosChain.Stargaze]: undefined
 };
 
-const chinWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
+const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
   [SupportedCosmosChain.GravityBridge]: undefined,
-  [SupportedCosmosChain.Osmosis]: undefined
+  [SupportedCosmosChain.Osmosis]: undefined,
+  [SupportedCosmosChain.Stargaze]: undefined
 };
 
 async function init (): Promise<void> {
@@ -135,7 +137,7 @@ function getWalletByChain (chain: SupportedCosmosChain): ICosmosWallet | undefin
 function setWallet (chain: SupportedCosmosChain, walletType: CosmosWalletType): void {
   const wallet = getWallet(walletType);
   chainWalletTypeMap[chain] = walletType;
-  chinWalletMap[chain] = wallet;
+  chainWalletMap[chain] = wallet;
   logger.info(chain, walletType);
   window.localStorage.setItem(chain, walletType);
 }

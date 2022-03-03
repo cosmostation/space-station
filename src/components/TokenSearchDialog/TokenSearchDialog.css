@@ -1,9 +1,13 @@
 .Box.TokenSearchDialog {
   width: 380px;
-  height: 80vh;
+  height: fit-content;
   max-height: 694px;
   margin-top: 90px;
   z-index: 100;
+}
+
+.token-loading-progress {
+  color: var(--blue);
 }
 
 .token-searcher-heading {
@@ -33,7 +37,7 @@
 }
 
 .no-token-candidate {
-  height: calc(100% - 48px - 40px - 24px);
+  height: 190px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,7 +45,7 @@
 
 .token-candidate-list {
   overflow-y: auto;
-  height: calc(100% - 48px - 40px - 24px);
+  max-height: calc(694px - 48px - 40px - 24px);
 }
 
 .token-list-item {
@@ -49,8 +53,13 @@
   padding: 0 12px;
   border-radius: 8px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   cursor: pointer;
+}
+
+.token-list-left {
+  display: flex;
 }
 
 .token-list-item:hover {

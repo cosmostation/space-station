@@ -25,14 +25,21 @@ type FeeSelectorProps = {
   selectedFee?: Fee
 }
 
+function getPriceDenom (selectedToken: IToken): string {
+  if (selectedToken.erc20) {
+    return selectedToken.erc20.priceDenom || selectedToken.erc20.symbol;
+  } else if (selectedToken.cosmos) {
+    return selectedToken.cosmos.priceDenom || selectedToken.cosmos.denom;
+  }
+  return '';
+}
+
 const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedToken, currency, amount, balance, select, selectedFee }) => {
-  const denom = selectedToken?.isErc20
-    ? selectedToken.erc20?.symbol
-    : selectedToken?.cosmos?.denom;
-  const tokenPrice = usePrice(currency, denom);
+  const priceDenom = getPriceDenom(selectedToken);
+  const tokenPrice = usePrice(currency, priceDenom);
   const _tokenPrice = new Big(tokenPrice?.current_price || '1').toString();
   const fees = transferer.getFees(fromChain, toChain, selectedToken, _tokenPrice);
-  logger.info('Fees:', fees);
+  logger.info('denom:', priceDenom, 'Fees:', fees);
 
   useEffect(() => {
     if (selectedFee) {
