@@ -9,6 +9,7 @@ import useAccount from 'hooks/use-account';
 import useConnectedWallet from 'hooks/use-connected-wallet';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
+import CosmosChainLogo from 'images/cosmos-chain-logo.png';
 import EthChainLogo from 'images/eth-chain-logo.png';
 import GbChainLogo from 'images/gb-chain-logo.png';
 import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
@@ -64,6 +65,15 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Osmosis,
     name: 'Osmosis',
     image: OsmosisChainLogo,
+    supportedWallets: [CosmosWalletType.Keplr],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Cosmos]: {
+    chain: SupportedChain.Cosmos,
+    name: 'Cosmos',
+    image: CosmosChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.GravityBridge],
     head: 8,

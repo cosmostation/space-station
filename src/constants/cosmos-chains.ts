@@ -6,7 +6,17 @@ const gravityBridge: CosmosChainInfo = {
   denom: 'ugraviton',
   ibcChannels: {
     [SupportedCosmosChain.Osmosis]: 'channel-10',
-    [SupportedCosmosChain.Stargaze]: 'channel-7'
+    [SupportedCosmosChain.Stargaze]: 'channel-7',
+    [SupportedCosmosChain.Cosmos]: 'channel-17'
+  }
+};
+
+const cosmos: CosmosChainInfo = {
+  chainId: 'cosmoshub-4',
+  lcd: 'https://lcd-cosmos.cosmostation.io',
+  denom: 'uatom',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-281'
   }
 };
 
@@ -30,6 +40,7 @@ const stargaze: CosmosChainInfo = {
 
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
+  cosmos,
   osmosis,
   stargaze
 };

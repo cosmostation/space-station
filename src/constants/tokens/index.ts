@@ -1,3 +1,4 @@
+import cosmosToGravityBridgeTokens from 'constants/tokens/cosmos-gb-tokens.json';
 import gravityBridgeToEthTokens from 'constants/tokens/gb-eth-tokens.json';
 import gravityBridgeToOsmosisTokens from 'constants/tokens/gb-osmosis-tokens.json';
 import gravityBridgeToStargazeTokens from 'constants/tokens/gb-stargaze-tokens.json';
@@ -14,7 +15,7 @@ export type CosmosTokenWithoutChainId = {
   priceDenom?: string;
 }
 
-export const ibcTokenFromToMap: { [key in SupportedChain]?: { [key in SupportedChain]?: Record<string, CosmosTokenWithoutChainId> } } = {
+export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]?: Record<string, CosmosTokenWithoutChainId> }> = {
   [SupportedChain.GravityBridge]: {
     [SupportedChain.Eth]: gravityBridgeToEthTokens,
     [SupportedChain.Osmosis]: gravityBridgeToOsmosisTokens,
@@ -25,5 +26,9 @@ export const ibcTokenFromToMap: { [key in SupportedChain]?: { [key in SupportedC
   },
   [SupportedChain.Osmosis]: {
     [SupportedChain.GravityBridge]: osmosisToGravityBridgeTokens
-  }
+  },
+  [SupportedChain.Cosmos]: {
+    [SupportedChain.GravityBridge]: cosmosToGravityBridgeTokens
+  },
+  [SupportedChain.Eth]: {}
 };
