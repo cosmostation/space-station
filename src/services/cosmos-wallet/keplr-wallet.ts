@@ -17,7 +17,16 @@ const logger = loggerFactory.getLogger('[KelprWallet]');
 const keplr = new Promise<Keplr>((resolve, reject) => {
   window.onload = () : void => {
     const _window = window as Window;
-    _window.keplr ? resolve(_window.keplr) : reject(new NoKeplrWalletError("Can't find Keplr wallet."));
+    if (_window.keplr) {
+      _window.keplr.defaultOptions = {
+        sign: {
+          preferNoSetFee: true
+        }
+      };
+    }
+    _window.keplr
+      ? resolve(_window.keplr)
+      : reject(new NoKeplrWalletError("Can't find Keplr wallet."));
   };
 });
 
