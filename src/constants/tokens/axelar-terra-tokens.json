@@ -1,0 +1,9 @@
+{
+  "ibc/4627AD2524E3E0523047E35BB76CC90E37D9D57ACF14F0FCBCEB2480705F3CB8": {
+    "name": "Luna",
+    "denom": "ibc/4627AD2524E3E0523047E35BB76CC90E37D9D57ACF14F0FCBCEB2480705F3CB8",
+    "symbol": "LUNA",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-stargaze.svg"
+  }
+}

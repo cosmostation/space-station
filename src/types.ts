@@ -17,7 +17,9 @@ export enum SupportedChain {
   GravityBridge = 'gravityBridge',
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
-  Cosmos = 'cosmos'
+  Cosmos = 'cosmos',
+  Axelar = 'axelar',
+  Terra = 'terra'
 }
 
 export enum SupportedEthChain {
@@ -28,7 +30,9 @@ export enum SupportedCosmosChain {
   GravityBridge = 'gravityBridge',
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
-  Cosmos = 'cosmos'
+  Cosmos = 'cosmos',
+  Axelar = 'axelar',
+  Terra = 'terra'
 }
 
 export interface IERC20Token {

@@ -87,6 +87,24 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     toChains: [SupportedChain.GravityBridge],
     head: 8,
     tail: 8
+  },
+  [SupportedChain.Axelar]: {
+    chain: SupportedChain.Axelar,
+    name: 'Axelar',
+    image: StargazeChainLogo,
+    supportedWallets: [CosmosWalletType.Keplr],
+    toChains: [SupportedChain.Terra],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Terra]: {
+    chain: SupportedChain.Terra,
+    name: 'Terra',
+    image: StargazeChainLogo,
+    supportedWallets: [CosmosWalletType.Keplr],
+    toChains: [SupportedChain.Axelar],
+    head: 8,
+    tail: 8
   }
 };
 

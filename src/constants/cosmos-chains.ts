@@ -38,11 +38,31 @@ const stargaze: CosmosChainInfo = {
   }
 };
 
+const axelar: CosmosChainInfo = {
+  chainId: 'axelar-dojo-1',
+  lcd: 'https://lcd-axelar.cosmostation.io',
+  denom: 'uaxl',
+  ibcChannels: {
+    [SupportedCosmosChain.Terra]: 'channel-0'
+  }
+};
+
+const terra: CosmosChainInfo = {
+  chainId: 'columbus-5',
+  lcd: 'https://lcd.terra.dev',
+  denom: 'uluna',
+  ibcChannels: {
+    [SupportedCosmosChain.Axelar]: 'channel-19'
+  }
+};
+
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
   cosmos,
   osmosis,
-  stargaze
+  stargaze,
+  axelar,
+  terra
 };
 
 export default chainInfoMap;
