@@ -17,7 +17,8 @@ export enum SupportedChain {
   GravityBridge = 'gravityBridge',
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
-  Cosmos = 'cosmos'
+  Cosmos = 'cosmos',
+  Iris = 'iris'
 }
 
 export enum SupportedEthChain {
@@ -28,7 +29,8 @@ export enum SupportedCosmosChain {
   GravityBridge = 'gravityBridge',
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
-  Cosmos = 'cosmos'
+  Cosmos = 'cosmos',
+  Iris = 'iris'
 }
 
 export interface IERC20Token {
@@ -174,7 +176,7 @@ export interface PriceInfo {
   prices: Price[]
 }
 
-export interface Fee {
+export interface BridgeFee {
   id: number;
   label: string;
   denom: string;
@@ -189,7 +191,7 @@ export interface ITransfer {
   fromAddress: string,
   toAddress: string,
   amount: string,
-  bridgeFee?: Fee
+  bridgeFee?: BridgeFee
 }
 
 export type ChainViewInfo = {

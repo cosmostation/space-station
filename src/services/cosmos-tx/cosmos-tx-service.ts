@@ -9,6 +9,7 @@ function createTxBody (messages: google.protobuf.IAny[], memo = ''): cosmos.tx.v
 function getAuthInfo (
   publicKey: Uint8Array,
   sequence: Long,
+  feeDenom: string,
   feeAmount: string,
   gasLimit: Long,
   mode: cosmos.tx.signing.v1beta1.SignMode
@@ -26,7 +27,7 @@ function getAuthInfo (
 
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: [{
-      denom: 'ugraviton',
+      denom: feeDenom,
       amount: feeAmount
     }],
     gas_limit: gasLimit
@@ -42,14 +43,7 @@ function getSignDoc (
   accountNumber: Long
 ): cosmos.tx.v1beta1.SignDoc {
   const bodyBytes = cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
-  let authInfoBytes;
-  try {
-    authInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('!!!!!!!authInfoBytes:', error);
-    throw error;
-  }
+  const authInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
 
   const signDoc = new cosmos.tx.v1beta1.SignDoc({
     chain_id: chainId,
