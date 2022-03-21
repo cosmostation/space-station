@@ -1,5 +1,5 @@
 import cosmosToGravityBridgeTokens from 'constants/tokens/cosmos-gb-tokens.json';
-import gravityBridgeToEthTokens from 'constants/tokens/gb-eth-tokens.json';
+import gravityBridgeToEthTokens from 'constants/tokens/gb-eth-tokens';
 import gravityBridgeToOsmosisTokens from 'constants/tokens/gb-osmosis-tokens.json';
 import gravityBridgeToStargazeTokens from 'constants/tokens/gb-stargaze-tokens.json';
 import osmosisToGravityBridgeTokens from 'constants/tokens/osmosis-gb-tokens.json';

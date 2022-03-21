@@ -58,7 +58,12 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Gravity Bridge',
     image: GbChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
-    toChains: [SupportedChain.Eth, SupportedChain.Osmosis, SupportedChain.Stargaze],
+    toChains: [
+      SupportedChain.Eth,
+      SupportedChain.Osmosis,
+      SupportedChain.Stargaze,
+      SupportedChain.Cheqd
+    ],
     head: 8,
     tail: 8
   },

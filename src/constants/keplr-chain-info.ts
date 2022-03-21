@@ -4,7 +4,7 @@ const gravityBridge: ChainInfo = {
   chainName: 'GravityBridge',
   chainId: 'gravity-bridge-3',
   rest: 'https://lcd-gravity-bridge.cosmostation.io',
-  rpc: 'http://220.76.21.184:20302',
+  rpc: 'https://lcd-gravity-bridge.cosmostation.io:26657',
   stakeCurrency: {
     coinDenom: 'GRAVITON',
     coinMinimalDenom: 'ugraviton',
@@ -78,9 +78,9 @@ const cheqd: ChainInfo = {
     }
   ],
   gasPriceStep: {
-    low: 0,
-    average: 0,
-    high: 0
+    low: 25,
+    average: 30,
+    high: 50
   }
 };
 

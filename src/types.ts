@@ -181,7 +181,7 @@ export interface PriceInfo {
   prices: Price[]
 }
 
-export interface Fee {
+export interface BridgeFee {
   id: number;
   label: string;
   denom: string;
@@ -196,7 +196,7 @@ export interface ITransfer {
   fromAddress: string,
   toAddress: string,
   amount: string,
-  bridgeFee?: Fee
+  bridgeFee?: BridgeFee
 }
 
 export type ChainViewInfo = {

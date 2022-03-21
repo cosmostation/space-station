@@ -9,6 +9,7 @@ function createTxBody (messages: google.protobuf.IAny[], memo = ''): cosmos.tx.v
 function getAuthInfo (
   publicKey: Uint8Array,
   sequence: Long,
+  feeDenom: string,
   feeAmount: string,
   gasLimit: Long,
   mode: cosmos.tx.signing.v1beta1.SignMode
@@ -26,7 +27,7 @@ function getAuthInfo (
 
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: [{
-      denom: 'ugraviton',
+      denom: feeDenom,
       amount: feeAmount
     }],
     gas_limit: gasLimit
