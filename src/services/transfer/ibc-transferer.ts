@@ -6,7 +6,7 @@ import ibcMessageService from 'services/cosmos-tx/ibc-message-service';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
-import { ITransfer, SupportedChain } from 'types';
+import { ITransfer, SupportedChain, CosmosBroadcastSource } from 'types';
 
 const logger = loggerFactory.getLogger('[IbcTransferer]');
 
@@ -56,7 +56,8 @@ async function transfer (entity: ITransfer): Promise<string> {
   return cosmosWalletManager.broadcast(
     entity.fromChain,
     txBytes,
-    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC
+    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
+    CosmosBroadcastSource.Wallet
   );
 }
 

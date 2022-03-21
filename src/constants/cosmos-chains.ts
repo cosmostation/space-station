@@ -7,7 +7,8 @@ const gravityBridge: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.Osmosis]: 'channel-10',
     [SupportedCosmosChain.Stargaze]: 'channel-7',
-    [SupportedCosmosChain.Cosmos]: 'channel-17'
+    [SupportedCosmosChain.Cosmos]: 'channel-17',
+    [SupportedCosmosChain.Cheqd]: 'channel-43'
   }
 };
 
@@ -38,11 +39,21 @@ const stargaze: CosmosChainInfo = {
   }
 };
 
+const cheqd: CosmosChainInfo = {
+  chainId: 'cheqd-mainnet-1',
+  lcd: 'https://api.cheqd.net',
+  denom: 'ncheq',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-2'
+  }
+};
+
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
   cosmos,
   osmosis,
-  stargaze
+  stargaze,
+  cheqd
 };
 
 export default chainInfoMap;

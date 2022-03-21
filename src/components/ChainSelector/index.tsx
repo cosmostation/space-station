@@ -14,6 +14,7 @@ import EthChainLogo from 'images/eth-chain-logo.png';
 import GbChainLogo from 'images/gb-chain-logo.png';
 import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
 import StargazeChainLogo from 'images/stargaze-chain-logo.png';
+import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
@@ -83,6 +84,15 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Stargaze,
     name: 'Stargaze',
     image: StargazeChainLogo,
+    supportedWallets: [CosmosWalletType.Keplr],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Cheqd]: {
+    chain: SupportedChain.Cheqd,
+    name: 'Cheqd',
+    image: CheqdChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.GravityBridge],
     head: 8,

@@ -42,14 +42,7 @@ function getSignDoc (
   accountNumber: Long
 ): cosmos.tx.v1beta1.SignDoc {
   const bodyBytes = cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
-  let authInfoBytes;
-  try {
-    authInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('!!!!!!!authInfoBytes:', error);
-    throw error;
-  }
+  const authInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
 
   const signDoc = new cosmos.tx.v1beta1.SignDoc({
     chain_id: chainId,
