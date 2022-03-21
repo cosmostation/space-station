@@ -24,7 +24,7 @@ async function transfer (entity: ITransfer): Promise<string> {
   }
 
   if (entity.token.cosmos === undefined) {
-    const errorMessage = 'Cosmos token is only allowed for IBC transfer!';
+    const errorMessage = 'Only Cosmos SDK based token can do IBC transfer!';
     logger.error('[transfer]', errorMessage);
     throw new Error(errorMessage);
   }

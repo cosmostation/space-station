@@ -23,14 +23,16 @@ const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefi
   [SupportedCosmosChain.GravityBridge]: undefined,
   [SupportedCosmosChain.Osmosis]: undefined,
   [SupportedCosmosChain.Stargaze]: undefined,
-  [SupportedCosmosChain.Cosmos]: undefined
+  [SupportedCosmosChain.Cosmos]: undefined,
+  [SupportedCosmosChain.Iris]: undefined
 };
 
 const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
   [SupportedCosmosChain.GravityBridge]: undefined,
   [SupportedCosmosChain.Osmosis]: undefined,
   [SupportedCosmosChain.Stargaze]: undefined,
-  [SupportedCosmosChain.Cosmos]: undefined
+  [SupportedCosmosChain.Cosmos]: undefined,
+  [SupportedCosmosChain.Iris]: undefined
 };
 
 async function init (): Promise<void> {
@@ -62,7 +64,7 @@ async function connect (chain: SupportedCosmosChain, walletType: CosmosWalletTyp
   accountStore.updateAccount(chain, account, walletType);
 }
 
-async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse> {
+async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[], fee?: string, gasLimit?: number): Promise<DirectSignResponse> {
   const wallet = getWalletByChain(chain);
   if (!wallet) {
     logger.error(`[sign] No wallet for ${chain}!`);
@@ -84,15 +86,16 @@ async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny
   logger.info('[sign] txBody:', txBody);
 
   const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
-  const fee = '0';
-  const gasLimit = new Long(200000);
+  fee = fee || '0';
+  const _gasLimit = gasLimit ? new Long(gasLimit) : new Long(200000);
   const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
 
   const authInfo = cosmosTxService.getAuthInfo(
     account.pubKey,
     sequence,
+    chainInfo.denom,
     fee,
-    gasLimit,
+    _gasLimit,
     mode
   );
   logger.info('[sign] Auth Info:', authInfo);

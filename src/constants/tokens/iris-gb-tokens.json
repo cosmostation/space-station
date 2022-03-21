@@ -1,0 +1,9 @@
+{
+  "uiris": {
+    "name": "Iris",
+    "denom": "uiris",
+    "symbol": "IRIS",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-iris.svg"
+  }
+}

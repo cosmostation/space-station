@@ -5,7 +5,8 @@ const nameMap: Record<SupportedChain, string> = {
   [SupportedChain.GravityBridge]: 'Gravity Bridge',
   [SupportedChain.Osmosis]: 'Osmosis',
   [SupportedChain.Stargaze]: 'Stargaze',
-  [SupportedChain.Cosmos]: 'Cosmos'
+  [SupportedChain.Cosmos]: 'Cosmos',
+  [SupportedChain.Iris]: 'Iris'
 };
 
 const linkMap: Record<SupportedChain, string> = {
@@ -13,7 +14,8 @@ const linkMap: Record<SupportedChain, string> = {
   [SupportedChain.GravityBridge]: 'https://www.mintscan.io/gravity-bridge/txs',
   [SupportedChain.Osmosis]: 'https://www.mintscan.io/osmosis/txs',
   [SupportedChain.Stargaze]: 'https://www.mintscan.io/stargaze/txs',
-  [SupportedChain.Cosmos]: 'https://www.mintscan.io/cosmos/txs'
+  [SupportedChain.Cosmos]: 'https://www.mintscan.io/cosmos/txs',
+  [SupportedChain.Iris]: 'https://www.mintscan.io/iris/txs'
 };
 
 function getChainName (chain: SupportedChain): string {
