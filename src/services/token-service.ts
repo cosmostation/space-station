@@ -1,6 +1,6 @@
 import Big from 'big.js';
 import cosmosChains from 'constants/cosmos-chains';
-import { CosmosTokenWithoutChainId, ibcTokenFromToMap } from 'constants/tokens';
+import { CosmosTokenWithoutChainId, ibcTokenFromToMap, gravityBridgeTokenFromToMap } from 'constants/tokens';
 import ethToGravityBridgeTokens from 'constants/tokens/eth-gb-tokens.json';
 import _ from 'lodash';
 import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
@@ -19,7 +19,7 @@ async function getTokens (fromChain: SupportedChain, toChain: SupportedChain, ad
   if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain)) {
     logger.info('[getTokens] Getting tokens for Gravity Bridge transfer...');
     if (fromChain === SupportedChain.GravityBridge) {
-      const tokens = _.get(ibcTokenFromToMap, [fromChain, toChain], {});
+      const tokens = _.get(gravityBridgeTokenFromToMap, [fromChain, toChain], {});
       return getTokensOnCosmosChain(SupportedCosmosChain.GravityBridge, address, tokens);
     } else {
       return getErc20TokensOnChain(fromChain, address);

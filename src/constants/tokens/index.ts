@@ -21,7 +21,6 @@ export type CosmosTokenWithoutChainId = {
 
 export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]?: Record<string, CosmosTokenWithoutChainId> }> = {
   [SupportedChain.GravityBridge]: {
-    [SupportedChain.Eth]: gravityBridgeToEthTokens,
     [SupportedChain.Osmosis]: gravityBridgeToOsmosisTokens,
     [SupportedChain.Stargaze]: gravityBridgeToStargazeTokens,
     [SupportedChain.Cheqd]: gravityBridgeToCheqdTokens,
@@ -43,4 +42,19 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
     [SupportedChain.GravityBridge]: irisToGravityBridgeTokens
   },
   [SupportedChain.Eth]: {}
+};
+
+export const gravityBridgeTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]?: Record<string, CosmosTokenWithoutChainId> }> = {
+  [SupportedChain.GravityBridge]: {
+    [SupportedChain.Eth]: gravityBridgeToEthTokens
+  },
+  [SupportedChain.Eth]: {
+    [SupportedChain.GravityBridge]: gravityBridgeToEthTokens,
+    [SupportedChain.Osmosis]: gravityBridgeToEthTokens
+  },
+  [SupportedChain.Stargaze]: {},
+  [SupportedChain.Osmosis]: {},
+  [SupportedChain.Cosmos]: {},
+  [SupportedChain.Cheqd]: {},
+  [SupportedChain.Iris]: {}
 };

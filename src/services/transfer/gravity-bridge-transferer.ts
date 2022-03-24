@@ -20,7 +20,8 @@ const fromToMap: { [key in SupportedChain]?: { [key in SupportedChain]?: (transf
     [SupportedChain.Eth]: transferFromGravityBridge
   },
   [SupportedChain.Eth]: {
-    [SupportedChain.GravityBridge]: transferToGravityBridge
+    [SupportedChain.GravityBridge]: transferToGravityBridge,
+    [SupportedChain.Osmosis]: transferToGravityBridge
   }
 };
 
