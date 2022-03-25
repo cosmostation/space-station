@@ -7,6 +7,7 @@ import Long from 'long';
 import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
 import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
 import keplrWallet from 'services/cosmos-wallet/keplr-wallet';
+import ledgerCosmosWallet from 'services/cosmos-wallet/ledger-cosmos-wallet';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
 import accountStore from 'stores/account-store';
@@ -16,7 +17,8 @@ dotenv.config();
 const logger = loggerFactory.getLogger('[CosmosWalletManager]');
 
 const walletMap: Record<CosmosWalletType, ICosmosWallet> = {
-  [CosmosWalletType.Keplr]: keplrWallet
+  [CosmosWalletType.Keplr]: keplrWallet,
+  [CosmosWalletType.Ledger]: ledgerCosmosWallet
 };
 
 const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefined> = {
@@ -47,22 +49,27 @@ async function init (): Promise<void> {
 }
 
 async function connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void> {
-  logger.info(`[connect] Connecting ${walletType} for ${chain}...`);
-  const wallet = getWallet(walletType);
-  if (!wallet) {
-    logger.error(`[connect] ${walletType} is not supported!`);
-    throw new Error(`${walletType} is not supported!`);
-  }
+  try {
+    logger.info(`[connect] Connecting ${walletType} for ${chain}...`);
+    const wallet = getWallet(walletType);
+    if (!wallet) {
+      logger.error(`[connect] ${walletType} is not supported!`);
+      throw new Error(`${walletType} is not supported!`);
+    }
 
-  setWallet(chain, walletType);
-  const chainInfo = cosmosChains[chain];
-  await wallet.addChain(chainInfo.chainId);
-  const account = await wallet.getAccount(chainInfo.chainId);
-  account.balance = await getBalance(chain, account.address);
-  accountStore.updateAccount(chain, account, walletType);
+    setWallet(chain, walletType);
+    const chainInfo = cosmosChains[chain];
+    await wallet.addChain(chainInfo.chainId);
+    const account = await wallet.getAccount(chainInfo);
+    account.balance = await getBalance(chain, account.address);
+    accountStore.updateAccount(chain, account, walletType);
+  } catch (error) {
+    unsetWallet(chain);
+    throw error;
+  }
 }
 
-async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse> {
+async function signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse> {
   const wallet = getWalletByChain(chain);
   if (!wallet) {
     logger.error(`[sign] No wallet for ${chain}!`);
@@ -72,7 +79,7 @@ async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny
   const chainInfo = cosmosChains[chain];
   const chainId = chainInfo.chainId;
 
-  const account = await wallet.getAccount(chainId);
+  const account = await wallet.getAccount(chainInfo);
   logger.info('[sign] Account from wallet:', account);
   if (!account) {
     const errorMessage = `Can't get account for ${chain}!`;
@@ -105,7 +112,7 @@ async function sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny
   );
   logger.info('[sign] Sign Doc:', signDoc);
 
-  return wallet.sign(chainId, account.address, signDoc);
+  return wallet.signDirect(chainId, account.address, signDoc);
 }
 
 async function broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode): Promise<string> {
@@ -144,6 +151,12 @@ function setWallet (chain: SupportedCosmosChain, walletType: CosmosWalletType): 
   window.localStorage.setItem(chain, walletType);
 }
 
+function unsetWallet (chain: SupportedCosmosChain): void {
+  chainWalletTypeMap[chain] = undefined;
+  chainWalletMap[chain] = undefined;
+  window.localStorage.setItem(chain, '');
+}
+
 async function getBalance (chain: SupportedCosmosChain, address: string): Promise<string> {
   try {
     logger.info(`[getBalance] Getting balance of ${address}...`);
@@ -177,7 +190,7 @@ async function getAccountInfo (chain: SupportedCosmosChain, address: string): Pr
 const walletManager: ICosmosWalletManager = {
   init,
   connect,
-  sign,
+  signDirect,
   broadcast
 };
 

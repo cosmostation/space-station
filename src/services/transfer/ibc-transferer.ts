@@ -50,7 +50,7 @@ async function transfer (entity: ITransfer): Promise<string> {
   );
   logger.info('[transfer] Message:', message);
 
-  const signature = await cosmosWalletManager.sign(entity.fromChain, [message]);
+  const signature = await cosmosWalletManager.signDirect(entity.fromChain, [message]);
   logger.info('[transfer] signature:', signature);
   const txBytes = cosmosTxService.createTxRawBytes(signature);
   return cosmosWalletManager.broadcast(

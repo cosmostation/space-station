@@ -1,3 +1,4 @@
+import { AminoSignResponse } from '@cosmjs/amino';
 import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos, google } from 'constants/cosmos-v0.44.5';
@@ -112,12 +113,15 @@ export type EthChainInfo = {
 export type CosmosChainInfo = {
   chainId: string;
   lcd: string;
+  bech32Prefix: string;
   denom: string;
-  ibcChannels: { [key in SupportedCosmosChain]?: string }
+  path: number[];
+  ibcChannels: { [key in SupportedCosmosChain]?: string };
 }
 
 export enum CosmosWalletType {
-  Keplr = 'Keplr'
+  Keplr = 'Keplr',
+  Ledger = 'Ledger'
 }
 
 export type DirectSignDoc = {
@@ -130,14 +134,18 @@ export type DirectSignDoc = {
 export interface ICosmosWalletManager {
   init (): Promise<void>;
   connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void>;
-  sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse>;
+  signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse>;
   broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode): Promise<string>;
 }
 
 export interface ICosmosWallet {
-  connect: (chainId: string) => Promise<void>;
-  getAccount: (chainId: string) => Promise<ICosmosSdkAccount>;
-  sign: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
+  isSupportDirectSign: boolean;
+  isSupportAminoSign: boolean;
+  keepConnection: boolean;
+  connect: (chainInfo: CosmosChainInfo) => Promise<void>;
+  getAccount: (chainInfo: CosmosChainInfo) => Promise<ICosmosSdkAccount>;
+  signDirect: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
+  signAmino: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<AminoSignResponse>;
   sendTx: (chainId: string, txBytes: Uint8Array, mode: BroadcastMode) => Promise<Uint8Array>;
   addChain: (chainId: string) => Promise<void>;
   onAccountChange?: (handler: AccountChangeEventHandler) => any;

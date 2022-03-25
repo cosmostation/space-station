@@ -87,7 +87,7 @@ async function transferFromGravityBridge (transfer: ITransfer): Promise<string> 
   logger.info('[transferFromGravityBridge] Entity:', transfer);
 
   const message = gravityBridgeMessageService.createSendToEthereumMessage(transfer);
-  const signature = await cosmosWalletManager.sign(SupportedCosmosChain.GravityBridge, [message]);
+  const signature = await cosmosWalletManager.signDirect(SupportedCosmosChain.GravityBridge, [message]);
   const txBytes = cosmosTxService.createTxRawBytes(signature);
   return cosmosWalletManager.broadcast(
     SupportedCosmosChain.GravityBridge,

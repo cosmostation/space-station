@@ -56,7 +56,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.GravityBridge,
     name: 'Gravity Bridge',
     image: GbChainLogo,
-    supportedWallets: [CosmosWalletType.Keplr],
+    supportedWallets: [CosmosWalletType.Ledger, CosmosWalletType.Keplr],
     toChains: [SupportedChain.Eth, SupportedChain.Osmosis, SupportedChain.Stargaze],
     head: 8,
     tail: 8
@@ -251,6 +251,12 @@ async function connectChain (chain: SupportedChain, walletType: EthWalletType | 
       } else {
         toastService.showFailToast("Can't connect to Keplr", 'Please try again');
       }
+    }
+  } else if (typeHelper.isSupportedCosmosChain(chain) && walletType === CosmosWalletType.Ledger) {
+    try {
+      await cosmosWalletManager.connect(chain, walletType);
+    } catch (error) {
+      toastService.showFailToast("Can't connect to Ledger", (error as any).message);
     }
   }
 }
