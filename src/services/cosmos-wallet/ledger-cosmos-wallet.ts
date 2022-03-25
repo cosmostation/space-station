@@ -1,5 +1,4 @@
 import { AminoSignResponse } from '@cosmjs/amino';
-import { BroadcastMode } from '@cosmjs/launchpad';
 import { cosmos } from 'constants/cosmos-v0.44.5';
 import ledgerConnector from 'services/ledger-connector';
 import loggerFactory from 'services/util/logger-factory';
@@ -49,7 +48,7 @@ async function signAmino (chainId: string, signer: string, signDoc: cosmos.tx.v1
   throw new Error('Not supported!');
 }
 
-async function sendTx (chainId: string, txBytes: Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
+async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode): Promise<Uint8Array> {
   logger.info('[sendTx] Sending TX...');
   logger.error('[sendTx] Ledger does not support sending TX!');
   return new Uint8Array();

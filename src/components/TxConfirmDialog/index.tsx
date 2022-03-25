@@ -13,7 +13,7 @@ import defaultTokenIcon from 'images/default-token-icon.png';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
 import chainHelper from 'services/util/chain-helper';
-import { Fee, IToken, SupportedChain } from 'types';
+import { BridgeFee, IToken, SupportedChain } from 'types';
 
 type TxSenderProps = {
   open: boolean;
@@ -22,7 +22,7 @@ type TxSenderProps = {
   toChain: SupportedChain;
   token?: IToken;
   amount: string;
-  bridgeFee?: Fee;
+  bridgeFee?: BridgeFee;
   close: () => void;
   confirm: () => void;
 }

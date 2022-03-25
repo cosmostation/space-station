@@ -4,7 +4,7 @@ const gravityBridge: ChainInfo = {
   chainName: 'GravityBridge',
   chainId: 'gravity-bridge-3',
   rest: 'https://lcd-gravity-bridge.cosmostation.io',
-  rpc: 'http://220.76.21.184:20302',
+  rpc: 'https://lcd-gravity-bridge.cosmostation.io:26657',
   stakeCurrency: {
     coinDenom: 'GRAVITON',
     coinMinimalDenom: 'ugraviton',
@@ -42,8 +42,51 @@ const gravityBridge: ChainInfo = {
   }
 };
 
+const cheqd: ChainInfo = {
+  chainName: 'Cheqd',
+  chainId: 'cheqd-mainnet-1',
+  rest: 'https://api.cheqd.net',
+  rpc: 'https://rpc.cheqd.net',
+  stakeCurrency: {
+    coinDenom: 'CHEQ',
+    coinMinimalDenom: 'ncheq',
+    coinDecimals: 9
+  },
+  bip44: {
+    coinType: 118
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'cheqd',
+    bech32PrefixAccPub: 'cheqdpub',
+    bech32PrefixValAddr: 'cheqdvaloper',
+    bech32PrefixValPub: 'cheqdvaloperpub',
+    bech32PrefixConsAddr: 'cheqdvalcons',
+    bech32PrefixConsPub: 'cheqdvalconspub'
+  },
+  currencies: [
+    {
+      coinDenom: 'CHEQ',
+      coinMinimalDenom: 'ncheq',
+      coinDecimals: 9
+    }
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'CHEQ',
+      coinMinimalDenom: 'ncheq',
+      coinDecimals: 9
+    }
+  ],
+  gasPriceStep: {
+    low: 25,
+    average: 30,
+    high: 50
+  }
+};
+
 const chainInfoMap: Record<string, ChainInfo> = {
-  gravityBridge
+  gravityBridge,
+  cheqd
 };
 
 export default chainInfoMap;

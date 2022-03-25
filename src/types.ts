@@ -1,5 +1,4 @@
 import { AminoSignResponse } from '@cosmjs/amino';
-import { BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import { EventEmitter } from 'events';
@@ -18,7 +17,9 @@ export enum SupportedChain {
   GravityBridge = 'gravityBridge',
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
-  Cosmos = 'cosmos'
+  Cosmos = 'cosmos',
+  Cheqd = 'cheqd',
+  Iris = 'iris'
 }
 
 export enum SupportedEthChain {
@@ -29,7 +30,9 @@ export enum SupportedCosmosChain {
   GravityBridge = 'gravityBridge',
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
-  Cosmos = 'cosmos'
+  Cosmos = 'cosmos',
+  Cheqd = 'cheqd',
+  Iris = 'iris'
 }
 
 export interface IERC20Token {
@@ -131,11 +134,16 @@ export type DirectSignDoc = {
   accountNumber: Long;
 }
 
+export enum CosmosBroadcastSource {
+  Lcd,
+  Wallet
+}
+
 export interface ICosmosWalletManager {
   init (): Promise<void>;
   connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void>;
   signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse>;
-  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode): Promise<string>;
+  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode, broadCastSource: CosmosBroadcastSource): Promise<string>;
 }
 
 export interface ICosmosWallet {
@@ -146,7 +154,7 @@ export interface ICosmosWallet {
   getAccount: (chainInfo: CosmosChainInfo) => Promise<ICosmosSdkAccount>;
   signDirect: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
   signAmino: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<AminoSignResponse>;
-  sendTx: (chainId: string, txBytes: Uint8Array, mode: BroadcastMode) => Promise<Uint8Array>;
+  sendTx: (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode) => Promise<Uint8Array>;
   addChain: (chainId: string) => Promise<void>;
   onAccountChange?: (handler: AccountChangeEventHandler) => any;
   onNetworkChange?: (handler: NetworkChangeEventHandler) => any;
@@ -182,7 +190,7 @@ export interface PriceInfo {
   prices: Price[]
 }
 
-export interface Fee {
+export interface BridgeFee {
   id: number;
   label: string;
   denom: string;
@@ -197,7 +205,7 @@ export interface ITransfer {
   fromAddress: string,
   toAddress: string,
   amount: string,
-  bridgeFee?: Fee
+  bridgeFee?: BridgeFee
 }
 
 export type ChainViewInfo = {

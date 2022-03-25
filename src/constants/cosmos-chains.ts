@@ -9,7 +9,9 @@ const gravityBridge: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.Osmosis]: 'channel-10',
     [SupportedCosmosChain.Stargaze]: 'channel-7',
-    [SupportedCosmosChain.Cosmos]: 'channel-17'
+    [SupportedCosmosChain.Cosmos]: 'channel-17',
+    [SupportedCosmosChain.Cheqd]: 'channel-43',
+    [SupportedCosmosChain.Iris]: 'channel-47'
   }
 };
 
@@ -46,11 +48,31 @@ const stargaze: CosmosChainInfo = {
   }
 };
 
+const cheqd: CosmosChainInfo = {
+  chainId: 'cheqd-mainnet-1',
+  lcd: 'https://api.cheqd.net',
+  denom: 'ncheq',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-2'
+  }
+};
+
+const iris: CosmosChainInfo = {
+  chainId: 'irishub-1',
+  lcd: 'https://lcd-iris.cosmostation.io',
+  denom: 'uiris',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-29'
+  }
+};
+
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
   cosmos,
   osmosis,
-  stargaze
+  stargaze,
+  cheqd,
+  iris
 };
 
 export default chainInfoMap;

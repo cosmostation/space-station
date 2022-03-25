@@ -2,10 +2,7 @@ import axios from 'axios';
 import cosmosChains from 'constants/cosmos-chains';
 import { cosmos } from 'constants/cosmos-v0.44.5';
 import _ from 'lodash';
-import loggerFactory from 'services/util/logger-factory';
 import { SupportedCosmosChain } from 'types';
-
-const logger = loggerFactory.getLogger('[lcdService]');
 
 type AccountInfoResponse = {
   '@type': string;

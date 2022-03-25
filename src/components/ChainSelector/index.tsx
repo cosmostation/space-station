@@ -9,9 +9,11 @@ import useAccount from 'hooks/use-account';
 import useConnectedWallet from 'hooks/use-connected-wallet';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
+import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import CosmosChainLogo from 'images/cosmos-chain-logo.png';
 import EthChainLogo from 'images/eth-chain-logo.png';
 import GbChainLogo from 'images/gb-chain-logo.png';
+import IrisChainLogo from 'images/iris-chain-image.png';
 import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
 import StargazeChainLogo from 'images/stargaze-chain-logo.png';
 import _ from 'lodash';
@@ -48,7 +50,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Ethereum',
     image: EthChainLogo,
     supportedWallets: [EthWalletType.MetaMask],
-    toChains: [SupportedChain.GravityBridge],
+    toChains: [SupportedChain.GravityBridge, SupportedChain.Osmosis],
     head: 8,
     tail: 8
   },
@@ -57,7 +59,13 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Gravity Bridge',
     image: GbChainLogo,
     supportedWallets: [CosmosWalletType.Ledger, CosmosWalletType.Keplr],
-    toChains: [SupportedChain.Eth, SupportedChain.Osmosis, SupportedChain.Stargaze],
+    toChains: [
+      SupportedChain.Eth,
+      SupportedChain.Osmosis,
+      SupportedChain.Stargaze,
+      SupportedChain.Cheqd,
+      SupportedChain.Iris
+    ],
     head: 8,
     tail: 8
   },
@@ -83,6 +91,24 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Stargaze,
     name: 'Stargaze',
     image: StargazeChainLogo,
+    supportedWallets: [CosmosWalletType.Keplr],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Cheqd]: {
+    chain: SupportedChain.Cheqd,
+    name: 'Cheqd',
+    image: CheqdChainLogo,
+    supportedWallets: [CosmosWalletType.Keplr],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Iris]: {
+    chain: SupportedChain.Iris,
+    name: 'Iris',
+    image: IrisChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.GravityBridge],
     head: 8,

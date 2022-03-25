@@ -25,7 +25,7 @@ import transferer from 'services/transfer/transferer';
 import loggerFactory from 'services/util/logger-factory';
 import toastService from 'services/util/toast-service';
 import themeStore from 'stores/theme-store';
-import { Fee, IToken, ITransfer, SupportedChain, ThemeType } from 'types';
+import { BridgeFee, IToken, ITransfer, SupportedChain, ThemeType } from 'types';
 
 const logger = loggerFactory.getLogger('[TransferBox]');
 const ROUND = 6;
@@ -44,7 +44,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
   const [txConfirmOpened, setTxConfirmOpened] = useState<boolean>(false);
   const [txBroadcastingOpened, setTxBroadcastingOpened] = useState<boolean>(false);
   const [balanceUpdateCounter, setBalanceUpdateCounter] = useState<number>(0);
-  const [bridgeFee, setBridgeFee] = useState<Fee>();
+  const [bridgeFee, setBridgeFee] = useState<BridgeFee>();
 
   const fromAccount = useAccount(fromChain);
   const toAccount = useAccount(toChain);
@@ -131,7 +131,7 @@ const TransferBox: React.FC<TransferBoxProps> = ({ theme }) => {
     setTokenSearcherOpened(false);
   }, []);
 
-  const onSelectExtraFee = useCallback((fee: Fee) => {
+  const onSelectExtraFee = useCallback((fee: BridgeFee) => {
     logger.info('Extra Fee:', fee);
     setBridgeFee(fee);
   }, []);

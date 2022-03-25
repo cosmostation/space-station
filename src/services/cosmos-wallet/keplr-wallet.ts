@@ -75,14 +75,23 @@ async function signAmino (chainId: string, signer: string, signDoc: cosmos.tx.v1
   throw new Error('Not supported!');
 }
 
-async function sendTx (chainId: string, txBytes: Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
+async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode): Promise<Uint8Array> {
   logger.info('[sendTx] Sending TX...');
   const keplr = await detectKeplrProvider();
-  return keplr.sendTx(chainId, txBytes, mode);
+  return keplr.sendTx(chainId, txBytes, convertBroadcastMode(mode));
 }
 
 async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
   (window as any).addEventListener(KeplrEvent.AccountChange, handler);
+}
+
+function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): BroadcastMode {
+  switch (mode) {
+    case cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_BLOCK: return BroadcastMode.Block;
+    case cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_ASYNC: return BroadcastMode.Async;
+    case cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC: return BroadcastMode.Sync;
+    default: return BroadcastMode.Sync;
+  }
 }
 
 const keplrWallet: ICosmosWallet = {

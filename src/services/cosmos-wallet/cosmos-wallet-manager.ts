@@ -11,7 +11,7 @@ import ledgerCosmosWallet from 'services/cosmos-wallet/ledger-cosmos-wallet';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
 import accountStore from 'stores/account-store';
-import { CosmosWalletType, ICosmosWallet, ICosmosWalletManager, SupportedCosmosChain } from 'types';
+import { CosmosWalletType, ICosmosWallet, ICosmosWalletManager, SupportedCosmosChain, CosmosBroadcastSource } from 'types';
 
 dotenv.config();
 const logger = loggerFactory.getLogger('[CosmosWalletManager]');
@@ -25,14 +25,18 @@ const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefi
   [SupportedCosmosChain.GravityBridge]: undefined,
   [SupportedCosmosChain.Osmosis]: undefined,
   [SupportedCosmosChain.Stargaze]: undefined,
-  [SupportedCosmosChain.Cosmos]: undefined
+  [SupportedCosmosChain.Cosmos]: undefined,
+  [SupportedCosmosChain.Cheqd]: undefined,
+  [SupportedCosmosChain.Iris]: undefined
 };
 
 const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
   [SupportedCosmosChain.GravityBridge]: undefined,
   [SupportedCosmosChain.Osmosis]: undefined,
   [SupportedCosmosChain.Stargaze]: undefined,
-  [SupportedCosmosChain.Cosmos]: undefined
+  [SupportedCosmosChain.Cosmos]: undefined,
+  [SupportedCosmosChain.Cheqd]: undefined,
+  [SupportedCosmosChain.Iris]: undefined
 };
 
 async function init (): Promise<void> {
@@ -69,7 +73,7 @@ async function connect (chain: SupportedCosmosChain, walletType: CosmosWalletTyp
   }
 }
 
-async function signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse> {
+async function signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[], fee?: string, gasLimit?: number): Promise<DirectSignResponse> {
   const wallet = getWalletByChain(chain);
   if (!wallet) {
     logger.error(`[sign] No wallet for ${chain}!`);
@@ -91,15 +95,16 @@ async function signDirect (chain: SupportedCosmosChain, messages: google.protobu
   logger.info('[sign] txBody:', txBody);
 
   const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
-  const fee = '0';
-  const gasLimit = new Long(200000);
+  fee = fee || '0';
+  const _gasLimit = gasLimit ? new Long(gasLimit) : new Long(200000);
   const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
 
   const authInfo = cosmosTxService.getAuthInfo(
     account.pubKey,
     sequence,
+    chainInfo.denom,
     fee,
-    gasLimit,
+    _gasLimit,
     mode
   );
   logger.info('[sign] Auth Info:', authInfo);
@@ -115,19 +120,39 @@ async function signDirect (chain: SupportedCosmosChain, messages: google.protobu
   return wallet.signDirect(chainId, account.address, signDoc);
 }
 
-async function broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode): Promise<string> {
-  const result = await lcdService.broadcastProtoTx(chain, txBytes, broadCastMode);
-  logger.info('[broadcast] Result:', result);
-  const code = _.get(result, 'tx_response.code');
-  const txhash = _.get(result, 'tx_response.txhash');
+async function broadcast (
+  chain: SupportedCosmosChain,
+  txBytes: Uint8Array,
+  broadCastMode: cosmos.tx.v1beta1.BroadcastMode,
+  broadCastSource: CosmosBroadcastSource
+): Promise<string> {
+  if (broadCastSource === CosmosBroadcastSource.Lcd) {
+    const result = await lcdService.broadcastProtoTx(chain, txBytes, broadCastMode);
+    logger.info('[broadcast] Result:', result);
+    const code = _.get(result, 'tx_response.code');
+    const txhash = _.get(result, 'tx_response.txhash');
 
-  if (code !== 0) {
-    const rawLog = _.get(result, 'tx_response.raw_log');
-    logger.error('[broadcast]', rawLog);
-    throw new Error(rawLog);
+    if (code !== 0) {
+      const rawLog = _.get(result, 'tx_response.raw_log');
+      logger.error('[broadcast]', rawLog);
+      throw new Error(rawLog);
+    }
+    return txhash;
+  } else if (broadCastSource === CosmosBroadcastSource.Wallet) {
+    const chainInfo = cosmosChains[chain];
+    const chainId = chainInfo.chainId;
+    const wallet = getWalletByChain(chain);
+    if (!wallet) {
+      throw new Error('No wallet to broadcast!');
+    }
+
+    const result = await wallet.sendTx(chainId, txBytes, broadCastMode);
+    const txHash = _.toUpper(Buffer.from(result).toString('hex'));
+    logger.info('[broadcast] Result:', txHash);
+    return txHash;
+  } else {
+    return '';
   }
-
-  return txhash;
 }
 
 function getWallet (walletType: CosmosWalletType): ICosmosWallet {
