@@ -58,7 +58,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.GravityBridge,
     name: 'Gravity Bridge',
     image: GbChainLogo,
-    supportedWallets: [CosmosWalletType.Ledger, CosmosWalletType.Keplr],
+    supportedWallets: [CosmosWalletType.Keplr],
     toChains: [
       SupportedChain.Eth,
       SupportedChain.Osmosis,
@@ -159,6 +159,14 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
     connectChain(toChain, walletType);
   }, [toChain]);
 
+  const onDisconnectFromChainWallet = useCallback(() => {
+    disconnect(fromChain);
+  }, [fromChain]);
+
+  const onDisconnectToChainWallet = useCallback(() => {
+    disconnect(toChain);
+  }, [toChain]);
+
   const toggleDirection = useCallback(() => {
     toggle(toChain, fromChain);
   }, [fromChain, toChain, toggle]);
@@ -187,10 +195,13 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
               ))}
               Connect
             </button>
-          : <button className="chain-selector-wallet-connect-button disabled">
-              <span className={classNames('chain-selector-wallet-icon', fromConnectedWallet)}></span>
-              <span className="chain-selector-connected-address">{ fromAddress }</span>
-            </button>
+          : <>
+              <button className="chain-selector-wallet-connect-button disabled">
+                <span className={classNames('chain-selector-wallet-icon', fromConnectedWallet)}></span>
+                <span className="chain-selector-connected-address">{ fromAddress }</span>
+              </button>
+              <button onClick={onDisconnectFromChainWallet}>dis</button>
+            </>
         }
       </div>
       <button className="chain-selector-toggle-button" onClick={toggleDirection}>
@@ -221,10 +232,13 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
               ))}
               Connect
             </button>
-          : <button className="chain-selector-wallet-connect-button disabled">
+          : <>
+            <button className="chain-selector-wallet-connect-button disabled">
               <span className={classNames('chain-selector-wallet-icon', toConnectedWallet)}></span>
               <span className="chain-selector-connected-address">{ toAddress }</span>
             </button>
+            <button onClick={onDisconnectToChainWallet}>dis</button>
+          </>
           }
       </div>
       {fromChainDialogOpened
@@ -284,6 +298,14 @@ async function connectChain (chain: SupportedChain, walletType: EthWalletType | 
     } catch (error) {
       toastService.showFailToast("Can't connect to Ledger", (error as any).message);
     }
+  }
+}
+
+async function disconnect (chain: SupportedChain): Promise<void> {
+  if (typeHelper.isSupportedEthChain(chain)) {
+    await ethWalletManager.disconnect(chain);
+  } else if (typeHelper.isSupportedCosmosChain(chain)) {
+    await cosmosWalletManager.disconnect(chain);
   }
 }
 

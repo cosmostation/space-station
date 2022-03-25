@@ -1,4 +1,4 @@
-import { AminoSignResponse, BroadcastMode, StdSignDoc } from '@cosmjs/launchpad';
+import { AminoSignResponse, BroadcastMode } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { Keplr, Window } from '@keplr-wallet/types';
 import { cosmos } from 'constants/cosmos-v0.44.5';
@@ -6,7 +6,15 @@ import keplrChainInfo from 'constants/keplr-chain-info';
 import _ from 'lodash';
 import Long from 'long';
 import loggerFactory from 'services/util/logger-factory';
-import { AccountChangeEventHandler, DirectSignDoc, ICosmosSdkAccount, ICosmosWallet, NoKeplrWalletError, CosmosChainInfo } from 'types';
+import {
+  AccountChangeEventHandler,
+  CosmosChainInfo,
+  DirectSignDoc,
+  ICosmosSdkAccount,
+  ICosmosWallet,
+  NoKeplrWalletError,
+  CosmosWalletType
+} from 'types';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -30,13 +38,16 @@ const keplr = new Promise<Keplr>((resolve, reject) => {
   };
 });
 
+let accountChangeEventHandler: AccountChangeEventHandler;
+
 async function detectKeplrProvider (): Promise<Keplr> {
   return keplr;
 }
 
 async function connect (chainInfo: CosmosChainInfo): Promise<void> {
   const keplr = await detectKeplrProvider();
-  keplr.enable(chainInfo.chainId);
+  await addChain(chainInfo.chainId);
+  await keplr.enable(chainInfo.chainId);
 }
 
 async function getAccount (chainInfo: CosmosChainInfo): Promise<ICosmosSdkAccount> {
@@ -81,8 +92,24 @@ async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1b
   return keplr.sendTx(chainId, txBytes, convertBroadcastMode(mode));
 }
 
-async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
+function registerAccountChangeHandler (handler: AccountChangeEventHandler): void {
+  unregisterAccountChangeHandler();
+  accountChangeEventHandler = handler;
   (window as any).addEventListener(KeplrEvent.AccountChange, handler);
+}
+
+function registerNetworkChangeHandler (handler: AccountChangeEventHandler): void {
+  logger.info('[registerNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
+}
+
+function unregisterAccountChangeHandler (): void {
+  if (accountChangeEventHandler) {
+    (window as any).removeEventListener(KeplrEvent.AccountChange, accountChangeEventHandler);
+  }
+}
+
+function unregisterNetworkChangeHandler (): void {
+  logger.info('[unregisterNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
 }
 
 function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): BroadcastMode {
@@ -95,6 +122,7 @@ function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): Broadcast
 }
 
 const keplrWallet: ICosmosWallet = {
+  type: CosmosWalletType.Keplr,
   keepConnection: true,
   isSupportDirectSign: true,
   isSupportAminoSign: false,
@@ -102,9 +130,12 @@ const keplrWallet: ICosmosWallet = {
   getAccount,
   addChain,
   signDirect,
+  signAmino,
   sendTx,
-  onAccountChange,
-  signAmino
+  registerAccountChangeHandler,
+  registerNetworkChangeHandler,
+  unregisterAccountChangeHandler,
+  unregisterNetworkChangeHandler
 };
 
 export default keplrWallet;

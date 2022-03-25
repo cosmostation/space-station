@@ -92,25 +92,36 @@ async function connect (chain: SupportedEthChain, walletType: EthWalletType): Pr
   if (account) {
     logger.info('[connect] Account:', account);
     accountStore.updateAccount(chain, account, walletType);
-    registerEventHandler(chain);
+    registerEventHandlers(chain);
   }
 }
 
-function registerEventHandler (chain: SupportedEthChain): void {
+async function disconnect (chain: SupportedEthChain): Promise<void> {
+  logger.info(`[Disconnect] Disconnecting for ${chain}...`);
+  unsetWallet(chain);
+  accountStore.updateAccount(chain, undefined, undefined);
+}
+
+function registerEventHandlers (chain: SupportedEthChain): void {
   try {
-    logger.info('[registerEventHandler] Registering event handler...');
+    logger.info(`[registerEventHandler] Registering event handlers for ${chain}...`);
     const wallet = getWalletByChain(chain);
     if (wallet) {
-      wallet.registerAccountChangeHandler(accountChangeEventHandler(chain, wallet));
-      wallet.registerNetworkChangeHandler(networkChangeEventHandler(chain, wallet));
+      logger.info(`[registerEventHandler] Registering event handlers for ${wallet.type}...`);
+      const accountChangeEventHandler = getAccountChangeEventHandler(chain, wallet);
+      wallet.registerAccountChangeHandler(accountChangeEventHandler);
+
+      const networkChangeEventHandler = getNetworkChangeEventHandler(chain, wallet);
+      wallet.registerNetworkChangeHandler(networkChangeEventHandler);
     }
   } catch (error) {
     logger.error(error);
   }
 }
 
-function accountChangeEventHandler (chain: SupportedEthChain, wallet: IEthWallet): AccountChangeEventHandler {
+function getAccountChangeEventHandler (chain: SupportedEthChain, wallet: IEthWallet): AccountChangeEventHandler {
   return async (accounts: string[]): Promise<void> => {
+    logger.info('[accountChangeEventHandler] Chain:', chain);
     logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
     if (!_.isEmpty(accounts)) {
       const account = await wallet.getAccount();
@@ -121,10 +132,11 @@ function accountChangeEventHandler (chain: SupportedEthChain, wallet: IEthWallet
   };
 }
 
-function networkChangeEventHandler (chain: SupportedEthChain, wallet: IEthWallet): NetworkChangeEventHandler {
+function getNetworkChangeEventHandler (chain: SupportedEthChain, wallet: IEthWallet): NetworkChangeEventHandler {
   const chainInfo = ethChains[chain];
   return async (chainId: string): Promise<void> => {
-    logger.info('[accountChangeEventHandler] Updated chain ID:', chainId);
+    logger.info('[networkChangeEventHandler] Chain:', chain);
+    logger.info('[networkChangeEventHandler] Updated chain ID:', chainId);
     if (chainId !== chainInfo.chainId) {
       accountStore.updateAccount(chain, undefined, undefined);
     } else {
@@ -213,9 +225,16 @@ function setWallet (chain: SupportedEthChain, walletType: EthWalletType): void {
   window.localStorage.setItem(chain, walletType);
 }
 
+function unsetWallet (chain: SupportedEthChain): void {
+  chainWalletTypeMap[chain] = undefined;
+  chinWalletMap[chain] = undefined;
+  window.localStorage.setItem(chain, '');
+}
+
 const manager: IEthWalletManager = {
   init,
   connect,
+  disconnect,
   updateAccount,
   getERC20Info,
   getERC20Balance,

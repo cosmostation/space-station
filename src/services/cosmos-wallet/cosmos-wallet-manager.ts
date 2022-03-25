@@ -11,7 +11,15 @@ import ledgerCosmosWallet from 'services/cosmos-wallet/ledger-cosmos-wallet';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
 import accountStore from 'stores/account-store';
-import { CosmosWalletType, ICosmosWallet, ICosmosWalletManager, SupportedCosmosChain, CosmosBroadcastSource } from 'types';
+import {
+  AccountChangeEventHandler,
+  CosmosBroadcastSource,
+  CosmosWalletType,
+  ICosmosWallet,
+  ICosmosWalletManager,
+  NetworkChangeEventHandler,
+  SupportedCosmosChain,
+} from 'types';
 
 dotenv.config();
 const logger = loggerFactory.getLogger('[CosmosWalletManager]');
@@ -54,6 +62,8 @@ async function init (): Promise<void> {
 
 async function connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void> {
   try {
+    const chainInfo = cosmosChains[chain];
+
     logger.info(`[connect] Connecting ${walletType} for ${chain}...`);
     const wallet = getWallet(walletType);
     if (!wallet) {
@@ -61,15 +71,28 @@ async function connect (chain: SupportedCosmosChain, walletType: CosmosWalletTyp
       throw new Error(`${walletType} is not supported!`);
     }
 
-    setWallet(chain, walletType);
-    const chainInfo = cosmosChains[chain];
-    await wallet.addChain(chainInfo.chainId);
+    await wallet.connect(chainInfo);
     const account = await wallet.getAccount(chainInfo);
-    account.balance = await getBalance(chain, account.address);
-    accountStore.updateAccount(chain, account, walletType);
+    if (account) {
+      setWallet(chain, walletType);
+      account.balance = await getBalance(chain, account.address);
+      accountStore.updateAccount(chain, account, walletType);
+      registerEventHandlers(chain);
+    }
   } catch (error) {
+    logger.error('[connect]', error);
     unsetWallet(chain);
     throw error;
+  }
+}
+
+async function disconnect (chain: SupportedCosmosChain): Promise<void> {
+  try {
+    logger.info(`[disconnect] Disconnecting for ${chain}...`);
+    unsetWallet(chain);
+    accountStore.updateAccount(chain, undefined, undefined);
+  } catch (error) {
+    logger.error('[disconnect]', error);
   }
 }
 
@@ -172,7 +195,6 @@ function setWallet (chain: SupportedCosmosChain, walletType: CosmosWalletType): 
   const wallet = getWallet(walletType);
   chainWalletTypeMap[chain] = walletType;
   chainWalletMap[chain] = wallet;
-  logger.info(chain, walletType);
   window.localStorage.setItem(chain, walletType);
 }
 
@@ -212,9 +234,55 @@ async function getAccountInfo (chain: SupportedCosmosChain, address: string): Pr
   }
 }
 
+function registerEventHandlers (chain: SupportedCosmosChain): void {
+  try {
+    logger.info(`[registerEventHandler] Registering event handlers for ${chain}...`);
+    const wallet = getWalletByChain(chain);
+    if (wallet) {
+      logger.info(`[registerEventHandler] Registering event handlers for ${wallet.type}...`);
+      const accountChangeEventHandler = getAccountChangeEventHandler(chain, wallet);
+      wallet.registerAccountChangeHandler(accountChangeEventHandler);
+
+      const networkChangeEventHandler = getNetworkChangeEventHandler(chain, wallet);
+      wallet.registerNetworkChangeHandler(networkChangeEventHandler);
+    }
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+function getAccountChangeEventHandler (chain: SupportedCosmosChain, wallet: ICosmosWallet): AccountChangeEventHandler {
+  const chainInfo = cosmosChains[chain];
+  return async (accounts: string[]): Promise<void> => {
+    logger.info('[accountChangeEventHandler] Chain:', chain);
+    logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
+    if (!_.isEmpty(accounts)) {
+      const account = await wallet.getAccount(chainInfo);
+      accountStore.updateAccount(chain, account, undefined);
+    } else {
+      accountStore.updateAccount(chain, undefined, undefined);
+    }
+  };
+}
+
+function getNetworkChangeEventHandler (chain: SupportedCosmosChain, wallet: ICosmosWallet): NetworkChangeEventHandler {
+  const chainInfo = cosmosChains[chain];
+  return async (chainId: string): Promise<void> => {
+    logger.info('[networkChangeEventHandler] Chain:', chain);
+    logger.info('[networkChangeEventHandler] Updated chain ID:', chainId);
+    if (chainId !== chainInfo.chainId) {
+      accountStore.updateAccount(chain, undefined, undefined);
+    } else {
+      const account = await wallet.getAccount(chainInfo);
+      accountStore.updateAccount(chain, account, undefined);
+    }
+  };
+}
+
 const walletManager: ICosmosWalletManager = {
   init,
   connect,
+  disconnect,
   signDirect,
   broadcast
 };

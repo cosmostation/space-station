@@ -1,10 +1,18 @@
 import { AminoSignResponse } from '@cosmjs/amino';
+import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos } from 'constants/cosmos-v0.44.5';
+import _ from 'lodash';
 import ledgerConnector from 'services/ledger-connector';
 import loggerFactory from 'services/util/logger-factory';
-import { AccountChangeEventHandler, ICosmosSdkAccount, ICosmosWallet, CosmosChainInfo } from 'types';
-import { DirectSignResponse } from '@cosmjs/proto-signing';
-import _ from 'lodash';
+import {
+  AccountChangeEventHandler,
+  CosmosChainInfo,
+  CosmosWalletType,
+  ICosmosSdkAccount,
+  ICosmosWallet,
+  NetworkChangeEventHandler,
+} from 'types';
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import CosmosApp from 'ledger-cosmos-js';
@@ -35,7 +43,7 @@ async function getAccount (chainInfo: CosmosChainInfo): Promise<ICosmosSdkAccoun
 
 async function addChain (chainId: string): Promise<void> {
   logger.info(`[addChain] Adding ${chainId}...`);
-  logger.info('[addChain] Ledger does not support to add chain...');
+  logger.info('[addChain] Ledger does not support to add chain. Do nothing...');
 }
 
 async function signDirect (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
@@ -54,8 +62,20 @@ async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1b
   return new Uint8Array();
 }
 
-async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
-  logger.error('[onAccountChange] Ledger does not support onAccountChange event!');
+function registerAccountChangeHandler (handler: AccountChangeEventHandler): void {
+  logger.info('[registerAccountChangeHandler] Ledger does not support account change event. Do nothing...');
+}
+
+function registerNetworkChangeHandler (handler: NetworkChangeEventHandler): void {
+  logger.info('[registerNetworkChangeHandler] Ledger does not support network change event. Do nothing...');
+}
+
+function unregisterAccountChangeHandler (): void {
+  logger.info('[unregisterNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
+}
+
+function unregisterNetworkChangeHandler (): void {
+  logger.info('[unregisterNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
 }
 
 async function checkLock (app: CosmosApp): Promise<void> {
@@ -79,6 +99,7 @@ async function checkApp (app: CosmosApp): Promise<void> {
 }
 
 const ledgerWallet: ICosmosWallet = {
+  type: CosmosWalletType.Ledger,
   keepConnection: false,
   isSupportDirectSign: false,
   isSupportAminoSign: true,
@@ -88,7 +109,10 @@ const ledgerWallet: ICosmosWallet = {
   signDirect,
   signAmino,
   sendTx,
-  onAccountChange
+  registerAccountChangeHandler,
+  registerNetworkChangeHandler,
+  unregisterAccountChangeHandler,
+  unregisterNetworkChangeHandler
 };
 
 export default ledgerWallet;
