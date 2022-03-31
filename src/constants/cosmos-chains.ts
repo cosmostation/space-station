@@ -5,7 +5,7 @@ const gravityBridge: CosmosChainInfo = {
   chainId: 'gravity-bridge-3',
   lcd: 'https://lcd-gravity-bridge.cosmostation.io',
   bech32Prefix: 'gravity',
-  path: [44, 60, 0, 0, 0],
+  path: [44, 118, 0, 0, 0],
   denom: 'ugraviton',
   ibcChannels: {
     [SupportedCosmosChain.Osmosis]: 'channel-10',

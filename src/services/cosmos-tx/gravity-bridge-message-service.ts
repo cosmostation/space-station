@@ -3,6 +3,7 @@ import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import { gravity } from 'constants/gravity-bridge-v1.2.1';
 import loggerFactory from 'services/util/logger-factory';
 import { IToken, ITransfer } from 'types';
+import { AminoMsg } from '@cosmjs/amino';
 
 const logger = loggerFactory.getLogger('[GravityBridgeMessageService]');
 
@@ -27,12 +28,41 @@ function createSendToEthereumMessage (transfer: ITransfer): google.protobuf.Any 
     amount: coin,
     bridge_fee: feeCoin
   });
-  logger.info('MsgSendToEth', sendMessage);
+  logger.info('[createSendToEthereumMessage] MsgSendToEth:', sendMessage);
 
   return new google.protobuf.Any({
     type_url: '/gravity.v1.MsgSendToEth',
     value: gravity.v1.MsgSendToEth.encode(sendMessage).finish()
   });
+}
+
+function createSendToEthereumAminoMessage (transfer: ITransfer): AminoMsg {
+  const token = transfer.token.erc20 || transfer.token.cosmos;
+  if (!token) {
+    const errorMessage = 'No token info!';
+    logger.error('[createSendToEthereumAminoMessage]', errorMessage);
+    throw new Error(errorMessage);
+  }
+
+  const decimal = new Big(10).pow(token.decimals);
+  const amount = new Big(transfer.amount).times(decimal).toString();
+  const feeAmount = transfer.bridgeFee
+    ? new Big(transfer.bridgeFee.amount).times(decimal).toString()
+    : '0';
+  const coin = convertTokenToCoin(transfer.token, amount);
+  const feeCoin = convertTokenToCoin(transfer.token, feeAmount);
+  const message: AminoMsg = {
+    type: 'gravity/MsgSendToEth',
+    value: {
+      sender: transfer.fromAddress,
+      eth_dest: transfer.toAddress,
+      amount: coin,
+      bridge_fee: feeCoin
+    }
+  };
+
+  logger.info('[createSendToEthereumAminoMessage] MsgSendToEth:', message);
+  return message;
 }
 
 function convertTokenToCoin (token: IToken, amount: string): cosmos.base.v1beta1.ICoin {
@@ -54,5 +84,6 @@ function convertTokenToCoin (token: IToken, amount: string): cosmos.base.v1beta1
 }
 
 export default {
-  createSendToEthereumMessage
+  createSendToEthereumMessage,
+  createSendToEthereumAminoMessage
 };

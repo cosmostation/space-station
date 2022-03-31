@@ -1,4 +1,4 @@
-import { AminoSignResponse, BroadcastMode } from '@cosmjs/launchpad';
+import { AminoSignResponse, BroadcastMode, StdSignDoc } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { Keplr, Window } from '@keplr-wallet/types';
 import { cosmos } from 'constants/cosmos-v0.44.5';
@@ -15,7 +15,6 @@ import {
   NoKeplrWalletError,
   CosmosWalletType
 } from 'types';
-import { findChainInfoByChainId } from 'constants/cosmos-chains';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -70,25 +69,30 @@ async function addChain (chainId: string): Promise<void> {
   }
 }
 
-async function signDirect (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
-  logger.info('[sign] Direct signing...');
+async function signDirect (chainInfo: CosmosChainInfo, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
+  logger.info('[signDirect] Direct signing...');
   const keplr = await detectKeplrProvider();
+  const chainId = chainInfo.chainId;
   const _signDoc: DirectSignDoc = {
     chainId,
     bodyBytes: signDoc.body_bytes,
     authInfoBytes: signDoc.auth_info_bytes,
     accountNumber: signDoc.account_number as Long
   };
-  const chainInfo = findChainInfoByChainId(chainId);
   const options = chainInfo && chainInfo.supportZeroFee
     ? { preferNoSetFee: true }
     : { preferNoSetFee: false };
   return keplr.signDirect(chainId, signer, _signDoc, options);
 }
 
-async function signAmino (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<AminoSignResponse> {
-  logger.info('[sign] Direct signing...');
-  throw new Error('Not supported!');
+async function signAmino (chainInfo: CosmosChainInfo, signer: string, signDoc: StdSignDoc): Promise<AminoSignResponse> {
+  logger.info('[signAmino] Amino signing...');
+  const keplr = await detectKeplrProvider();
+  const chainId = chainInfo.chainId;
+  const options = chainInfo && chainInfo.supportZeroFee
+    ? { preferNoSetFee: true }
+    : { preferNoSetFee: false };
+  return keplr.signAmino(chainId, signer, signDoc, options);
 }
 
 async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode): Promise<Uint8Array> {
@@ -129,8 +133,8 @@ function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): Broadcast
 const keplrWallet: ICosmosWallet = {
   type: CosmosWalletType.Keplr,
   keepConnection: true,
-  isSupportDirectSign: true,
-  isSupportAminoSign: false,
+  isSupportDirectSign: false,
+  isSupportAminoSign: true,
   connect,
   getAccount,
   addChain,

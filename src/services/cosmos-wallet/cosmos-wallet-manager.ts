@@ -1,3 +1,4 @@
+import { AminoMsg, AminoSignResponse } from '@cosmjs/amino';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import cosmosChains from 'constants/cosmos-chains';
 import { cosmos, google } from 'constants/cosmos-v0.44.5';
@@ -96,10 +97,26 @@ async function disconnect (chain: SupportedCosmosChain): Promise<void> {
   }
 }
 
-async function signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[], fee?: string, gasLimit?: number): Promise<DirectSignResponse> {
+function canSignDirect (chain: SupportedCosmosChain): boolean {
+  const wallet = getWalletByChain(chain);
+  return wallet !== undefined && wallet.isSupportDirectSign;
+}
+
+function canSignAmino (chain: SupportedCosmosChain): boolean {
+  const wallet = getWalletByChain(chain);
+  return wallet !== undefined && wallet.isSupportAminoSign;
+}
+
+async function signDirect (
+  chain: SupportedCosmosChain,
+  messages: google.protobuf.IAny[],
+  feeAmount: string,
+  gasLimit: number,
+  memo: string
+): Promise<DirectSignResponse> {
   const wallet = getWalletByChain(chain);
   if (!wallet) {
-    logger.error(`[sign] No wallet for ${chain}!`);
+    logger.error(`[signDirect] No wallet for ${chain}!`);
     throw new Error(`No wallet for ${chain}!`);
   }
 
@@ -107,30 +124,27 @@ async function signDirect (chain: SupportedCosmosChain, messages: google.protobu
   const chainId = chainInfo.chainId;
 
   const account = await wallet.getAccount(chainInfo);
-  logger.info('[sign] Account from wallet:', account);
+  logger.info('[signDirect] Account from wallet:', account);
   if (!account) {
     const errorMessage = `Can't get account for ${chain}!`;
-    logger.error('[sign]', errorMessage);
+    logger.error('[signDirect]', errorMessage);
     throw new Error(errorMessage);
   }
 
-  const txBody = cosmosTxService.createTxBody(messages);
-  logger.info('[sign] txBody:', txBody);
+  const txBody = cosmosTxService.createTxBody(messages, memo);
+  logger.info('[signDirect] txBody:', txBody);
 
   const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
-  fee = fee || '0';
-  const _gasLimit = gasLimit ? new Long(gasLimit) : new Long(200000);
   const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
-
   const authInfo = cosmosTxService.getAuthInfo(
     account.pubKey,
     sequence,
     chainInfo.denom,
-    fee,
-    _gasLimit,
+    feeAmount,
+    new Long(gasLimit),
     mode
   );
-  logger.info('[sign] Auth Info:', authInfo);
+  logger.info('[signDirect] Auth Info:', authInfo);
 
   const signDoc = cosmosTxService.getSignDoc(
     chainId,
@@ -138,9 +152,48 @@ async function signDirect (chain: SupportedCosmosChain, messages: google.protobu
     authInfo,
     new Long(_.toNumber(accountNumber))
   );
-  logger.info('[sign] Sign Doc:', signDoc);
+  logger.info('[signDirect] Sign Doc:', signDoc);
 
-  return wallet.signDirect(chainId, account.address, signDoc);
+  return wallet.signDirect(chainInfo, account.address, signDoc);
+}
+
+async function signAmino (
+  chain: SupportedCosmosChain,
+  messages: AminoMsg[],
+  feeAmount: string,
+  gasLimit: number,
+  memo: string
+): Promise<AminoSignResponse> {
+  const wallet = getWalletByChain(chain);
+  if (!wallet) {
+    logger.error(`[signAmino] No wallet for ${chain}!`);
+    throw new Error(`No wallet for ${chain}!`);
+  }
+
+  const chainInfo = cosmosChains[chain];
+  const chainId = chainInfo.chainId;
+
+  const account = await wallet.getAccount(chainInfo);
+  logger.info('[signAmino] Account from wallet:', account);
+  if (!account) {
+    const errorMessage = `Can't get account for ${chain}!`;
+    logger.error('[signAmino]', errorMessage);
+    throw new Error(errorMessage);
+  }
+
+  const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
+  const aminoSignDoc = cosmosTxService.getAminoSignDoc(
+    chainId,
+    accountNumber,
+    String(sequence),
+    chainInfo.denom,
+    feeAmount,
+    String(gasLimit),
+    messages,
+    memo
+  );
+  logger.info('[signAmino] Sign Doc:', aminoSignDoc);
+  return wallet.signAmino(chainInfo, account.address, aminoSignDoc);
 }
 
 async function broadcast (
@@ -283,7 +336,10 @@ const walletManager: ICosmosWalletManager = {
   init,
   connect,
   disconnect,
+  canSignDirect,
+  canSignAmino,
   signDirect,
+  signAmino,
   broadcast
 };
 

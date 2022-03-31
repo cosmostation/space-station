@@ -1,4 +1,4 @@
-import { AminoSignResponse } from '@cosmjs/amino';
+import { AminoSignResponse, StdSignDoc } from '@cosmjs/amino';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos } from 'constants/cosmos-v0.44.5';
 import _ from 'lodash';
@@ -46,14 +46,18 @@ async function addChain (chainId: string): Promise<void> {
   logger.info('[addChain] Ledger does not support to add chain. Do nothing...');
 }
 
-async function signDirect (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
+async function signDirect (chainInfo: CosmosChainInfo, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
   logger.info('[sign] Direct signing...');
   throw new Error('Not supported!');
 }
 
-async function signAmino (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<AminoSignResponse> {
+async function signAmino (chainInfo: CosmosChainInfo, signer: string, signDoc: StdSignDoc): Promise<AminoSignResponse> {
   logger.info('[sign] Amino signing...');
-  throw new Error('Not supported!');
+  const transport = await ledgerConnector.getLedgerConnection();
+  const app = new CosmosApp(transport);
+  const signature = await app.sign(chainInfo.path, signDoc);
+  logger.info(signature);
+  return signature;
 }
 
 async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode): Promise<Uint8Array> {

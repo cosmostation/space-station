@@ -7,7 +7,15 @@ import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import ethWalletManger from 'services/eth-wallet/eth-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
-import { BridgeFee, IToken, ITransfer, SupportedChain, SupportedCosmosChain, SupportedEthChain, CosmosBroadcastSource } from 'types';
+import {
+  BridgeFee,
+  CosmosBroadcastSource,
+  IToken,
+  ITransfer,
+  SupportedChain,
+  SupportedCosmosChain,
+  SupportedEthChain,
+} from 'types';
 
 const logger = loggerFactory.getLogger('[GravityBridgeTransferer]');
 
@@ -84,16 +92,67 @@ async function transferToGravityBridge (entity: ITransfer): Promise<string> {
 }
 
 async function transferFromGravityBridge (transfer: ITransfer): Promise<string> {
-  logger.info('[transferFromGravityBridge] Entity:', transfer);
+  logger.info('[transferFromGravityBridge] Transfer Entity:', transfer);
+  if (!typeHelper.isSupportedCosmosChain(transfer.fromChain)) {
+    throw new Error('from chain is not supported Cosmos chain!');
+  }
+
+  if (cosmosWalletManager.canSignDirect(transfer.fromChain)) {
+    return broadcastWithDirectSign(transfer);
+  } else if (cosmosWalletManager.canSignAmino(transfer.fromChain)) {
+    return broadcastWithAminoSign(transfer);
+  } else {
+    throw new Error('[transferFromGravityBridge] Wallet should support direct signing or amino signing!');
+  }
+}
+
+async function broadcastWithDirectSign (transfer: ITransfer): Promise<string> {
+  const feeAmount = transfer.feeAmount || '0';
+  const memo = transfer.memo || '';
+  const gasLimit = 200000;
 
   const message = gravityBridgeMessageService.createSendToEthereumMessage(transfer);
-  const signature = await cosmosWalletManager.signDirect(SupportedCosmosChain.GravityBridge, [message]);
+  const signature = await cosmosWalletManager.signDirect(
+    SupportedCosmosChain.GravityBridge,
+    [message],
+    feeAmount,
+    gasLimit,
+    memo
+  );
   const txBytes = cosmosTxService.createTxRawBytes(signature);
   return cosmosWalletManager.broadcast(
     SupportedCosmosChain.GravityBridge,
     txBytes,
     cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
     CosmosBroadcastSource.Lcd
+  );
+}
+
+async function broadcastWithAminoSign (transfer: ITransfer): Promise<string> {
+  if (!typeHelper.isSupportedCosmosChain(transfer.fromChain)) {
+    throw new Error('from chain is not supported Cosmos chain!');
+  }
+  const feeAmount = transfer.feeAmount || '0';
+  const memo = transfer.memo || '';
+  const gasLimit = 200000;
+
+  const aminoMessage = gravityBridgeMessageService.createSendToEthereumAminoMessage(transfer);
+  const protoMessage = gravityBridgeMessageService.createSendToEthereumMessage(transfer);
+
+  const aminoSignResponse = await cosmosWalletManager.signAmino(
+    transfer.fromChain,
+    [aminoMessage],
+    feeAmount,
+    gasLimit,
+    memo
+  );
+
+  const txBytes = cosmosTxService.createAminoTxRawBytes(aminoSignResponse, [protoMessage]);
+  return cosmosWalletManager.broadcast(
+    transfer.fromChain,
+    txBytes,
+    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
+    CosmosBroadcastSource.Wallet
   );
 }
 

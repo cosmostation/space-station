@@ -1,4 +1,4 @@
-import { AminoSignResponse } from '@cosmjs/amino';
+import { AminoSignResponse, StdSignDoc, AminoMsg } from '@cosmjs/amino';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import { EventEmitter } from 'events';
@@ -153,7 +153,10 @@ export interface ICosmosWalletManager {
   init (): Promise<void>;
   connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void>;
   disconnect: (chain: SupportedCosmosChain) => Promise<void>;
-  signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse>;
+  canSignDirect: (chain: SupportedCosmosChain) => boolean;
+  canSignAmino: (chain: SupportedCosmosChain) => boolean;
+  signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[], feeAmount: string, gasLimit: number, memo: string): Promise<DirectSignResponse>;
+  signAmino (chain: SupportedCosmosChain, messages: AminoMsg[], feeAmount: string, gasLimit: number, memo: string): Promise<AminoSignResponse>;
   broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode, broadCastSource: CosmosBroadcastSource): Promise<string>;
 }
 
@@ -164,8 +167,8 @@ export interface ICosmosWallet {
   keepConnection: boolean;
   connect: (chainInfo: CosmosChainInfo) => Promise<void>;
   getAccount: (chainInfo: CosmosChainInfo) => Promise<ICosmosSdkAccount>;
-  signDirect: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
-  signAmino: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<AminoSignResponse>;
+  signDirect: (chainInfo: CosmosChainInfo, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
+  signAmino: (chainInfo: CosmosChainInfo, signer: string, signDoc: StdSignDoc) => Promise<AminoSignResponse>;
   sendTx: (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode) => Promise<Uint8Array>;
   addChain: (chainId: string) => Promise<void>;
   registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
@@ -219,6 +222,8 @@ export interface ITransfer {
   fromAddress: string,
   toAddress: string,
   amount: string,
+  feeAmount?: string,
+  memo?: string,
   bridgeFee?: BridgeFee
 }
 
