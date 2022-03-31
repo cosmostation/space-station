@@ -6,7 +6,9 @@ const nameMap: Record<SupportedChain, string> = {
   [SupportedChain.Osmosis]: 'Osmosis',
   [SupportedChain.Stargaze]: 'Stargaze',
   [SupportedChain.Cosmos]: 'Cosmos',
+  [SupportedChain.Cheqd]: 'cheqd',
   [SupportedChain.Iris]: 'Iris'
+
 };
 
 const linkMap: Record<SupportedChain, string> = {
@@ -15,6 +17,7 @@ const linkMap: Record<SupportedChain, string> = {
   [SupportedChain.Osmosis]: 'https://www.mintscan.io/osmosis/txs',
   [SupportedChain.Stargaze]: 'https://www.mintscan.io/stargaze/txs',
   [SupportedChain.Cosmos]: 'https://www.mintscan.io/cosmos/txs',
+  [SupportedChain.Cheqd]: 'https://explorer.cheqd.io/transactions',
   [SupportedChain.Iris]: 'https://www.mintscan.io/iris/txs'
 };
 

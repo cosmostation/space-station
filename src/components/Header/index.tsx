@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ theme }) => {
           }
         </>
         <div className="logo-title-container">
-          spacestation.zone currently only supports transfers to&nbsp;<span className="logo-title-gravity-bridge">Gravity Bridge Chain</span>.
+          spacestation.zone currently supports&nbsp;<span className="logo-title-gravity-bridge">Gravity Bridge Chain</span>&nbsp;and&nbsp;<span className="logo-title-gravity-bridge">IBC transfers</span>
         </div>
       </div>
     </div>

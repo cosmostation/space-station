@@ -18,6 +18,7 @@ export enum SupportedChain {
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
   Cosmos = 'cosmos',
+  Cheqd = 'cheqd',
   Iris = 'iris'
 }
 
@@ -30,6 +31,7 @@ export enum SupportedCosmosChain {
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
   Cosmos = 'cosmos',
+  Cheqd = 'cheqd',
   Iris = 'iris'
 }
 
@@ -129,18 +131,23 @@ export type DirectSignDoc = {
   accountNumber: Long;
 }
 
+export enum CosmosBroadcastSource {
+  Lcd,
+  Wallet
+}
+
 export interface ICosmosWalletManager {
   init (): Promise<void>;
   connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void>;
   sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse>;
-  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode): Promise<string>;
+  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode, broadCastSource: CosmosBroadcastSource): Promise<string>;
 }
 
 export interface ICosmosWallet {
   connect: (chainId: string) => Promise<void>;
   getAccount: (chainId: string) => Promise<ICosmosSdkAccount>;
   sign: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
-  sendTx: (chainId: string, txBytes: Uint8Array, mode: BroadcastMode) => Promise<Uint8Array>;
+  sendTx: (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode) => Promise<Uint8Array>;
   addChain: (chainId: string) => Promise<void>;
   onAccountChange?: (handler: AccountChangeEventHandler) => any;
   onNetworkChange?: (handler: NetworkChangeEventHandler) => any;

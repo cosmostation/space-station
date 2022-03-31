@@ -7,7 +7,7 @@ import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import ethWalletManger from 'services/eth-wallet/eth-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
-import { BridgeFee, IToken, ITransfer, SupportedChain, SupportedCosmosChain, SupportedEthChain } from 'types';
+import { BridgeFee, IToken, ITransfer, SupportedChain, SupportedCosmosChain, SupportedEthChain, CosmosBroadcastSource } from 'types';
 
 const logger = loggerFactory.getLogger('[GravityBridgeTransferer]');
 
@@ -92,7 +92,8 @@ async function transferFromGravityBridge (transfer: ITransfer): Promise<string> 
   return cosmosWalletManager.broadcast(
     SupportedCosmosChain.GravityBridge,
     txBytes,
-    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC
+    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
+    CosmosBroadcastSource.Lcd
   );
 }
 
