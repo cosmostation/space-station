@@ -129,6 +129,7 @@ export type CosmosChainInfo = {
   denom: string;
   path: number[];
   ibcChannels: { [key in SupportedCosmosChain]?: string };
+  supportZeroFee: boolean;
 }
 
 export enum CosmosWalletType {

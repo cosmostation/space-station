@@ -15,6 +15,7 @@ import {
   NoKeplrWalletError,
   CosmosWalletType
 } from 'types';
+import { findChainInfoByChainId } from 'constants/cosmos-chains';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -78,7 +79,11 @@ async function signDirect (chainId: string, signer: string, signDoc: cosmos.tx.v
     authInfoBytes: signDoc.auth_info_bytes,
     accountNumber: signDoc.account_number as Long
   };
-  return keplr.signDirect(chainId, signer, _signDoc);
+  const chainInfo = findChainInfoByChainId(chainId);
+  const options = chainInfo && chainInfo.supportZeroFee
+    ? { preferNoSetFee: true }
+    : { preferNoSetFee: false };
+  return keplr.signDirect(chainId, signer, _signDoc, options);
 }
 
 async function signAmino (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<AminoSignResponse> {

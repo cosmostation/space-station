@@ -49,7 +49,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy:testnet": "yarn run build && aws s3 sync --cache-control max-age=0,public ./build/ s3://gb-eth",
+    "deploy:prod": "yarn run build && aws s3 sync --cache-control max-age=0,public ./build/ s3://spacestation.zone && aws cloudfront create-invalidation --distribution-id ESRVODSMBBH8C --paths '/*'"
   },
   "eslintConfig": {
     "extends": [

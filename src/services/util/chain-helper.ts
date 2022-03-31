@@ -6,7 +6,7 @@ const nameMap: Record<SupportedChain, string> = {
   [SupportedChain.Osmosis]: 'Osmosis',
   [SupportedChain.Stargaze]: 'Stargaze',
   [SupportedChain.Cosmos]: 'Cosmos',
-  [SupportedChain.Cheqd]: 'Cheqd',
+  [SupportedChain.Cheqd]: 'cheqd',
   [SupportedChain.Iris]: 'Iris'
 
 };

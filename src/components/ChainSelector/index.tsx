@@ -62,6 +62,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     toChains: [
       SupportedChain.Eth,
       SupportedChain.Osmosis,
+      SupportedChain.Cosmos,
       SupportedChain.Stargaze,
       SupportedChain.Cheqd,
       SupportedChain.Iris
@@ -98,7 +99,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
   },
   [SupportedChain.Cheqd]: {
     chain: SupportedChain.Cheqd,
-    name: 'Cheqd',
+    name: 'cheqd',
     image: CheqdChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.GravityBridge],

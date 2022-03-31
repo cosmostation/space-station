@@ -1,4 +1,5 @@
 import { CosmosChainInfo, SupportedCosmosChain } from 'types';
+import _ from 'lodash';
 
 const gravityBridge: CosmosChainInfo = {
   chainId: 'gravity-bridge-3',
@@ -12,7 +13,8 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Cosmos]: 'channel-17',
     [SupportedCosmosChain.Cheqd]: 'channel-43',
     [SupportedCosmosChain.Iris]: 'channel-47'
-  }
+  },
+  supportZeroFee: true
 };
 
 const cosmos: CosmosChainInfo = {
@@ -23,7 +25,8 @@ const cosmos: CosmosChainInfo = {
   denom: 'uatom',
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-281'
-  }
+  },
+  supportZeroFee: false
 };
 
 const osmosis: CosmosChainInfo = {
@@ -34,7 +37,8 @@ const osmosis: CosmosChainInfo = {
   denom: 'uosmo',
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-144'
-  }
+  },
+  supportZeroFee: true
 };
 
 const stargaze: CosmosChainInfo = {
@@ -45,7 +49,8 @@ const stargaze: CosmosChainInfo = {
   denom: 'ustars',
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-6'
-  }
+  },
+  supportZeroFee: false
 };
 
 const cheqd: CosmosChainInfo = {
@@ -56,7 +61,8 @@ const cheqd: CosmosChainInfo = {
   denom: 'ncheq',
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-2'
-  }
+  },
+  supportZeroFee: false
 };
 
 const iris: CosmosChainInfo = {
@@ -67,7 +73,8 @@ const iris: CosmosChainInfo = {
   denom: 'uiris',
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-29'
-  }
+  },
+  supportZeroFee: false
 };
 
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
@@ -78,5 +85,9 @@ const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   cheqd,
   iris
 };
+
+export function findChainInfoByChainId (chainId: string): CosmosChainInfo | undefined {
+  return _.find(_.values(chainInfoMap), { chainId });
+}
 
 export default chainInfoMap;
