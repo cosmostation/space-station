@@ -7,6 +7,7 @@ import _ from 'lodash';
 import Long from 'long';
 import loggerFactory from 'services/util/logger-factory';
 import { AccountChangeEventHandler, DirectSignDoc, ICosmosSdkAccount, ICosmosWallet, NoKeplrWalletError } from 'types';
+import { findChainInfoByChainId } from 'constants/cosmos-chains';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -67,7 +68,11 @@ async function sign (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1
     authInfoBytes: signDoc.auth_info_bytes,
     accountNumber: signDoc.account_number as Long
   };
-  return keplr.signDirect(chainId, signer, _signDoc);
+  const chainInfo = findChainInfoByChainId(chainId);
+  const options = chainInfo && chainInfo.supportZeroFee
+    ? { preferNoSetFee: true }
+    : { preferNoSetFee: false };
+  return keplr.signDirect(chainId, signer, _signDoc, options);
 }
 
 async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode): Promise<Uint8Array> {
