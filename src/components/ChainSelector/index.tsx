@@ -62,6 +62,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     toChains: [
       SupportedChain.Eth,
       SupportedChain.Osmosis,
+      SupportedChain.Cosmos,
       SupportedChain.Stargaze,
       SupportedChain.Cheqd,
       SupportedChain.Iris
