@@ -43,7 +43,7 @@ const gravityBridge: ChainInfo = {
 };
 
 const cheqd: ChainInfo = {
-  chainName: 'Cheqd',
+  chainName: 'cheqd',
   chainId: 'cheqd-mainnet-1',
   rest: 'https://api.cheqd.net',
   rpc: 'https://rpc.cheqd.net',

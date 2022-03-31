@@ -98,7 +98,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
   },
   [SupportedChain.Cheqd]: {
     chain: SupportedChain.Cheqd,
-    name: 'Cheqd',
+    name: 'cheqd',
     image: CheqdChainLogo,
     supportedWallets: [CosmosWalletType.Keplr],
     toChains: [SupportedChain.GravityBridge],
