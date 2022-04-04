@@ -1,22 +1,9 @@
-.dark .Box.ConnectedWalletDialog {
-  --connected-wallet-dialog-bg: var(--base-06);
-  --wallet-list-item-bg: var(--base-07);
-  --wallet-list-item-hover-border-color: var(--base-02);
-}
-
-.light .Box.ConnectedWalletDialog {
-  --connected-wallet-dialog-bg: var(--base-00);
-  --wallet-list-item-bg: var(--base-01);
-  --wallet-list-item-hover-border-color: var(--base-05);
-}
-
 .Box.ConnectedWalletDialog {
   width: 380px;
   height: fit-content;
   max-height: 694px;
   margin-top: 180px;
   z-index: 100;
-  background-color: var(--connected-wallet-dialog-bg);
 }
 
 .connected-wallet-heading {

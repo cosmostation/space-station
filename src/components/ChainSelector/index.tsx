@@ -62,7 +62,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Gravity Bridge',
     image: GbChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Ledger
     ],
     toChains: [
       SupportedChain.Eth,
@@ -251,7 +252,7 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
         </div>
         {fromAccount === undefined
           ? <button className="chain-selector-wallet-connect-button" onClick={connectFromWallet}>
-              Connect
+              <span className="chain-selector-wallet-connect-button-text">Connect</span>
             </button>
           : <button className="chain-selector-wallet-connect-button" onClick={openFromConnectedWalletDialog}>
               <span className={classNames('chain-selector-wallet-icon', fromConnectedWallet)}></span>
@@ -282,7 +283,7 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
         </div>
         { toAccount === undefined
           ? <button className="chain-selector-wallet-connect-button" onClick={connectToWallet}>
-              Connect
+              <span className="chain-selector-wallet-connect-button-text">Connect</span>
             </button>
           : <button className="chain-selector-wallet-connect-button" onClick={openToConnectedWalletDialog}>
               <span className={classNames('chain-selector-wallet-icon', toConnectedWallet)}></span>
