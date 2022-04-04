@@ -3,6 +3,8 @@ import './ChainSelector.css';
 import classNames from 'classnames';
 import Box from 'components/Box';
 import ChainSelectDialog from 'components/ChainSelectDialog';
+import WalletSelectDialog from 'components/WalletSelectDialog';
+import ConnectedWalletDialog from 'components/ConnectedWalletDialog';
 import IconButton from 'components/IconButton';
 import Text from 'components/Text';
 import useAccount from 'hooks/use-account';
@@ -33,6 +35,7 @@ import {
   SupportedAccount,
   SupportedChain,
 } from 'types';
+import walletHelper from 'services/util/wallet-helper';
 
 const logger = loggerFactory.getLogger('[ChainSelector]');
 
@@ -58,7 +61,9 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.GravityBridge,
     name: 'Gravity Bridge',
     image: GbChainLogo,
-    supportedWallets: [CosmosWalletType.Ledger],
+    supportedWallets: [
+      CosmosWalletType.Keplr
+    ],
     toChains: [
       SupportedChain.Eth,
       SupportedChain.Osmosis,
@@ -74,7 +79,9 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Osmosis,
     name: 'Osmosis',
     image: OsmosisChainLogo,
-    supportedWallets: [CosmosWalletType.Keplr],
+    supportedWallets: [
+      CosmosWalletType.Keplr
+    ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
     tail: 8
@@ -83,7 +90,9 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Cosmos,
     name: 'Cosmos',
     image: CosmosChainLogo,
-    supportedWallets: [CosmosWalletType.Keplr],
+    supportedWallets: [
+      CosmosWalletType.Keplr
+    ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
     tail: 8
@@ -92,7 +101,9 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Stargaze,
     name: 'Stargaze',
     image: StargazeChainLogo,
-    supportedWallets: [CosmosWalletType.Keplr],
+    supportedWallets: [
+      CosmosWalletType.Keplr
+    ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
     tail: 8
@@ -110,7 +121,9 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Iris,
     name: 'Iris',
     image: IrisChainLogo,
-    supportedWallets: [CosmosWalletType.Keplr],
+    supportedWallets: [
+      CosmosWalletType.Keplr
+    ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
     tail: 8
@@ -120,6 +133,11 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
 const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selectFromChain, selectToChain, toggle }) => {
   const [fromChainDialogOpened, setFromChainDialogOpened] = useState<boolean>(false);
   const [toChainDialogOpened, setToChainDialogOpened] = useState<boolean>(false);
+  const [fromWalletSelectDialogOpened, setFromWalletSelectDialogOpened] = useState<boolean>(false);
+  const [toWalletSelectDialogOpened, setToWalletSelectDialogOpened] = useState<boolean>(false);
+  const [fromConnectedWalletDialogOpened, setFromConnectedWalletDialogOpened] = useState<boolean>(false);
+  const [toConnectedWalletDialogOpened, setToConnectedWalletDialogOpened] = useState<boolean>(false);
+
   const fromChainInfo = SUPPORTED_CHAIN_MAP[fromChain];
   const toChainInfo = SUPPORTED_CHAIN_MAP[toChain];
   const disableToChainSelector = _.size(fromChainInfo.toChains) === 1;
@@ -136,35 +154,77 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
     }
   }, [fromChain, toChain]);
 
-  const onOpenFromChainSelector = useCallback(() => {
+  const openFromChainSelector = useCallback(() => {
     setFromChainDialogOpened(true);
   }, []);
 
-  const onCloseFromChainSelector = useCallback(() => {
+  const closeFromChainSelector = useCallback(() => {
     setFromChainDialogOpened(false);
   }, []);
 
-  const onOpenToChainSelector = useCallback(() => {
+  const openToChainSelector = useCallback(() => {
     setToChainDialogOpened(true);
   }, []);
 
-  const onCloseToChainSelector = useCallback(() => {
+  const closeToChainSelector = useCallback(() => {
     setToChainDialogOpened(false);
   }, []);
 
-  const onConnectFromChainWallet = useCallback((walletType: EthWalletType | CosmosWalletType) => {
-    connectChain(fromChain, walletType);
+  const connectFromWallet = useCallback(() => {
+    if (_.size(fromChainInfo.supportedWallets) === 1) {
+      connectChain(fromChain, fromChainInfo.supportedWallets[0]);
+    } else if (_.size(fromChainInfo.supportedWallets) > 1) {
+      setFromWalletSelectDialogOpened(true);
+    }
   }, [fromChain]);
 
-  const onConnectToChainWallet = useCallback((walletType: EthWalletType | CosmosWalletType) => {
-    connectChain(toChain, walletType);
+  const selectFromWallet = useCallback((wallet: EthWalletType | CosmosWalletType) => {
+    connectChain(fromChain, wallet);
+  }, [fromChain]);
+
+  const closeFromWalletSelectDialog = useCallback(() => {
+    setFromWalletSelectDialogOpened(false);
+  }, []);
+
+  const connectToWallet = useCallback(() => {
+    if (_.size(toChainInfo.supportedWallets) === 1) {
+      connectChain(toChain, toChainInfo.supportedWallets[0]);
+    } else if (_.size(toChainInfo.supportedWallets) > 1) {
+      setToWalletSelectDialogOpened(true);
+    }
   }, [toChain]);
 
-  const onDisconnectFromChainWallet = useCallback(() => {
+  const selectToWallet = useCallback((wallet: EthWalletType | CosmosWalletType) => {
+    connectChain(toChain, wallet);
+  }, [toChain]);
+
+  const closeToWalletSelectDialog = useCallback(() => {
+    setToWalletSelectDialogOpened(false);
+  }, []);
+
+  const openFromConnectedWalletDialog = useCallback(() => {
+    setFromConnectedWalletDialogOpened(true);
+  }, []);
+
+  const closeFromConnectedWalletDialog = useCallback(() => {
+    setFromConnectedWalletDialogOpened(false);
+  }, []);
+
+  const disconnectFromChainWallet = useCallback(() => {
+    setFromConnectedWalletDialogOpened(false);
     disconnect(fromChain);
   }, [fromChain]);
 
-  const onDisconnectToChainWallet = useCallback(() => {
+  const openToConnectedWalletDialog = useCallback(() => {
+    setToConnectedWalletDialogOpened(true);
+  }, []);
+
+  const closeToConnectedWalletDialog = useCallback(() => {
+    setToConnectedWalletDialogOpened(false);
+  }, []);
+
+  const disconnectToChainWallet = useCallback(() => {
+    setToConnectedWalletDialogOpened(false);
     disconnect(toChain);
   }, [toChain]);
 
@@ -176,7 +236,7 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
     <Box className="chain-selector-container" density={1} depth={1}>
       <div className="chain-selector-source">
         <Text className="chain-selector-heading" size="small" muted>Source</Text>
-        <div className={classNames('chain-selector')} onClick={onOpenFromChainSelector}>
+        <div className={classNames('chain-selector')} onClick={openFromChainSelector}>
           <img
             className="chain-selector-chain-icon"
             src={fromChainInfo.image}
@@ -190,19 +250,13 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
           </IconButton>
         </div>
         {fromAccount === undefined
-          ? <button className="chain-selector-wallet-connect-button" onClick={onConnectFromChainWallet.bind(null, fromChainInfo.supportedWallets[0])}>
-              {_.map(fromChainInfo.supportedWallets, (wallet, i) => (
-                <span key={i} className={classNames('chain-selector-wallet-icon', wallet)}></span>
-              ))}
+          ? <button className="chain-selector-wallet-connect-button" onClick={connectFromWallet}>
               Connect
             </button>
-          : <>
-              <button className="chain-selector-wallet-connect-button disabled">
-                <span className={classNames('chain-selector-wallet-icon', fromConnectedWallet)}></span>
-                <span className="chain-selector-connected-address">{ fromAddress }</span>
-              </button>
-              <button onClick={onDisconnectFromChainWallet}>dis</button>
-            </>
+          : <button className="chain-selector-wallet-connect-button" onClick={openFromConnectedWalletDialog}>
+              <span className={classNames('chain-selector-wallet-icon', fromConnectedWallet)}></span>
+              <span className="chain-selector-connected-address">{ fromAddress }</span>
+            </button>
         }
       </div>
       <button className="chain-selector-toggle-button" onClick={toggleDirection}>
@@ -210,7 +264,7 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
       </button>
       <div className="chain-selector-dest">
         <Text className="chain-selector-heading" size="small" muted>Destination</Text>
-        <div className={classNames('chain-selector', { disabled: disableToChainSelector })} onClick={onOpenToChainSelector}>
+        <div className={classNames('chain-selector', { disabled: disableToChainSelector })} onClick={openToChainSelector}>
           <img
             className="chain-selector-chain-icon"
             src={toChainInfo.image}
@@ -227,33 +281,63 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ fromChain, toChain, selec
           }
         </div>
         { toAccount === undefined
-          ? <button className="chain-selector-wallet-connect-button" onClick={onConnectToChainWallet.bind(null, toChainInfo.supportedWallets[0])}>
-              {_.map(toChainInfo.supportedWallets, (wallet, i) => (
-                <span key={i} className={classNames('chain-selector-wallet-icon', wallet)}></span>
-              ))}
+          ? <button className="chain-selector-wallet-connect-button" onClick={connectToWallet}>
               Connect
             </button>
-          : <>
-            <button className="chain-selector-wallet-connect-button disabled">
+          : <button className="chain-selector-wallet-connect-button" onClick={openToConnectedWalletDialog}>
               <span className={classNames('chain-selector-wallet-icon', toConnectedWallet)}></span>
               <span className="chain-selector-connected-address">{ toAddress }</span>
             </button>
-            <button onClick={onDisconnectToChainWallet}>dis</button>
-          </>
           }
       </div>
       {fromChainDialogOpened
         ? <ChainSelectDialog
             chains={_.values(SUPPORTED_CHAIN_MAP)}
             select={selectFromChain}
-            close={onCloseFromChainSelector}/>
+            close={closeFromChainSelector}/>
         : <></>
       }
       {!disableToChainSelector && toChainDialogOpened
         ? <ChainSelectDialog
             chains={getToChains(fromChain)}
             select={selectToChain}
-            close={onCloseToChainSelector}/>
+            close={closeToChainSelector}/>
+        : <></>
+      }
+      {fromWalletSelectDialogOpened
+        ? <WalletSelectDialog
+            wallets={fromChainInfo.supportedWallets}
+            select={selectFromWallet}
+            close={closeFromWalletSelectDialog}
+          />
+        : <></>
+      }
+      {toWalletSelectDialogOpened
+        ? <WalletSelectDialog
+            wallets={toChainInfo.supportedWallets}
+            select={selectToWallet}
+            close={closeToWalletSelectDialog}
+          />
+        : <></>
+      }
+      {fromConnectedWalletDialogOpened && fromConnectedWallet && fromAccount
+        ? <ConnectedWalletDialog
+            chainInfo={fromChainInfo}
+            wallet={fromConnectedWallet}
+            account={fromAccount}
+            disconnect={disconnectFromChainWallet}
+            close={closeFromConnectedWalletDialog}
+          />
+        : <></>
+      }
+      {toConnectedWalletDialogOpened && toConnectedWallet && toAccount
+        ? <ConnectedWalletDialog
+            chainInfo={toChainInfo}
+            wallet={toConnectedWallet}
+            account={toAccount}
+            disconnect={disconnectToChainWallet}
+            close={closeToConnectedWalletDialog}
+          />
         : <></>
       }
     </Box>
@@ -316,23 +400,9 @@ function getAddress (account: SupportedAccount | undefined, chainInfo: ChainView
   }
 
   if (_.startsWith(account.address, '0x')) {
-    return shortenAddress(account.address, chainInfo.head, chainInfo.tail);
+    return walletHelper.shortenAddress(account.address, chainInfo.head, chainInfo.tail);
   } else {
-    return shortenAddress(account.address, chainInfo.head, chainInfo.tail);
-  }
-}
-
-function shortenAddress (str: string, head: number, tail: number): string {
-  if (_.size(str) <= head + tail) {
-    return str;
-  } else {
-    const pattern = new RegExp(`^(\\w{${head}})\\w+(\\w{${tail}})$`, 'g');
-    const result = pattern.exec(str);
-    if (result !== null && result[1] && result[2]) {
-      return `${result[1]}...${result[2]}`;
-    } else {
-      return str;
-    }
+    return walletHelper.shortenAddress(account.address, chainInfo.head, chainInfo.tail);
   }
 }
 

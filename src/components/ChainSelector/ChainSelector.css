@@ -76,10 +76,25 @@
 
 .chain-selector-wallet-icon.MetaMask {
   background-image: url('../../images/meta-mask-icon.png');
+  background-size: 16px 16px;
 }
 
 .chain-selector-wallet-icon.Keplr {
   background-image: url('../../images/keplr-icon.png');
+  background-size: 16px 16px;
+}
+
+.chain-selector-wallet-icon.Ledger {
+  background-image: url('../../images/ledger-light-icon.png');
+  background-size: 16px 16px;
+}
+
+.light .chain-selector-wallet-icon.Ledger {
+  background-image: url('../../images/ledger-light-icon.png');
+}
+
+.dark .chain-selector-wallet-icon.Ledger {
+  background-image: url('../../images/ledger-dark-icon.png');
 }
 
 .chain-selector-wallet-connect-button {

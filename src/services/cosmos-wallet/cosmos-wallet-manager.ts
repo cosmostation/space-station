@@ -14,7 +14,7 @@ import typeHelper from 'services/util/type-helper';
 import accountStore from 'stores/account-store';
 import {
   AccountChangeEventHandler,
-  CosmosBroadcastSource,
+  BroadcastSource,
   CosmosWalletType,
   ICosmosWallet,
   ICosmosWalletManager,
@@ -97,14 +97,22 @@ async function disconnect (chain: SupportedCosmosChain): Promise<void> {
   }
 }
 
-function canSignDirect (chain: SupportedCosmosChain): boolean {
+async function canSignDirect (chain: SupportedCosmosChain): Promise<boolean> {
   const wallet = getWalletByChain(chain);
-  return wallet !== undefined && wallet.isSupportDirectSign;
+  if (!wallet) {
+    return false;
+  }
+  const chainInfo = cosmosChains[chain];
+  return wallet.isSupportDirectSign(chainInfo);
 }
 
-function canSignAmino (chain: SupportedCosmosChain): boolean {
+async function canSignAmino (chain: SupportedCosmosChain): Promise<boolean> {
   const wallet = getWalletByChain(chain);
-  return wallet !== undefined && wallet.isSupportAminoSign;
+  if (!wallet) {
+    return false;
+  }
+  const chainInfo = cosmosChains[chain];
+  return wallet.isSupportAminoSign(chainInfo);
 }
 
 async function signDirect (
@@ -192,7 +200,7 @@ async function signAmino (
     messages,
     memo
   );
-  logger.info('[signAmino] Sign Doc:', aminoSignDoc);
+  logger.info('[signAmino] SignDoc:', aminoSignDoc);
   return wallet.signAmino(chainInfo, account.address, aminoSignDoc);
 }
 
@@ -200,9 +208,9 @@ async function broadcast (
   chain: SupportedCosmosChain,
   txBytes: Uint8Array,
   broadCastMode: cosmos.tx.v1beta1.BroadcastMode,
-  broadCastSource: CosmosBroadcastSource
+  broadCastSource: BroadcastSource
 ): Promise<string> {
-  if (broadCastSource === CosmosBroadcastSource.Lcd) {
+  if (broadCastSource === BroadcastSource.Lcd) {
     const result = await lcdService.broadcastProtoTx(chain, txBytes, broadCastMode);
     logger.info('[broadcast] Result:', result);
     const code = _.get(result, 'tx_response.code');
@@ -214,7 +222,7 @@ async function broadcast (
       throw new Error(rawLog);
     }
     return txhash;
-  } else if (broadCastSource === CosmosBroadcastSource.Wallet) {
+  } else if (broadCastSource === BroadcastSource.Wallet) {
     const chainInfo = cosmosChains[chain];
     const chainId = chainInfo.chainId;
     const wallet = getWalletByChain(chain);
@@ -222,12 +230,16 @@ async function broadcast (
       throw new Error('No wallet to broadcast!');
     }
 
+    if (!wallet.isSupportBroadcast) {
+      throw new Error('Wallet does not support broadcast!');
+    }
+
     const result = await wallet.sendTx(chainId, txBytes, broadCastMode);
     const txHash = _.toUpper(Buffer.from(result).toString('hex'));
     logger.info('[broadcast] Result:', txHash);
     return txHash;
   } else {
-    return '';
+    throw new Error('No method to broadcast!');
   }
 }
 

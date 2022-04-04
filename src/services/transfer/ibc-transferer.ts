@@ -6,7 +6,8 @@ import ibcMessageService from 'services/cosmos-tx/ibc-message-service';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
-import { ITransfer, SupportedChain, CosmosBroadcastSource, ICosmosToken, SupportedCosmosChain } from 'types';
+import chainHelper from 'services/util/chain-helper';
+import { ITransfer, SupportedChain, ICosmosToken, SupportedCosmosChain } from 'types';
 
 const logger = loggerFactory.getLogger('[IbcTransferer]');
 
@@ -38,7 +39,10 @@ async function transfer (entity: ITransfer): Promise<string> {
   const memo = entity.memo || '';
   logger.info('[transfer] Timeout Height:', timeoutHeight);
 
-  if (cosmosWalletManager.canSignDirect(entity.fromChain)) {
+  const directAvailable = await cosmosWalletManager.canSignDirect(entity.fromChain);
+  const aminoAvailable = await cosmosWalletManager.canSignAmino(entity.fromChain);
+
+  if (directAvailable) {
     return broadcastWithDirectSign(
       entity.fromChain,
       cosmosToken,
@@ -51,7 +55,7 @@ async function transfer (entity: ITransfer): Promise<string> {
       feeAmount,
       memo
     );
-  } else if (cosmosWalletManager.canSignAmino(entity.fromChain)) {
+  } else if (aminoAvailable) {
     return broadcastWithAminoSign(
       entity.fromChain,
       cosmosToken,
@@ -110,7 +114,7 @@ async function broadcastWithDirectSign (
     fromChain,
     txBytes,
     cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
-    CosmosBroadcastSource.Wallet
+    chainHelper.getBroadcastSource(fromChain)
   );
 }
 
@@ -148,6 +152,7 @@ async function broadcastWithAminoSign (
     gasLimit,
     memo
   );
+  logger.info('[broadcastWithAminoSign] signature:', aminoSignResponse);
 
   const message = ibcMessageService.createIbcSendMessage(
     fromAddress,
@@ -165,7 +170,7 @@ async function broadcastWithAminoSign (
     fromChain,
     txBytes,
     cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
-    CosmosBroadcastSource.Wallet
+    chainHelper.getBroadcastSource(fromChain)
   );
 }
 

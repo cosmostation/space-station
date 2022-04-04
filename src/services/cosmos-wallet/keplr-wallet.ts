@@ -130,11 +130,34 @@ function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): Broadcast
   }
 }
 
+async function isSupportDirectSign (chainInfo: CosmosChainInfo): Promise<boolean> {
+  const keplr = await detectKeplrProvider();
+  const key = await keplr.getKey(chainInfo.chainId);
+  return key.isNanoLedger === false;
+}
+
+async function isSupportAminoSign (chainInfo: CosmosChainInfo): Promise<boolean> {
+  const keplr = await detectKeplrProvider();
+  const key = await keplr.getKey(chainInfo.chainId);
+  logger.info('[isSupportAminoSign] key:', key);
+  return key.isNanoLedger === true;
+}
+
+async function isSupportBroadcast (chainInfo: CosmosChainInfo): Promise<boolean> {
+  try {
+    const account = await getAccount(chainInfo);
+    return !_.isEmpty(account);
+  } catch (error) {
+    return false;
+  }
+}
+
 const keplrWallet: ICosmosWallet = {
   type: CosmosWalletType.Keplr,
   keepConnection: true,
-  isSupportDirectSign: false,
-  isSupportAminoSign: true,
+  isSupportDirectSign,
+  isSupportAminoSign,
+  isSupportBroadcast,
   connect,
   getAccount,
   addChain,

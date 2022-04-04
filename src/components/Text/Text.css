@@ -37,3 +37,7 @@
 .light .Text.muted {
   color: var(--base-03);
 }
+
+.Text.bold {
+  font-weight: bold;
+}

@@ -144,7 +144,7 @@ export type DirectSignDoc = {
   accountNumber: Long;
 }
 
-export enum CosmosBroadcastSource {
+export enum BroadcastSource {
   Lcd,
   Wallet
 }
@@ -153,18 +153,19 @@ export interface ICosmosWalletManager {
   init (): Promise<void>;
   connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void>;
   disconnect: (chain: SupportedCosmosChain) => Promise<void>;
-  canSignDirect: (chain: SupportedCosmosChain) => boolean;
-  canSignAmino: (chain: SupportedCosmosChain) => boolean;
+  canSignDirect: (chain: SupportedCosmosChain) => Promise<boolean>;
+  canSignAmino: (chain: SupportedCosmosChain) => Promise<boolean>;
   signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[], feeAmount: string, gasLimit: number, memo: string): Promise<DirectSignResponse>;
   signAmino (chain: SupportedCosmosChain, messages: AminoMsg[], feeAmount: string, gasLimit: number, memo: string): Promise<AminoSignResponse>;
-  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode, broadCastSource: CosmosBroadcastSource): Promise<string>;
+  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode, broadCastSource: BroadcastSource): Promise<string>;
 }
 
 export interface ICosmosWallet {
   type: CosmosWalletType;
-  isSupportDirectSign: boolean;
-  isSupportAminoSign: boolean;
   keepConnection: boolean;
+  isSupportDirectSign(chainInfo: CosmosChainInfo): Promise<boolean>;
+  isSupportAminoSign(chainInfo: CosmosChainInfo): Promise<boolean>;
+  isSupportBroadcast(chainInfo: CosmosChainInfo): Promise<boolean>;
   connect: (chainInfo: CosmosChainInfo) => Promise<void>;
   getAccount: (chainInfo: CosmosChainInfo) => Promise<ICosmosSdkAccount>;
   signDirect: (chainInfo: CosmosChainInfo, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
@@ -236,3 +237,5 @@ export type ChainViewInfo = {
   head: number
   tail: number
 }
+
+export type WalletType = CosmosWalletType | EthWalletType;

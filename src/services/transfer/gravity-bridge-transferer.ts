@@ -9,7 +9,7 @@ import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
 import {
   BridgeFee,
-  CosmosBroadcastSource,
+  BroadcastSource,
   IToken,
   ITransfer,
   SupportedChain,
@@ -97,9 +97,12 @@ async function transferFromGravityBridge (transfer: ITransfer): Promise<string> 
     throw new Error('from chain is not supported Cosmos chain!');
   }
 
-  if (cosmosWalletManager.canSignDirect(transfer.fromChain)) {
+  const directAvailable = await cosmosWalletManager.canSignDirect(transfer.fromChain);
+  const aminoAvailable = await cosmosWalletManager.canSignAmino(transfer.fromChain);
+
+  if (directAvailable) {
     return broadcastWithDirectSign(transfer);
-  } else if (cosmosWalletManager.canSignAmino(transfer.fromChain)) {
+  } else if (aminoAvailable) {
     return broadcastWithAminoSign(transfer);
   } else {
     throw new Error('[transferFromGravityBridge] Wallet should support direct signing or amino signing!');
@@ -124,7 +127,7 @@ async function broadcastWithDirectSign (transfer: ITransfer): Promise<string> {
     SupportedCosmosChain.GravityBridge,
     txBytes,
     cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
-    CosmosBroadcastSource.Lcd
+    BroadcastSource.Lcd
   );
 }
 
@@ -152,7 +155,7 @@ async function broadcastWithAminoSign (transfer: ITransfer): Promise<string> {
     transfer.fromChain,
     txBytes,
     cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
-    CosmosBroadcastSource.Wallet
+    BroadcastSource.Wallet
   );
 }
 

@@ -1,0 +1,74 @@
+.dark .Box.ConnectedWalletDialog {
+  --connected-wallet-dialog-bg: var(--base-06);
+  --wallet-list-item-bg: var(--base-07);
+  --wallet-list-item-hover-border-color: var(--base-02);
+}
+
+.light .Box.ConnectedWalletDialog {
+  --connected-wallet-dialog-bg: var(--base-00);
+  --wallet-list-item-bg: var(--base-01);
+  --wallet-list-item-hover-border-color: var(--base-05);
+}
+
+.Box.ConnectedWalletDialog {
+  width: 380px;
+  height: fit-content;
+  max-height: 694px;
+  margin-top: 180px;
+  z-index: 100;
+  background-color: var(--connected-wallet-dialog-bg);
+}
+
+.connected-wallet-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.connected-wallet-info {
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+.connected-wallet-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.connected-wallet-name {
+  margin-left: 10px;
+}
+
+.connected-wallet-address-label {
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.connected-wallet-address {
+  display: flex;
+  align-items: center;
+}
+
+.connected-wallet-account-link {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  background-size: 24px 24px;
+  cursor: pointer;
+}
+
+.disconnect-button {
+  margin-top: 24px;
+  width: 100%;
+  height: 52px;
+}
+
+.dark .connected-wallet-account-link {
+  background-image: url('../../images/external-link-dark-icon.png');
+}
+
+.light .connected-wallet-account-link {
+  background-image: url('../../images/external-link-light-icon.png');
+}
