@@ -137,10 +137,7 @@ async function isSupportDirectSign (chainInfo: CosmosChainInfo): Promise<boolean
 }
 
 async function isSupportAminoSign (chainInfo: CosmosChainInfo): Promise<boolean> {
-  const keplr = await detectKeplrProvider();
-  const key = await keplr.getKey(chainInfo.chainId);
-  logger.info('[isSupportAminoSign] key:', key);
-  return key.isNanoLedger === true;
+  return Promise.resolve(true);
 }
 
 async function isSupportBroadcast (chainInfo: CosmosChainInfo): Promise<boolean> {
