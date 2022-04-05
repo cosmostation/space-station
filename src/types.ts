@@ -1,4 +1,4 @@
-import { BroadcastMode } from '@cosmjs/launchpad';
+import { AminoSignResponse, StdSignDoc, AminoMsg } from '@cosmjs/amino';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import { EventEmitter } from 'events';
@@ -81,27 +81,36 @@ export enum EthWalletType {
   MetaMask = 'MetaMask'
 }
 
+export enum EthWalletEvent {
+  AccountChange,
+  NetworkChange
+}
+
 export type AccountChangeEventHandler = (accounts: string[]) => void;
 export type NetworkChangeEventHandler = (data: any) => void;
 
 export interface IEthWalletManager {
   init (ethChain: SupportedEthChain): Promise<void>;
   connect (chain: SupportedEthChain, walletType: EthWalletType): Promise<void>;
+  disconnect: (chain: SupportedEthChain) => Promise<void>;
   getERC20Info (chain: SupportedEthChain, contractAddress: string): Promise<IERC20Token | null>;
   updateAccount (chain: SupportedEthChain): Promise<void>;
   getERC20Balance (chain: SupportedEthChain, contractAddress: string, ownerAddress: string): Promise<string>;
-  getWeb3(chain: SupportedEthChain): Promise<Web3Manager | null>;
+  getWeb3 (chain: SupportedEthChain): Promise<Web3Manager | null>;
 }
 
 export interface IEthWallet {
+  type: EthWalletType;
   connect: (chain: SupportedEthChain) => Promise<void>;
   checkConnection: (chain: SupportedEthChain) => Promise<boolean>;
   getAccount: () => Promise<IEthAccount>;
   updateNetwork: (chain: SupportedEthChain) => Promise<boolean>;
-  registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
-  registerNetworkChangeHandler: (handler: NetworkChangeEventHandler) => void;
   getWeb3: () => Promise<Web3Manager | null>;
   isSupportMultiConnection: () => boolean;
+  registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
+  registerNetworkChangeHandler: (handler: NetworkChangeEventHandler) => void;
+  unregisterAccountChangeHandler: () => void;
+  unregisterNetworkChangeHandler: () => void;
 }
 
 export interface MetaMaskProvider extends AbstractProvider, EventEmitter {
@@ -116,13 +125,16 @@ export type EthChainInfo = {
 export type CosmosChainInfo = {
   chainId: string;
   lcd: string;
+  bech32Prefix: string;
   denom: string;
+  path: number[];
   ibcChannels: { [key in SupportedCosmosChain]?: string };
   supportZeroFee: boolean;
 }
 
 export enum CosmosWalletType {
-  Keplr = 'Keplr'
+  Keplr = 'Keplr',
+  Ledger = 'Ledger'
 }
 
 export type DirectSignDoc = {
@@ -132,7 +144,7 @@ export type DirectSignDoc = {
   accountNumber: Long;
 }
 
-export enum CosmosBroadcastSource {
+export enum BroadcastSource {
   Lcd,
   Wallet
 }
@@ -140,18 +152,30 @@ export enum CosmosBroadcastSource {
 export interface ICosmosWalletManager {
   init (): Promise<void>;
   connect (chain: SupportedCosmosChain, walletType: CosmosWalletType): Promise<void>;
-  sign (chain: SupportedCosmosChain, messages: google.protobuf.IAny[]): Promise<DirectSignResponse>;
-  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode, broadCastSource: CosmosBroadcastSource): Promise<string>;
+  disconnect: (chain: SupportedCosmosChain) => Promise<void>;
+  canSignDirect: (chain: SupportedCosmosChain) => Promise<boolean>;
+  canSignAmino: (chain: SupportedCosmosChain) => Promise<boolean>;
+  signDirect (chain: SupportedCosmosChain, messages: google.protobuf.IAny[], feeAmount: string, gasLimit: number, memo: string): Promise<DirectSignResponse>;
+  signAmino (chain: SupportedCosmosChain, messages: AminoMsg[], feeAmount: string, gasLimit: number, memo: string): Promise<AminoSignResponse>;
+  broadcast (chain: SupportedCosmosChain, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode, broadCastSource: BroadcastSource): Promise<string>;
 }
 
 export interface ICosmosWallet {
-  connect: (chainId: string) => Promise<void>;
-  getAccount: (chainId: string) => Promise<ICosmosSdkAccount>;
-  sign: (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
+  type: CosmosWalletType;
+  keepConnection: boolean;
+  isSupportDirectSign(chainInfo: CosmosChainInfo): Promise<boolean>;
+  isSupportAminoSign(chainInfo: CosmosChainInfo): Promise<boolean>;
+  isSupportBroadcast(chainInfo: CosmosChainInfo): Promise<boolean>;
+  connect: (chainInfo: CosmosChainInfo) => Promise<void>;
+  getAccount: (chainInfo: CosmosChainInfo) => Promise<ICosmosSdkAccount>;
+  signDirect: (chainInfo: CosmosChainInfo, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
+  signAmino: (chainInfo: CosmosChainInfo, signer: string, signDoc: StdSignDoc) => Promise<AminoSignResponse>;
   sendTx: (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode) => Promise<Uint8Array>;
   addChain: (chainId: string) => Promise<void>;
-  onAccountChange?: (handler: AccountChangeEventHandler) => any;
-  onNetworkChange?: (handler: NetworkChangeEventHandler) => any;
+  registerAccountChangeHandler: (handler: AccountChangeEventHandler) => void;
+  registerNetworkChangeHandler: (handler: NetworkChangeEventHandler) => void;
+  unregisterAccountChangeHandler: () => void;
+  unregisterNetworkChangeHandler: () => void;
 }
 
 export type Erc20ContractMethods = {
@@ -199,6 +223,8 @@ export interface ITransfer {
   fromAddress: string,
   toAddress: string,
   amount: string,
+  feeAmount?: string,
+  memo?: string,
   bridgeFee?: BridgeFee
 }
 
@@ -211,3 +237,5 @@ export type ChainViewInfo = {
   head: number
   tail: number
 }
+
+export type WalletType = CosmosWalletType | EthWalletType;

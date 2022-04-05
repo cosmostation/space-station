@@ -1,4 +1,4 @@
-import { BroadcastMode } from '@cosmjs/launchpad';
+import { AminoSignResponse, BroadcastMode, StdSignDoc } from '@cosmjs/launchpad';
 import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { Keplr, Window } from '@keplr-wallet/types';
 import { cosmos } from 'constants/cosmos-v0.44.5';
@@ -6,8 +6,15 @@ import keplrChainInfo from 'constants/keplr-chain-info';
 import _ from 'lodash';
 import Long from 'long';
 import loggerFactory from 'services/util/logger-factory';
-import { AccountChangeEventHandler, DirectSignDoc, ICosmosSdkAccount, ICosmosWallet, NoKeplrWalletError } from 'types';
-import { findChainInfoByChainId } from 'constants/cosmos-chains';
+import {
+  AccountChangeEventHandler,
+  CosmosChainInfo,
+  DirectSignDoc,
+  ICosmosSdkAccount,
+  ICosmosWallet,
+  NoKeplrWalletError,
+  CosmosWalletType
+} from 'types';
 
 enum KeplrEvent {
   AccountChange = 'keplr_keystorechange'
@@ -31,18 +38,21 @@ const keplr = new Promise<Keplr>((resolve, reject) => {
   };
 });
 
+let accountChangeEventHandler: AccountChangeEventHandler;
+
 async function detectKeplrProvider (): Promise<Keplr> {
   return keplr;
 }
 
-async function connect (chainId: string): Promise<void> {
+async function connect (chainInfo: CosmosChainInfo): Promise<void> {
   const keplr = await detectKeplrProvider();
-  return keplr.enable(chainId);
+  await addChain(chainInfo.chainId);
+  await keplr.enable(chainInfo.chainId);
 }
 
-async function getAccount (chainId: string): Promise<ICosmosSdkAccount> {
+async function getAccount (chainInfo: CosmosChainInfo): Promise<ICosmosSdkAccount> {
   const keplr = await detectKeplrProvider();
-  const key = await keplr.getKey(chainId);
+  const key = await keplr.getKey(chainInfo.chainId);
   return {
     address: key.bech32Address,
     balance: '0',
@@ -59,20 +69,30 @@ async function addChain (chainId: string): Promise<void> {
   }
 }
 
-async function sign (chainId: string, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
-  logger.info('[sign] Signing...');
+async function signDirect (chainInfo: CosmosChainInfo, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc): Promise<DirectSignResponse> {
+  logger.info('[signDirect] Direct signing...');
   const keplr = await detectKeplrProvider();
+  const chainId = chainInfo.chainId;
   const _signDoc: DirectSignDoc = {
     chainId,
     bodyBytes: signDoc.body_bytes,
     authInfoBytes: signDoc.auth_info_bytes,
     accountNumber: signDoc.account_number as Long
   };
-  const chainInfo = findChainInfoByChainId(chainId);
   const options = chainInfo && chainInfo.supportZeroFee
     ? { preferNoSetFee: true }
     : { preferNoSetFee: false };
   return keplr.signDirect(chainId, signer, _signDoc, options);
+}
+
+async function signAmino (chainInfo: CosmosChainInfo, signer: string, signDoc: StdSignDoc): Promise<AminoSignResponse> {
+  logger.info('[signAmino] Amino signing...');
+  const keplr = await detectKeplrProvider();
+  const chainId = chainInfo.chainId;
+  const options = chainInfo && chainInfo.supportZeroFee
+    ? { preferNoSetFee: true }
+    : { preferNoSetFee: false };
+  return keplr.signAmino(chainId, signer, signDoc, options);
 }
 
 async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode): Promise<Uint8Array> {
@@ -81,8 +101,24 @@ async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1b
   return keplr.sendTx(chainId, txBytes, convertBroadcastMode(mode));
 }
 
-async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
+function registerAccountChangeHandler (handler: AccountChangeEventHandler): void {
+  unregisterAccountChangeHandler();
+  accountChangeEventHandler = handler;
   (window as any).addEventListener(KeplrEvent.AccountChange, handler);
+}
+
+function registerNetworkChangeHandler (handler: AccountChangeEventHandler): void {
+  logger.info('[registerNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
+}
+
+function unregisterAccountChangeHandler (): void {
+  if (accountChangeEventHandler) {
+    (window as any).removeEventListener(KeplrEvent.AccountChange, accountChangeEventHandler);
+  }
+}
+
+function unregisterNetworkChangeHandler (): void {
+  logger.info('[unregisterNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
 }
 
 function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): BroadcastMode {
@@ -94,13 +130,41 @@ function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): Broadcast
   }
 }
 
+async function isSupportDirectSign (chainInfo: CosmosChainInfo): Promise<boolean> {
+  const keplr = await detectKeplrProvider();
+  const key = await keplr.getKey(chainInfo.chainId);
+  return key.isNanoLedger === false;
+}
+
+async function isSupportAminoSign (chainInfo: CosmosChainInfo): Promise<boolean> {
+  return Promise.resolve(true);
+}
+
+async function isSupportBroadcast (chainInfo: CosmosChainInfo): Promise<boolean> {
+  try {
+    const account = await getAccount(chainInfo);
+    return !_.isEmpty(account);
+  } catch (error) {
+    return false;
+  }
+}
+
 const keplrWallet: ICosmosWallet = {
+  type: CosmosWalletType.Keplr,
+  keepConnection: true,
+  isSupportDirectSign,
+  isSupportAminoSign,
+  isSupportBroadcast,
   connect,
   getAccount,
   addChain,
-  sign,
+  signDirect,
+  signAmino,
   sendTx,
-  onAccountChange
+  registerAccountChangeHandler,
+  registerNetworkChangeHandler,
+  unregisterAccountChangeHandler,
+  unregisterNetworkChangeHandler
 };
 
 export default keplrWallet;

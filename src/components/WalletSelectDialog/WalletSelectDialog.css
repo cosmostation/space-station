@@ -1,0 +1,58 @@
+.dark .Box.WalletSelectDialog {
+  --wallet-list-item-bg: var(--base-06);
+  --wallet-list-item-hover-border-color: var(--base-02);
+}
+
+.light .Box.WalletSelectDialog {
+  --wallet-list-item-bg: var(--base-01);
+  --wallet-list-item-hover-border-color: var(--base-05);
+}
+
+.Box.WalletSelectDialog {
+  width: 380px;
+  height: fit-content;
+  max-height: 694px;
+  margin-top: 180px;
+  z-index: 100;
+}
+
+.wallet-select-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.wallet-select-list {
+  overflow-y: auto;
+  max-height: calc(100% - 48px - 40px - 24px);
+}
+
+.wallet-list-item {
+  height: 50px;
+  padding: 0 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: var(--wallet-list-item-bg);
+}
+
+.wallet-list-item:hover {
+  height: 48px;
+  border: 1px solid var(--wallet-list-item-hover-border-color);
+}
+
+.wallet-list-item + .wallet-list-item {
+  margin-top: 8px;
+}
+
+.wallet-list-item-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+}
+
+.wallet-list-wallet-name {
+  margin-top: 2px;
+}

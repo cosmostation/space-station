@@ -4,7 +4,6 @@
   --chain-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   --chain-selector-connect-background-color: var(--base-07);
   --chain-selector-connect-background-accent-color: var(--base-05);
-  --chain-selector-connect-font-color: var(--base-00);
 }
 
 .App.light {
@@ -13,7 +12,6 @@
   --chain-selector-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   --chain-selector-connect-background-color: var(--base-00);
   --chain-selector-connect-background-accent-color: var(--base-01);
-  --chain-selector-connect-font-color: var(--base-05);
 }
 
 .chain-selector-container {
@@ -76,10 +74,25 @@
 
 .chain-selector-wallet-icon.MetaMask {
   background-image: url('../../images/meta-mask-icon.png');
+  background-size: 16px 16px;
 }
 
 .chain-selector-wallet-icon.Keplr {
   background-image: url('../../images/keplr-icon.png');
+  background-size: 16px 16px;
+}
+
+.chain-selector-wallet-icon.Ledger {
+  background-image: url('../../images/ledger-light-icon.png');
+  background-size: 16px 16px;
+}
+
+.light .chain-selector-wallet-icon.Ledger {
+  background-image: url('../../images/ledger-light-icon.png');
+}
+
+.dark .chain-selector-wallet-icon.Ledger {
+  background-image: url('../../images/ledger-dark-icon.png');
 }
 
 .chain-selector-wallet-connect-button {
@@ -94,9 +107,14 @@
   font-weight: bold;
   cursor: pointer;
   box-shadow: var(--chain-selector-shadow);
-  color: var(--chain-selector-connect-font-color);
   border: none;
   border-radius: 8px;
+}
+
+.chain-selector-wallet-connect-button-text {
+  background: linear-gradient(90deg, #872FEA 0%, #0ACCDE 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .chain-selector-wallet-connect-button:hover {
