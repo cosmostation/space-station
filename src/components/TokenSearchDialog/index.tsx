@@ -84,7 +84,7 @@ const TokenSearcherDialog: React.FC<TokenSearchDialogProps> = ({ fromChain, toCh
     <DialogContainer open={true} close={onClose}>
       <Box className={classNames(className, 'TokenSearchDialog')}>
         <div className="token-searcher-heading">
-          <Text size="medium">Select a Token</Text>
+          <Text size="medium" bold>Select a Token</Text>
           <IconButton onClick={onClose}>
             <img src={closeIcon} alt="close"/>
           </IconButton>

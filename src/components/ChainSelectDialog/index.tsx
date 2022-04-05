@@ -27,7 +27,7 @@ const ChainSelectDialog: React.FC<ChainSelectDialogProps> = ({ chains, className
     <DialogContainer open={true} close={close}>
       <Box className={classNames(className, 'ChainSelectDialog')}>
         <div className="chain-select-heading">
-          <Text size="medium">Select a Chain</Text>
+          <Text size="medium" bold>Select a Chain</Text>
           <IconButton onClick={close}>
             <img src={closeIcon} alt="close"/>
           </IconButton>
