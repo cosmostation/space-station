@@ -3,15 +3,16 @@ import './ChainSelector.css';
 import classNames from 'classnames';
 import Box from 'components/Box';
 import ChainSelectDialog from 'components/ChainSelectDialog';
-import WalletSelectDialog from 'components/WalletSelectDialog';
 import ConnectedWalletDialog from 'components/ConnectedWalletDialog';
 import IconButton from 'components/IconButton';
 import Text from 'components/Text';
+import WalletSelectDialog from 'components/WalletSelectDialog';
 import useAccount from 'hooks/use-account';
 import useConnectedWallet from 'hooks/use-connected-wallet';
 import arrowIcon from 'images/arrow-icon.png';
 import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
 import CheqdChainLogo from 'images/cheqd-chain-logo.png';
+import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
 import CosmosChainLogo from 'images/cosmos-chain-logo.png';
 import EthChainLogo from 'images/eth-chain-logo.png';
 import GbChainLogo from 'images/gb-chain-logo.png';
@@ -25,6 +26,7 @@ import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
 import toastService from 'services/util/toast-service';
 import typeHelper from 'services/util/type-helper';
+import walletHelper from 'services/util/wallet-helper';
 import {
   ChainViewInfo,
   CosmosWalletType,
@@ -35,7 +37,6 @@ import {
   SupportedAccount,
   SupportedChain,
 } from 'types';
-import walletHelper from 'services/util/wallet-helper';
 
 const logger = loggerFactory.getLogger('[ChainSelector]');
 
@@ -70,7 +71,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
       SupportedChain.Cosmos,
       SupportedChain.Stargaze,
       SupportedChain.Cheqd,
-      SupportedChain.Iris
+      SupportedChain.Iris,
+      SupportedChain.Chihuahua
     ],
     head: 8,
     tail: 8
@@ -121,6 +123,17 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Iris,
     name: 'Iris',
     image: IrisChainLogo,
+    supportedWallets: [
+      CosmosWalletType.Keplr
+    ],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Chihuahua]: {
+    chain: SupportedChain.Chihuahua,
+    name: 'Chihuahua',
+    image: ChihuahuaChainLogo,
     supportedWallets: [
       CosmosWalletType.Keplr
     ],

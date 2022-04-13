@@ -84,9 +84,56 @@ const cheqd: ChainInfo = {
   }
 };
 
+const chihuahua: ChainInfo = {
+  chainId: 'chihuahua-1',
+  chainName: 'Chihuahua',
+  rpc: 'https://rpc.chihuahua.wtf',
+  rest: 'https://rest.flixnet-4.omniflix.network',
+  stakeCurrency: {
+    coinDenom: 'HUAHUA',
+    coinMinimalDenom: 'uhuahua',
+    coinDecimals: 6,
+    coinGeckoId: '-'
+  },
+  bip44: {
+    coinType: 118
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'chihuahua',
+    bech32PrefixAccPub: 'chihuahuapub',
+    bech32PrefixValAddr: 'chihuahuavaloper',
+    bech32PrefixValPub: 'chihuahuavaloperpub',
+    bech32PrefixConsAddr: 'chihuahuavalcons',
+    bech32PrefixConsPub: 'chihuahuavalconspub'
+  },
+  currencies: [
+    {
+      coinDenom: 'HUAHUA',
+      coinMinimalDenom: 'uhuahua',
+      coinDecimals: 6,
+      coinGeckoId: '-'
+    }
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'HUAHUA',
+      coinMinimalDenom: 'uhuahua',
+      coinDecimals: 6,
+      coinGeckoId: '-'
+    }
+  ],
+  gasPriceStep: {
+    low: 0.025,
+    average: 0.03,
+    high: 0.04
+  },
+  features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
+};
+
 const chainInfoMap: Record<string, ChainInfo> = {
   gravityBridge,
-  cheqd
+  cheqd,
+  chihuahua
 };
 
 export default chainInfoMap;

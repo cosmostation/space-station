@@ -1,6 +1,6 @@
 import cheqdToGravityBridgeTokens from 'constants/tokens/cheqd-gb-tokens.js';
-import cosmosToGravityBridgeTokens from 'constants/tokens/cosmos-gb-tokens.json';
-import gravityBridgeToCheqdTokens from 'constants/tokens/gb-cheqd-tokens.js';
+import cosmosToGravityBridgeTokens from 'constants/tokens/cosmos-gb-tokens';
+import gravityBridgeToCheqdTokens from 'constants/tokens/gb-cheqd-tokens';
 import gravityBridgeToEthTokens from 'constants/tokens/gb-eth-tokens';
 import gravityBridgeToIrisTokens from 'constants/tokens/gb-iris-tokens.json';
 import gravityBridgeToOsmosisTokens from 'constants/tokens/gb-osmosis-tokens.json';
@@ -9,6 +9,8 @@ import gravityBridgeToStargazeTokens from 'constants/tokens/gb-stargaze-tokens.j
 import irisToGravityBridgeTokens from 'constants/tokens/iris-gb-tokens.json';
 import osmosisToGravityBridgeTokens from 'constants/tokens/osmosis-gb-tokens.json';
 import stargazeToGravityBridgeTokens from 'constants/tokens/stargaze-gb-tokens.json';
+import chihuahuaToGravityBridgeTokens from 'constants/tokens/chihuahua-gb-tokens';
+import gravityBridgeToChihuahuaTokens from 'constants/tokens/gb-chihuahua-tokens';
 import { SupportedChain } from 'types';
 
 export type CosmosTokenWithoutChainId = {
@@ -27,7 +29,8 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
     [SupportedChain.Cosmos]: gravityBridgeToCosmosTokens,
     [SupportedChain.Stargaze]: gravityBridgeToStargazeTokens,
     [SupportedChain.Cheqd]: gravityBridgeToCheqdTokens,
-    [SupportedChain.Iris]: gravityBridgeToIrisTokens
+    [SupportedChain.Iris]: gravityBridgeToIrisTokens,
+    [SupportedChain.Chihuahua]: gravityBridgeToChihuahuaTokens
   },
   [SupportedChain.Stargaze]: {
     [SupportedChain.GravityBridge]: stargazeToGravityBridgeTokens
@@ -43,6 +46,9 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
   },
   [SupportedChain.Iris]: {
     [SupportedChain.GravityBridge]: irisToGravityBridgeTokens
+  },
+  [SupportedChain.Chihuahua]: {
+    [SupportedChain.GravityBridge]: chihuahuaToGravityBridgeTokens
   },
   [SupportedChain.Eth]: {}
 };

@@ -19,7 +19,8 @@ export enum SupportedChain {
   Stargaze = 'stargaze',
   Cosmos = 'cosmos',
   Cheqd = 'cheqd',
-  Iris = 'iris'
+  Iris = 'iris',
+  Chihuahua = 'chihuahua'
 }
 
 export enum SupportedEthChain {
@@ -32,7 +33,8 @@ export enum SupportedCosmosChain {
   Stargaze = 'stargaze',
   Cosmos = 'cosmos',
   Cheqd = 'cheqd',
-  Iris = 'iris'
+  Iris = 'iris',
+  Chihuahua = 'chihuahua'
 }
 
 export interface IERC20Token {

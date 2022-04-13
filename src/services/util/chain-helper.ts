@@ -7,7 +7,8 @@ const nameMap: Record<SupportedChain, string> = {
   [SupportedChain.Stargaze]: 'Stargaze',
   [SupportedChain.Cosmos]: 'Cosmos',
   [SupportedChain.Cheqd]: 'cheqd',
-  [SupportedChain.Iris]: 'Iris'
+  [SupportedChain.Iris]: 'Iris',
+  [SupportedChain.Chihuahua]: 'Chihuahua'
 };
 
 const txLinkMap: Record<SupportedChain, string> = {
@@ -17,7 +18,8 @@ const txLinkMap: Record<SupportedChain, string> = {
   [SupportedChain.Stargaze]: 'https://www.mintscan.io/stargaze/txs',
   [SupportedChain.Cosmos]: 'https://www.mintscan.io/cosmos/txs',
   [SupportedChain.Cheqd]: 'https://explorer.cheqd.io/transactions',
-  [SupportedChain.Iris]: 'https://www.mintscan.io/iris/txs'
+  [SupportedChain.Iris]: 'https://www.mintscan.io/iris/txs',
+  [SupportedChain.Chihuahua]: 'https://www.mintscan.io/chihuahua/txs'
 };
 
 const accountLinkMap: Record<SupportedChain, string> = {
@@ -27,7 +29,8 @@ const accountLinkMap: Record<SupportedChain, string> = {
   [SupportedChain.Stargaze]: 'https://www.mintscan.io/stargaze/account',
   [SupportedChain.Cosmos]: 'https://www.mintscan.io/cosmos/account',
   [SupportedChain.Cheqd]: 'https://explorer.cheqd.io/accounts',
-  [SupportedChain.Iris]: 'https://www.mintscan.io/iris/account'
+  [SupportedChain.Iris]: 'https://www.mintscan.io/iris/account',
+  [SupportedChain.Chihuahua]: 'https://www.mintscan.io/chihuahua/account'
 };
 
 const broadcastSourceMap: Record<SupportedCosmosChain, BroadcastSource> = {
@@ -36,7 +39,8 @@ const broadcastSourceMap: Record<SupportedCosmosChain, BroadcastSource> = {
   [SupportedChain.Stargaze]: BroadcastSource.Lcd,
   [SupportedChain.Cosmos]: BroadcastSource.Lcd,
   [SupportedChain.Cheqd]: BroadcastSource.Wallet,
-  [SupportedChain.Iris]: BroadcastSource.Lcd
+  [SupportedChain.Iris]: BroadcastSource.Lcd,
+  [SupportedChain.Chihuahua]: BroadcastSource.Lcd
 };
 
 function getChainName (chain: SupportedChain): string {
