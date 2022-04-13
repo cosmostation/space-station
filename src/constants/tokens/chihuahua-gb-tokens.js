@@ -5,7 +5,7 @@ export default {
     name: 'HUAHUA',
     denom: 'uhuahua',
     symbol: 'HUAHUA',
-    decimals: 9,
+    decimals: 6,
     logoURI: CheqdChainLogo
   }
 };
