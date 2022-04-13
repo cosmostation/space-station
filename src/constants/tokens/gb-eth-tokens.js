@@ -1,4 +1,5 @@
 import CheqdChainLogo from 'images/cheqd-chain-logo.png';
+import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
 
 export default {
   gravity0x6B175474E89094C44Da98b954EedeAC495271d0F: {
@@ -48,5 +49,13 @@ export default {
     decimals: 9,
     logoURI: CheqdChainLogo,
     priceDenom: 'ncheq'
+  },
+  'ibc/048BE20AE2E6BFD4142C547E04F17E5F94363003A12B7B6C084E08101BFCF7D1': {
+    name: 'Chihuahua',
+    denom: 'ibc/048BE20AE2E6BFD4142C547E04F17E5F94363003A12B7B6C084E08101BFCF7D1',
+    symbol: 'HUAHUA',
+    decimals: 6,
+    logoURI: ChihuahuaChainLogo,
+    priceDenom: 'uhuahua'
   }
 };

@@ -1,7 +1,7 @@
 import Big from 'big.js';
 import cosmosChains from 'constants/cosmos-chains';
 import { CosmosTokenWithoutChainId, ibcTokenFromToMap } from 'constants/tokens';
-import ethToGravityBridgeTokens from 'constants/tokens/eth-gb-tokens.json';
+import ethToGravityBridgeTokens from 'constants/tokens/eth-gb-tokens';
 import _ from 'lodash';
 import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
 import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';

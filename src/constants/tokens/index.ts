@@ -1,6 +1,6 @@
 import cheqdToGravityBridgeTokens from 'constants/tokens/cheqd-gb-tokens.js';
 import cosmosToGravityBridgeTokens from 'constants/tokens/cosmos-gb-tokens';
-import gravityBridgeToCheqdTokens from 'constants/tokens/gb-cheqd-tokens.js';
+import gravityBridgeToCheqdTokens from 'constants/tokens/gb-cheqd-tokens';
 import gravityBridgeToEthTokens from 'constants/tokens/gb-eth-tokens';
 import gravityBridgeToIrisTokens from 'constants/tokens/gb-iris-tokens.json';
 import gravityBridgeToOsmosisTokens from 'constants/tokens/gb-osmosis-tokens.json';
