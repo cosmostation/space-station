@@ -6,7 +6,8 @@ import ibcMessageService from 'services/cosmos-tx/ibc-message-service';
 import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
-import { ITransfer, SupportedChain } from 'types';
+import chainHelper from 'services/util/chain-helper';
+import { ITransfer, SupportedChain, ICosmosToken, SupportedCosmosChain } from 'types';
 
 const logger = loggerFactory.getLogger('[IbcTransferer]');
 
@@ -24,7 +25,7 @@ async function transfer (entity: ITransfer): Promise<string> {
   }
 
   if (entity.token.cosmos === undefined) {
-    const errorMessage = 'Cosmos token is only allowed for IBC transfer!';
+    const errorMessage = 'Only Cosmos SDK based token can do IBC transfer!';
     logger.error('[transfer]', errorMessage);
     throw new Error(errorMessage);
   }
@@ -33,30 +34,143 @@ async function transfer (entity: ITransfer): Promise<string> {
   logger.info('[transfer] Destination Channel:', channel, 'Origin Channel ID:', originChannelId);
 
   const cosmosToken = entity.token.cosmos;
-  const decimal = new Big(10).pow(cosmosToken.decimals);
-  const _amount = new Big(entity.amount).times(decimal).toString();
   const timeoutHeight = channel.proof_height;
+  const feeAmount = entity.feeAmount || '0';
+  const memo = entity.memo || '';
   logger.info('[transfer] Timeout Height:', timeoutHeight);
 
+  const directAvailable = await cosmosWalletManager.canSignDirect(entity.fromChain);
+  const aminoAvailable = await cosmosWalletManager.canSignAmino(entity.fromChain);
+
+  if (directAvailable) {
+    return broadcastWithDirectSign(
+      entity.fromChain,
+      cosmosToken,
+      entity.amount,
+      entity.fromAddress,
+      entity.toAddress,
+      originChannelId,
+      timeoutHeight.revision_number,
+      timeoutHeight.revision_height,
+      feeAmount,
+      memo
+    );
+  } else if (aminoAvailable) {
+    return broadcastWithAminoSign(
+      entity.fromChain,
+      cosmosToken,
+      entity.amount,
+      entity.fromAddress,
+      entity.toAddress,
+      originChannelId,
+      timeoutHeight.revision_number,
+      timeoutHeight.revision_height,
+      feeAmount,
+      memo
+    );
+  } else {
+    throw new Error('[transfer] Wallet should support direct signing or amino signing!');
+  }
+}
+
+async function broadcastWithDirectSign (
+  fromChain: SupportedCosmosChain,
+  cosmosToken: ICosmosToken,
+  amount: string,
+  fromAddress: string,
+  toAddress: string,
+  originChannelId: string,
+  revisionNumber: string,
+  revisionHeight: string,
+  feeAmount: string,
+  memo: string
+): Promise<string> {
+  const decimal = new Big(10).pow(cosmosToken.decimals);
+  const _amount = new Big(amount).times(decimal).toString();
+  const gasLimit = 200000;
+
   const message = ibcMessageService.createIbcSendMessage(
-    entity.fromAddress,
-    entity.toAddress,
+    fromAddress,
+    toAddress,
     cosmosToken,
     _amount,
     'transfer',
     originChannelId,
-    timeoutHeight.revision_number,
-    timeoutHeight.revision_height
+    revisionNumber,
+    revisionHeight
   );
-  logger.info('[transfer] Message:', message);
+  logger.info('[broadcastWithDirectSign] Message:', message);
 
-  const signature = await cosmosWalletManager.sign(entity.fromChain, [message]);
-  logger.info('[transfer] signature:', signature);
+  const signature = await cosmosWalletManager.signDirect(
+    fromChain,
+    [message],
+    feeAmount,
+    gasLimit,
+    memo
+  );
+  logger.info('[broadcastWithDirectSign] signature:', signature);
   const txBytes = cosmosTxService.createTxRawBytes(signature);
   return cosmosWalletManager.broadcast(
-    entity.fromChain,
+    fromChain,
     txBytes,
-    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC
+    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
+    chainHelper.getBroadcastSource(fromChain)
+  );
+}
+
+async function broadcastWithAminoSign (
+  fromChain: SupportedCosmosChain,
+  cosmosToken: ICosmosToken,
+  amount: string,
+  fromAddress: string,
+  toAddress: string,
+  originChannelId: string,
+  revisionNumber: string,
+  revisionHeight: string,
+  feeAmount: string,
+  memo: string
+): Promise<string> {
+  const decimal = new Big(10).pow(cosmosToken.decimals);
+  const _amount = new Big(amount).times(decimal).toString();
+  const gasLimit = 200000;
+
+  const aminoMessage = ibcMessageService.createIbcSendAminoMessage(
+    fromAddress,
+    toAddress,
+    cosmosToken,
+    _amount,
+    'transfer',
+    originChannelId,
+    revisionNumber,
+    revisionHeight
+  );
+
+  const aminoSignResponse = await cosmosWalletManager.signAmino(
+    fromChain,
+    [aminoMessage],
+    feeAmount,
+    gasLimit,
+    memo
+  );
+  logger.info('[broadcastWithAminoSign] signature:', aminoSignResponse);
+
+  const message = ibcMessageService.createIbcSendMessage(
+    fromAddress,
+    toAddress,
+    cosmosToken,
+    _amount,
+    'transfer',
+    originChannelId,
+    revisionNumber,
+    revisionHeight
+  );
+
+  const txBytes = cosmosTxService.createAminoTxRawBytes(aminoSignResponse, [message]);
+  return cosmosWalletManager.broadcast(
+    fromChain,
+    txBytes,
+    cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
+    chainHelper.getBroadcastSource(fromChain)
   );
 }
 

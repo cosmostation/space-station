@@ -1,4 +1,4 @@
-import { Fee, IToken, ITransfer, SupportedChain } from 'types';
+import { BridgeFee, IToken, ITransfer, SupportedChain } from 'types';
 
 import gravityBridgeTransferer from './gravity-bridge-transferer';
 import ibcTransferer from './ibc-transferer';
@@ -21,7 +21,7 @@ function needBridgeFee (fromChain: SupportedChain, toChain: SupportedChain): boo
   return false;
 }
 
-function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: IToken, tokenPrice: string): Fee[] {
+function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: IToken, tokenPrice: string): BridgeFee[] {
   if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain)) {
     return gravityBridgeTransferer.getFees(fromChain, token, tokenPrice);
   }

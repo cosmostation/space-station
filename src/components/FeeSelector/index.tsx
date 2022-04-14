@@ -10,7 +10,7 @@ import _ from 'lodash';
 import React, { useCallback, useEffect } from 'react';
 import transferer from 'services/transfer/transferer';
 import loggerFactory from 'services/util/logger-factory';
-import { Fee, IToken, SupportedChain } from 'types';
+import { BridgeFee, IToken, SupportedChain } from 'types';
 
 const logger = loggerFactory.getLogger('[FeeSelector]');
 
@@ -21,8 +21,8 @@ type FeeSelectorProps = {
   currency: string,
   balance: string,
   amount: string,
-  select: (fee: Fee) => void,
-  selectedFee?: Fee
+  select: (fee: BridgeFee) => void,
+  selectedFee?: BridgeFee
 }
 
 function getPriceDenom (selectedToken: IToken): string {
@@ -99,7 +99,7 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
   );
 };
 
-function isSameFee (feeA: Fee, feeB: Fee): boolean {
+function isSameFee (feeA: BridgeFee, feeB: BridgeFee): boolean {
   return _.join(_.values(feeA), ':') === _.join(_.values(feeB), ':');
 }
 

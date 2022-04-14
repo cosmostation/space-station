@@ -5,6 +5,7 @@ import Web3Manager from 'services/eth-wallet/web3-manager';
 import loggerFactory from 'services/util/logger-factory';
 import {
   AccountChangeEventHandler,
+  EthWalletType,
   IEthAccount,
   IEthWallet,
   MetaMaskPendingRequestError,
@@ -16,8 +17,16 @@ import {
 
 const logger = loggerFactory.getLogger('[MetaMaskWallet]');
 
+enum MetaMaskEventType {
+  accountsChanged = 'accountsChanged',
+  chainChanged = 'chainChanged'
+}
+
 class MetaMaskWallet implements IEthWallet {
+  type: EthWalletType = EthWalletType.MetaMask;
   web3: Promise<Web3Manager | null>;
+  accountChangeEventHandler: AccountChangeEventHandler | undefined;
+  networkChangeEventHandler: NetworkChangeEventHandler | undefined;
 
   constructor () {
     this.web3 = getMetaMaskProvider()
@@ -98,11 +107,31 @@ class MetaMaskWallet implements IEthWallet {
   }
 
   registerAccountChangeHandler (handler: AccountChangeEventHandler): void {
+    if (this.accountChangeEventHandler) {
+      this.unregisterAccountChangeHandler();
+    }
+    this.accountChangeEventHandler = handler;
     onAccountChange(handler);
   }
 
   registerNetworkChangeHandler (handler: NetworkChangeEventHandler): void {
+    if (this.networkChangeEventHandler) {
+      this.unregisterNetworkChangeHandler();
+    }
+    this.networkChangeEventHandler = handler;
     onNetworkChange(handler);
+  }
+
+  unregisterAccountChangeHandler (): void {
+    if (this.accountChangeEventHandler) {
+      removeAccountChangeHandler(this.accountChangeEventHandler);
+    }
+  }
+
+  unregisterNetworkChangeHandler (): void {
+    if (this.networkChangeEventHandler) {
+      removeNetworkChangeHandler(this.networkChangeEventHandler);
+    }
   }
 
   getWeb3 (): Promise<Web3Manager | null> {
@@ -168,12 +197,24 @@ async function getEthBalance (address: string): Promise<number> {
 
 async function onAccountChange (handler: AccountChangeEventHandler): Promise<void> {
   const metaMaskProvider = await getMetaMaskProvider();
-  metaMaskProvider.on('accountsChanged', handler);
+  metaMaskProvider.on(MetaMaskEventType.accountsChanged, handler);
 }
 
 async function onNetworkChange (handler: NetworkChangeEventHandler): Promise<void> {
   const metaMaskProvider = await getMetaMaskProvider();
-  metaMaskProvider.on('chainChanged', handler);
+  metaMaskProvider.on(MetaMaskEventType.chainChanged, handler);
+}
+
+async function removeAccountChangeHandler (handler: AccountChangeEventHandler): Promise<void> {
+  logger.info('[removeAccountChangeHandler] Removing account change handler');
+  const metaMaskProvider = await getMetaMaskProvider();
+  metaMaskProvider.removeListener(MetaMaskEventType.accountsChanged, handler);
+}
+
+async function removeNetworkChangeHandler (handler: NetworkChangeEventHandler): Promise<void> {
+  logger.info('[removeNetworkChangeHandler] Removing network change handler');
+  const metaMaskProvider = await getMetaMaskProvider();
+  metaMaskProvider.removeListener(MetaMaskEventType.chainChanged, handler);
 }
 
 function isPendingError (error: any): boolean {

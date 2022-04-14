@@ -1,0 +1,37 @@
+{
+  "uiris": {
+    "name": "Iris",
+    "denom": "uiris",
+    "symbol": "IRIS",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-iris.svg"
+  },
+  "ibc/DDC0CE4852A53B1D3A6BF056CBB59701AC8E91798028CD7C2A7F490A753F8A88": {
+    "name": "Graviton",
+    "denom": "ibc/DDC0CE4852A53B1D3A6BF056CBB59701AC8E91798028CD7C2A7F490A753F8A88",
+    "symbol": "GRAVITON",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-gravity-bridge.svg"
+  },
+  "ibc/BB672AA10BBB0A66CD8613E6286D8F11A31A4CA0B8026379BBC2484971499EFE": {
+    "name": "Dai",
+    "denom": "ibc/BB672AA10BBB0A66CD8613E6286D8F11A31A4CA0B8026379BBC2484971499EFE",
+    "symbol": "DAI",
+    "decimals": 18,
+    "logoURI": "https://assets.coingecko.com/coins/images/9956/thumb/4943.png?1636636734"
+  },
+  "ibc/E244B968EE0D1EC047E7516F6ABECE7B68E9FD93B4BD8D08D13642247416BB17": {
+    "name": "Wrapped ETH",
+    "denom": "ibc/E244B968EE0D1EC047E7516F6ABECE7B68E9FD93B4BD8D08D13642247416BB17",
+    "symbol": "WETH",
+    "decimals": 18,
+    "logoURI": "https://assets.coingecko.com/coins/images/2518/thumb/weth.png?1628852295"
+  },
+  "ibc/A5A5EBF3B7A180FBA2A3CE133153F5B904AA8B085691F66A15BE8156B6722652": {
+    "name": "USD Coin",
+    "denom": "ibc/A5A5EBF3B7A180FBA2A3CE133153F5B904AA8B085691F66A15BE8156B6722652",
+    "symbol": "USDC",
+    "decimals": 6,
+    "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389"
+  }
+}
