@@ -20,6 +20,8 @@ export enum SupportedChain {
   Cosmos = 'cosmos',
   Cheqd = 'cheqd',
   Iris = 'iris',
+  Axelar = 'axelar',
+  Terra = 'terra',
   Chihuahua = 'chihuahua'
 }
 
@@ -32,8 +34,10 @@ export enum SupportedCosmosChain {
   Osmosis = 'osmosis',
   Stargaze = 'stargaze',
   Cosmos = 'cosmos',
-  Cheqd = 'cheqd',
+  Axelar = 'axelar',
   Iris = 'iris',
+  Terra = 'terra',
+  Cheqd = 'cheqd',
   Chihuahua = 'chihuahua'
 }
 

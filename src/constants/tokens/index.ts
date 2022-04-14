@@ -1,3 +1,4 @@
+import axelarToTerraTokens from 'constants/tokens/axelar-terra-tokens.json';
 import cheqdToGravityBridgeTokens from 'constants/tokens/cheqd-gb-tokens.js';
 import cosmosToGravityBridgeTokens from 'constants/tokens/cosmos-gb-tokens';
 import gravityBridgeToCheqdTokens from 'constants/tokens/gb-cheqd-tokens';
@@ -9,6 +10,7 @@ import gravityBridgeToStargazeTokens from 'constants/tokens/gb-stargaze-tokens.j
 import irisToGravityBridgeTokens from 'constants/tokens/iris-gb-tokens.json';
 import osmosisToGravityBridgeTokens from 'constants/tokens/osmosis-gb-tokens.json';
 import stargazeToGravityBridgeTokens from 'constants/tokens/stargaze-gb-tokens.json';
+import terraToAxelarTokens from 'constants/tokens/terra-axelar-tokens.json';
 import chihuahuaToGravityBridgeTokens from 'constants/tokens/chihuahua-gb-tokens';
 import gravityBridgeToChihuahuaTokens from 'constants/tokens/gb-chihuahua-tokens';
 import { SupportedChain } from 'types';
@@ -40,6 +42,12 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
   },
   [SupportedChain.Cosmos]: {
     [SupportedChain.GravityBridge]: cosmosToGravityBridgeTokens
+  },
+  [SupportedChain.Axelar]: {
+    [SupportedChain.Terra]: axelarToTerraTokens
+  },
+  [SupportedChain.Terra]: {
+    [SupportedChain.Axelar]: terraToAxelarTokens
   },
   [SupportedChain.Cheqd]: {
     [SupportedChain.GravityBridge]: cheqdToGravityBridgeTokens

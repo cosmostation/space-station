@@ -1,0 +1,9 @@
+{
+  "uluna": {
+    "name": "Luna",
+    "denom": "uluna",
+    "symbol": "LUNA",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-stargaze.svg"
+  }
+}

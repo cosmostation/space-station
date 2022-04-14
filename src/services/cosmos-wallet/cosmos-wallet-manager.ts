@@ -35,6 +35,8 @@ const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefi
   [SupportedCosmosChain.Osmosis]: undefined,
   [SupportedCosmosChain.Stargaze]: undefined,
   [SupportedCosmosChain.Cosmos]: undefined,
+  [SupportedCosmosChain.Axelar]: undefined,
+  [SupportedCosmosChain.Terra]: undefined,
   [SupportedCosmosChain.Cheqd]: undefined,
   [SupportedCosmosChain.Iris]: undefined,
   [SupportedCosmosChain.Chihuahua]: undefined
@@ -45,6 +47,8 @@ const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = 
   [SupportedCosmosChain.Osmosis]: undefined,
   [SupportedCosmosChain.Stargaze]: undefined,
   [SupportedCosmosChain.Cosmos]: undefined,
+  [SupportedCosmosChain.Axelar]: undefined,
+  [SupportedCosmosChain.Terra]: undefined,
   [SupportedCosmosChain.Cheqd]: undefined,
   [SupportedCosmosChain.Iris]: undefined,
   [SupportedCosmosChain.Chihuahua]: undefined

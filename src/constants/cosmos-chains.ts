@@ -90,11 +90,37 @@ const chihuahua: CosmosChainInfo = {
   supportZeroFee: false
 };
 
+const axelar: CosmosChainInfo = {
+  chainId: 'axelar-dojo-1',
+  lcd: 'https://lcd-axelar.cosmostation.io',
+  bech32Prefix: 'axelar',
+  path: [44, 118, 0, 0, 0],
+  denom: 'uaxl',
+  ibcChannels: {
+    [SupportedCosmosChain.Terra]: 'channel-0'
+  },
+  supportZeroFee: false
+};
+
+const terra: CosmosChainInfo = {
+  chainId: 'columbus-5',
+  lcd: 'https://lcd.terra.dev',
+  bech32Prefix: 'terra',
+  path: [44, 118, 0, 0, 0],
+  denom: 'uluna',
+  ibcChannels: {
+    [SupportedCosmosChain.Axelar]: 'channel-19'
+  },
+  supportZeroFee: false
+};
+
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
   cosmos,
   osmosis,
   stargaze,
+  axelar,
+  terra,
   cheqd,
   iris,
   chihuahua
