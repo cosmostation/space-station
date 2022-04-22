@@ -191,7 +191,7 @@ function getFees (fromChain: SupportedChain, token: IToken, tokenPrice: string):
 
 function getFeeLabel (usdFee: number): string {
   switch (usdFee) {
-    case 10: return 'Within a day';
+    case 10: return 'Within 4 hours';
     case 200: return 'Within an hour';
     case 500: return 'Instantly';
     default: return 'Unknown';
