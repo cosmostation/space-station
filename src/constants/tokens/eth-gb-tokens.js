@@ -1,3 +1,4 @@
+import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
 
 export default [
@@ -45,6 +46,15 @@ export default [
     decimals: 6,
     logoURI: 'https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-stargaze.svg',
     priceDenom: 'ustars'
+  },
+  {
+    chainId: '0x1',
+    address: '0x70EDF1c215D0ce69E7F16FD4E6276ba0d99d4de7',
+    name: 'Cheqd',
+    symbol: 'CHEQ',
+    decimals: 9,
+    logoURI: CheqdChainLogo,
+    priceDenom: 'ncheq'
   },
   {
     chainId: '0x1',
