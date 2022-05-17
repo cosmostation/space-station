@@ -14,7 +14,7 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Cheqd]: 'channel-43',
     [SupportedCosmosChain.Iris]: 'channel-47',
     [SupportedCosmosChain.Chihuahua]: 'channel-34',
-    [SupportedCosmosChain.Nyx]: 'channel-13'
+    [SupportedCosmosChain.Nyx]: 'channel-18'
   },
   supportZeroFee: true
 };
