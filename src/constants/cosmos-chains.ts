@@ -98,7 +98,7 @@ const nyx: CosmosChainInfo = {
   path: [44, 118, 0, 0, 0],
   denom: 'unyx',
   ibcChannels: {
-    [SupportedCosmosChain.GravityBridge]: 'channel-1'
+    [SupportedCosmosChain.GravityBridge]: 'channel-0'
   },
   supportZeroFee: false
 };

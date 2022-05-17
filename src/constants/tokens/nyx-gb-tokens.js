@@ -2,9 +2,9 @@ import NymLogo from 'images/nym-icon.png';
 
 export default {
   unym: {
-    name: 'NYX',
+    name: 'NYM',
     denom: 'unym',
-    symbol: 'NYX',
+    symbol: 'NYM',
     decimals: 6,
     logoURI: NymLogo
   }
