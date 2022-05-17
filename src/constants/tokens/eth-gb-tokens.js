@@ -68,7 +68,7 @@ export default [
   },
   {
     chainId: '0x1',
-    address: '0x525a8f6f3ba4752868cde25164382bfbae3990e1',
+    address: '0x525A8F6F3Ba4752868cde25164382BfbaE3990e1',
     name: 'NYM',
     symbol: 'NYM',
     decimals: 6,
