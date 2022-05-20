@@ -20,7 +20,8 @@ export enum SupportedChain {
   Cosmos = 'cosmos',
   Cheqd = 'cheqd',
   Iris = 'iris',
-  Chihuahua = 'chihuahua'
+  Chihuahua = 'chihuahua',
+  Nyx = 'nyx'
 }
 
 export enum SupportedEthChain {
@@ -34,7 +35,8 @@ export enum SupportedCosmosChain {
   Cosmos = 'cosmos',
   Cheqd = 'cheqd',
   Iris = 'iris',
-  Chihuahua = 'chihuahua'
+  Chihuahua = 'chihuahua',
+  Nyx = 'nyx'
 }
 
 export interface IERC20Token {

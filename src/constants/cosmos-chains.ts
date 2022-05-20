@@ -13,7 +13,8 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Cosmos]: 'channel-17',
     [SupportedCosmosChain.Cheqd]: 'channel-43',
     [SupportedCosmosChain.Iris]: 'channel-47',
-    [SupportedCosmosChain.Chihuahua]: 'channel-34'
+    [SupportedCosmosChain.Chihuahua]: 'channel-34',
+    [SupportedCosmosChain.Nyx]: 'channel-18'
   },
   supportZeroFee: true
 };
@@ -90,6 +91,18 @@ const chihuahua: CosmosChainInfo = {
   supportZeroFee: false
 };
 
+const nyx: CosmosChainInfo = {
+  chainId: 'nyx',
+  lcd: 'https://lcd-nym.cosmostation.io',
+  bech32Prefix: 'n',
+  path: [44, 118, 0, 0, 0],
+  denom: 'unyx',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-0'
+  },
+  supportZeroFee: false
+};
+
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
   cosmos,
@@ -97,7 +110,8 @@ const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   stargaze,
   cheqd,
   iris,
-  chihuahua
+  chihuahua,
+  nyx
 };
 
 export function findChainInfoByChainId (chainId: string): CosmosChainInfo | undefined {

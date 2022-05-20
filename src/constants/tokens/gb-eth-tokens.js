@@ -1,5 +1,6 @@
 import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
+import NymLogo from 'images/nym-icon.png';
 
 export default {
   gravity0x6B175474E89094C44Da98b954EedeAC495271d0F: {
@@ -57,5 +58,13 @@ export default {
     decimals: 6,
     logoURI: ChihuahuaChainLogo,
     priceDenom: 'uhuahua'
+  },
+  'ibc/0C273962C274B2C05B22D9474BFE5B84D6A6FCAD198CB9B0ACD35EA521A36606': {
+    name: 'NYM',
+    denom: 'ibc/0C273962C274B2C05B22D9474BFE5B84D6A6FCAD198CB9B0ACD35EA521A36606',
+    symbol: 'NYM',
+    decimals: 6,
+    logoURI: NymLogo,
+    priceDenom: 'unym'
   }
 };

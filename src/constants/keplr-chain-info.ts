@@ -130,10 +130,63 @@ const chihuahua: ChainInfo = {
   features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
 };
 
+const nyx: ChainInfo = {
+  chainId: 'nyx',
+  chainName: 'NYX',
+  rpc: 'https://rpc-nym.cosmostation.io',
+  rest: 'https://lcd-nym.cosmostation.io',
+  stakeCurrency: {
+    coinDenom: 'NYX',
+    coinMinimalDenom: 'unyx',
+    coinDecimals: 6,
+    coinGeckoId: '-'
+  },
+  bip44: {
+    coinType: 118
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'n',
+    bech32PrefixAccPub: 'npub',
+    bech32PrefixValAddr: 'nvaloper',
+    bech32PrefixValPub: 'nvaloperpub',
+    bech32PrefixConsAddr: 'nvalcons',
+    bech32PrefixConsPub: 'nvalconspub'
+  },
+  currencies: [
+    {
+      coinDenom: 'NYX',
+      coinMinimalDenom: 'unyx',
+      coinDecimals: 6,
+      coinGeckoId: '-'
+    },
+    {
+      coinDenom: 'NYM',
+      coinMinimalDenom: 'unym',
+      coinDecimals: 6,
+      coinGeckoId: '-'
+    }
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'NYM',
+      coinMinimalDenom: 'unym',
+      coinDecimals: 6,
+      coinGeckoId: '-'
+    }
+  ],
+  gasPriceStep: {
+    low: 0.025,
+    average: 0.03,
+    high: 0.04
+  },
+  features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
+};
+
 const chainInfoMap: Record<string, ChainInfo> = {
   gravityBridge,
   cheqd,
-  chihuahua
+  chihuahua,
+  nyx
 };
 
 export default chainInfoMap;

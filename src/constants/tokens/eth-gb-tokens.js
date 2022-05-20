@@ -1,5 +1,6 @@
 import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
+import NymLogo from 'images/nym-icon.png';
 
 export default [
   {
@@ -64,5 +65,14 @@ export default [
     decimals: 6,
     logoURI: ChihuahuaChainLogo,
     priceDenom: 'uhuahua'
+  },
+  {
+    chainId: '0x1',
+    address: '0x525A8F6F3Ba4752868cde25164382BfbaE3990e1',
+    name: 'NYM',
+    symbol: 'NYM',
+    decimals: 6,
+    logoURI: NymLogo,
+    priceDenom: 'unym'
   }
 ];
