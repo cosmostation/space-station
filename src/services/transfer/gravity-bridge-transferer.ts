@@ -1,12 +1,3 @@
-import Big from 'big.js';
-import { cosmos } from 'constants/cosmos-v0.44.5';
-import _ from 'lodash';
-import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
-import gravityBridgeMessageService from 'services/cosmos-tx/gravity-bridge-message-service';
-import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
-import ethWalletManger from 'services/eth-wallet/eth-wallet-manager';
-import loggerFactory from 'services/util/logger-factory';
-import typeHelper from 'services/util/type-helper';
 import {
   BridgeFee,
   BroadcastSource,
@@ -16,6 +7,16 @@ import {
   SupportedCosmosChain,
   SupportedEthChain,
 } from 'types';
+
+import Big from 'big.js';
+import _ from 'lodash';
+import { cosmos } from 'constants/cosmos-v0.44.5';
+import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
+import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
+import ethWalletManger from 'services/eth-wallet/eth-wallet-manager';
+import gravityBridgeMessageService from 'services/cosmos-tx/gravity-bridge-message-service';
+import loggerFactory from 'services/util/logger-factory';
+import typeHelper from 'services/util/type-helper';
 
 const logger = loggerFactory.getLogger('[GravityBridgeTransferer]');
 
@@ -191,7 +192,7 @@ function getFees (fromChain: SupportedChain, token: IToken, tokenPrice: string):
 
 function getFeeLabel (usdFee: number): string {
   switch (usdFee) {
-    case 10: return 'Within 4 hours';
+    case 10: return 'Average 4 hours';
     case 200: return 'Within an hour';
     case 500: return 'Instantly';
     default: return 'Unknown';
