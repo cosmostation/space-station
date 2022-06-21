@@ -14,7 +14,8 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Cheqd]: 'channel-43',
     [SupportedCosmosChain.Iris]: 'channel-47',
     [SupportedCosmosChain.Chihuahua]: 'channel-34',
-    [SupportedCosmosChain.Nyx]: 'channel-18'
+    [SupportedCosmosChain.Nyx]: 'channel-18',
+    [SupportedCosmosChain.Crescent]: 'channel-62'
   },
   supportZeroFee: true
 };
@@ -102,6 +103,17 @@ const nyx: CosmosChainInfo = {
   },
   supportZeroFee: false
 };
+const crescent: CosmosChainInfo = {
+  chainId: 'crescent-1',
+  lcd: 'https://lcd-crescent.cosmostation.io/',
+  bech32Prefix: 'cre',
+  path: [44, 118, 0, 0, 0],
+  denom: 'ucre',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-2'
+  },
+  supportZeroFee: false
+};
 
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
@@ -111,7 +123,8 @@ const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   cheqd,
   iris,
   chihuahua,
-  nyx
+  nyx,
+  crescent
 };
 
 export function findChainInfoByChainId (chainId: string): CosmosChainInfo | undefined {
