@@ -210,12 +210,6 @@ const crescent: ChainInfo = {
       coinMinimalDenom: 'ucre',
       coinDecimals: 6,
       coinGeckoId: '-'
-    },
-    {
-      coinDenom: 'NYM',
-      coinMinimalDenom: 'unym',
-      coinDecimals: 6,
-      coinGeckoId: '-'
     }
   ],
   feeCurrencies: [
