@@ -1,0 +1,30 @@
+{
+  "ucre": {
+    "name": "Crescent",
+    "denom": "ucre",
+    "symbol": "CRE",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-crescent.svg"
+  },
+  "ibc/C950356239AD2A205DE09FDF066B1F9FF19A7CA7145EA48A5B19B76EE47E52F7": {
+    "name": "Graviton",
+    "denom": "ibc/C950356239AD2A205DE09FDF066B1F9FF19A7CA7145EA48A5B19B76EE47E52F7",
+    "symbol": "GRAVITON",
+    "decimals": 6,
+    "logoURI": "https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/tokens/token-gravity-bridge.svg"
+  },
+  "ibc/DBF5FA602C46392DE9F4796A0FC7D02F3A8A3D32CA3FAA50B761D4AA6F619E95": {
+    "name": "Wrapped ETH",
+    "denom": "ibc/DBF5FA602C46392DE9F4796A0FC7D02F3A8A3D32CA3FAA50B761D4AA6F619E95",
+    "symbol": "WETH",
+    "decimals": 18,
+    "logoURI": "https://assets.coingecko.com/coins/images/2518/thumb/weth.png?1628852295"
+  },
+  "ibc/CD01034D6749F20AAC5330EF4FD8B8CA7C40F7527AB8C4A302FBD2A070852EE1": {
+    "name": "USD Coin",
+    "denom": "ibc/CD01034D6749F20AAC5330EF4FD8B8CA7C40F7527AB8C4A302FBD2A070852EE1",
+    "symbol": "USDC",
+    "decimals": 6,
+    "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389"
+  }
+}

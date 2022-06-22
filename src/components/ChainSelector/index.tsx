@@ -38,6 +38,7 @@ import {
   SupportedChain,
 } from 'types';
 import NyxChainLogo from 'images/nyx-chain-logo.png';
+import CresecntChainLogo from 'images/cre-chain-logo.png';
 
 const logger = loggerFactory.getLogger('[ChainSelector]');
 
@@ -74,7 +75,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
       SupportedChain.Cheqd,
       SupportedChain.Iris,
       SupportedChain.Chihuahua,
-      SupportedChain.Nyx
+      SupportedChain.Nyx,
+      SupportedChain.Crescent
     ],
     head: 8,
     tail: 8
@@ -147,6 +149,17 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Nyx,
     name: 'Nyx',
     image: NyxChainLogo,
+    supportedWallets: [
+      CosmosWalletType.Keplr
+    ],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Crescent]: {
+    chain: SupportedChain.Crescent,
+    name: 'Crescent',
+    image: CresecntChainLogo,
     supportedWallets: [
       CosmosWalletType.Keplr
     ],
