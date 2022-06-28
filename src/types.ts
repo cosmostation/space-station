@@ -22,7 +22,8 @@ export enum SupportedChain {
   Iris = 'iris',
   Chihuahua = 'chihuahua',
   Nyx = 'nyx',
-  Crescent = 'crescent'
+  Crescent = 'crescent',
+  Secret = 'secret'
 }
 
 export enum SupportedEthChain {
@@ -38,7 +39,8 @@ export enum SupportedCosmosChain {
   Iris = 'iris',
   Chihuahua = 'chihuahua',
   Nyx = 'nyx',
-  Crescent = 'crescent'
+  Crescent = 'crescent',
+  Secret = 'secret'
 }
 
 export interface IERC20Token {
