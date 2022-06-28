@@ -32,6 +32,24 @@ export default [
   },
   {
     chainId: '0x1',
+    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    name: 'Tether',
+    symbol: 'USDC',
+    decimals: 6,
+    logoURI: 'https://assets.coingecko.com/coins/images/325/Tether-logo.png?1598003707',
+    priceDenom: 'tether'
+  },
+  {
+    chainId: '0x1',
+    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    name: 'Wrapped Bitcoin',
+    symbol: 'WBTC',
+    decimals: 8,
+    logoURI: 'https://assets.coingecko.com/coins/images/7598/wrapped_bitcoin_wbtc.png?1548822744',
+    priceDenom: 'wrapped-bitcoin'
+  },
+  {
+    chainId: '0x1',
     address: '0xdaf0b40b961CA51Fc914fbabdA8E779619576caD',
     name: 'Cosmos Atom',
     symbol: 'ATOM',

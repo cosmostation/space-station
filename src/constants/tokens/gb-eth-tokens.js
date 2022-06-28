@@ -27,6 +27,22 @@ export default {
     logoURI: 'https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389',
     priceDenom: 'usdc'
   },
+  gravity0xdAC17F958D2ee523a2206206994597C13D831ec7: {
+    name: 'Tether',
+    denom: 'gravity0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    symbol: 'USDT',
+    decimals: 6,
+    logoURI: 'https://assets.coingecko.com/coins/images/325/Tether-logo.png?1598003707',
+    priceDenom: 'tether'
+  },
+  gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599: {
+    name: 'Wrapped Bitcoin',
+    denom: 'gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+    symbol: 'WBTC',
+    decimals: 8,
+    logoURI: 'https://assets.coingecko.com/coins/images/325/Tether-logo.png?1598003707',
+    priceDenom: 'wrapped-bitcoin'
+  },
   'ibc/2E5D0AC026AC1AFA65A23023BA4F24BB8DDF94F118EDC0BAD6F625BFC557CDED': {
     name: 'Atom',
     denom: 'ibc/2E5D0AC026AC1AFA65A23023BA4F24BB8DDF94F118EDC0BAD6F625BFC557CDED',
