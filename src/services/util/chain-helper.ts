@@ -10,7 +10,8 @@ const nameMap: Record<SupportedChain, string> = {
   [SupportedChain.Iris]: 'Iris',
   [SupportedChain.Chihuahua]: 'Chihuahua',
   [SupportedChain.Nyx]: 'Nyx',
-  [SupportedChain.Crescent]: 'Crescent'
+  [SupportedChain.Crescent]: 'Crescent',
+  [SupportedChain.Secret]: 'Secret'
 };
 
 const txLinkMap: Record<SupportedChain, string> = {
@@ -23,7 +24,8 @@ const txLinkMap: Record<SupportedChain, string> = {
   [SupportedChain.Iris]: 'https://www.mintscan.io/iris/txs',
   [SupportedChain.Chihuahua]: 'https://www.mintscan.io/chihuahua/txs',
   [SupportedChain.Nyx]: 'https://nym.explorers.guru/transaction',
-  [SupportedChain.Crescent]: 'https://www.mintscan.io/crescent/txs'
+  [SupportedChain.Crescent]: 'https://www.mintscan.io/crescent/txs',
+  [SupportedChain.Secret]: 'https://www.mintscan.io/secret/txs'
 };
 
 const accountLinkMap: Record<SupportedChain, string> = {
@@ -36,7 +38,8 @@ const accountLinkMap: Record<SupportedChain, string> = {
   [SupportedChain.Iris]: 'https://www.mintscan.io/iris/account',
   [SupportedChain.Chihuahua]: 'https://www.mintscan.io/chihuahua/account',
   [SupportedChain.Nyx]: 'https://nym.explorers.guru/account',
-  [SupportedChain.Crescent]: 'https://www.mintscan.io/crescent/account'
+  [SupportedChain.Crescent]: 'https://www.mintscan.io/crescent/account',
+  [SupportedChain.Secret]: 'https://www.mintscan.io/secret/account'
 };
 
 const broadcastSourceMap: Record<SupportedCosmosChain, BroadcastSource> = {
@@ -48,7 +51,8 @@ const broadcastSourceMap: Record<SupportedCosmosChain, BroadcastSource> = {
   [SupportedChain.Iris]: BroadcastSource.Lcd,
   [SupportedChain.Chihuahua]: BroadcastSource.Lcd,
   [SupportedChain.Nyx]: BroadcastSource.Lcd,
-  [SupportedChain.Crescent]: BroadcastSource.Lcd
+  [SupportedChain.Crescent]: BroadcastSource.Lcd,
+  [SupportedChain.Secret]: BroadcastSource.Lcd
 };
 
 function getChainName (chain: SupportedChain): string {
