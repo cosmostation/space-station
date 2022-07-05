@@ -111,7 +111,7 @@ export interface IEthWallet {
   type: EthWalletType;
   connect: (chain: SupportedEthChain) => Promise<void>;
   checkConnection: (chain: SupportedEthChain) => Promise<boolean>;
-  getAccount: () => Promise<IEthAccount>;
+  getAccount: () => Promise<IEthAccount | undefined>;
   updateNetwork: (chain: SupportedEthChain) => Promise<boolean>;
   getWeb3: () => Promise<Web3Manager | null>;
   isSupportMultiConnection: () => boolean;

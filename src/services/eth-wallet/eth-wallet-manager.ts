@@ -125,7 +125,7 @@ function getAccountChangeEventHandler (chain: SupportedEthChain, wallet: IEthWal
   return async (accounts: string[]): Promise<void> => {
     logger.info('[accountChangeEventHandler] Chain:', chain);
     logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
-    if (!_.isEmpty(accounts)) {
+    if ((!_.isEmpty(accounts) && wallet.type === 'MetaMask') || wallet.type === 'Cosmostation') {
       const account = await wallet.getAccount();
       accountStore.updateAccount(chain, account, undefined);
     } else {

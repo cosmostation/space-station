@@ -82,9 +82,13 @@ class CosmostationWallet implements IEthWallet {
     }
   }
 
-  async getAccount (): Promise<IEthAccount> {
+  async getAccount (): Promise<IEthAccount | undefined> {
     try {
       const address = await getAccountInfo();
+
+      if (!address) {
+        return undefined;
+      }
       const web3 = await this.getWeb3();
       const balance = web3 !== null ? await web3.getBalance(address) : '0';
       return { address, balance };
@@ -177,11 +181,15 @@ async function changeChainId (chainId: string): Promise<void> {
 
 async function getAccountInfo (): Promise<string> {
   const provider = await getCosmostationProvider();
-  const accounts = await provider.request({ method: 'eth_requestAccounts' });
+  try {
+    const accounts = await provider.request({ method: 'eth_requestAccounts' });
 
-  return _.isArray(accounts)
-    ? _.first(accounts) as string
-    : '';
+    return _.isArray(accounts)
+      ? _.first(accounts) as string
+      : '';
+  } catch {
+    return '';
+  }
 }
 
 async function onAccountChange (handler: AccountChangeEventHandler): Promise<any> {
