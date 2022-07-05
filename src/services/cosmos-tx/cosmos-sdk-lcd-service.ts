@@ -2,7 +2,7 @@ import axios from 'axios';
 import cosmosChains from 'constants/cosmos-chains';
 import { cosmos } from 'constants/cosmos-v0.44.5';
 import _ from 'lodash';
-import { SupportedCosmosChain } from 'types';
+import { CosmosChainInfo, SupportedCosmosChain } from 'types';
 
 type AccountInfoResponse = {
   '@type': string;
@@ -76,6 +76,21 @@ async function broadcastProtoTx (cosmosChain: SupportedCosmosChain, txBytes: Uin
   return _.get(response, 'data');
 }
 
+async function broadcastProtoTxByChain (cosmosChain: CosmosChainInfo, txBytes: Uint8Array, broadCastMode: cosmos.tx.v1beta1.BroadcastMode): Promise<{
+  // eslint-disable-next-line camelcase
+  tx_response: {
+    code: number;
+    txhash: string;
+  }
+}> {
+  const chain = cosmosChain;
+  const txBytesBase64 = Buffer.from(txBytes).toString('base64');
+  const data = { tx_bytes: txBytesBase64, mode: broadCastMode };
+  const url = `${chain.lcd}/cosmos/tx/v1beta1/txs`;
+  const response = await axios.post(url, data);
+  return _.get(response, 'data');
+}
+
 async function getIbcDenomTraces (cosmosChain: SupportedCosmosChain): Promise<unknown> {
   const chain = cosmosChains[cosmosChain];
   const url = `${chain.lcd}/ibc/apps/transfer/v1/denom_traces`;
@@ -101,6 +116,7 @@ export default {
   getBalance,
   getTx,
   broadcastProtoTx,
+  broadcastProtoTxByChain,
   getIbcDenomTraces,
   getDestChannel
 };

@@ -17,7 +17,8 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Nyx]: 'channel-18',
     [SupportedCosmosChain.Crescent]: 'channel-62'
   },
-  supportZeroFee: true
+  supportZeroFee: true,
+  chainName: 'Gravity Bridge'
 };
 
 const cosmos: CosmosChainInfo = {
@@ -29,7 +30,8 @@ const cosmos: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-281'
   },
-  supportZeroFee: false
+  supportZeroFee: false,
+  chainName: 'Cosmos'
 };
 
 const osmosis: CosmosChainInfo = {
@@ -41,7 +43,8 @@ const osmosis: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-144'
   },
-  supportZeroFee: true
+  supportZeroFee: true,
+  chainName: 'Osmosis'
 };
 
 const stargaze: CosmosChainInfo = {
@@ -53,7 +56,8 @@ const stargaze: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-6'
   },
-  supportZeroFee: false
+  supportZeroFee: false,
+  chainName: 'Stargaze'
 };
 
 const cheqd: CosmosChainInfo = {
@@ -65,7 +69,8 @@ const cheqd: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-2'
   },
-  supportZeroFee: false
+  supportZeroFee: false,
+  chainName: 'Cheqd'
 };
 
 const iris: CosmosChainInfo = {
@@ -77,7 +82,8 @@ const iris: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-29'
   },
-  supportZeroFee: false
+  supportZeroFee: false,
+  chainName: 'Iris'
 };
 
 const chihuahua: CosmosChainInfo = {
@@ -89,7 +95,8 @@ const chihuahua: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-15'
   },
-  supportZeroFee: false
+  supportZeroFee: false,
+  chainName: 'Chihuahua'
 };
 
 const nyx: CosmosChainInfo = {
@@ -101,7 +108,8 @@ const nyx: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-0'
   },
-  supportZeroFee: false
+  supportZeroFee: false,
+  chainName: 'Nyx'
 };
 const crescent: CosmosChainInfo = {
   chainId: 'crescent-1',
@@ -112,7 +120,8 @@ const crescent: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-2'
   },
-  supportZeroFee: false
+  supportZeroFee: false,
+  chainName: 'Crescent'
 };
 
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {

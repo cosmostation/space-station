@@ -1388,6 +1388,11 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.24.1.tgz#0adfefe63b7f17222bc2bc12f71296f35e7ad378"
   integrity sha512-VA3WFx1lMFb7esp9BqHWkDgMvHoA3D9w+uDRvWhVRpUpDc7RYHxMbWExASjz+gNblTCg556WJGzF64tXnf9tdQ==
 
+"@cosmostation/extension-client@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@cosmostation/extension-client/-/extension-client-0.1.0.tgz#99c405fdc93c1ea1f94b76cb394c736456400678"
+  integrity sha512-j7Ssh+WyNNUn9j/4g9VovH0Rm47atBjirjCJUzbVpq+wIkimEk4o3bf4v7kAQbzt/2BB9sEN4llmfe+ayJ85dw==
+
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"

@@ -2,19 +2,24 @@ import KeplrIcon from 'images/keplr-icon.png';
 import LedgerDarkIcon from 'images/ledger-dark-icon.png';
 import LedgerLightIcon from 'images/ledger-light-icon.png';
 import MetaMaskIcon from 'images/meta-mask-icon.png';
+import CosmostationIcon from 'images/cosmostation-icon.png';
 import { CosmosWalletType, EthWalletType, ThemeType, WalletType } from 'types';
 import _ from 'lodash';
 
 const nameMap: Record<WalletType, string> = {
   [CosmosWalletType.Keplr]: 'Keplr',
   [CosmosWalletType.Ledger]: 'Ledger',
-  [EthWalletType.MetaMask]: 'MetaMask'
+  [CosmosWalletType.Cosmostation]: 'Cosmostation',
+  [EthWalletType.MetaMask]: 'MetaMask',
+  [EthWalletType.Cosmostation]: 'Cosmostation'
 };
 
 const walletIconMap: Record<WalletType, string> = {
   [CosmosWalletType.Keplr]: KeplrIcon,
   [CosmosWalletType.Ledger]: LedgerLightIcon,
-  [EthWalletType.MetaMask]: MetaMaskIcon
+  [CosmosWalletType.Cosmostation]: CosmostationIcon,
+  [EthWalletType.MetaMask]: MetaMaskIcon,
+  [EthWalletType.Cosmostation]: CosmostationIcon
 };
 
 function getWalletName (wallet: WalletType): string {

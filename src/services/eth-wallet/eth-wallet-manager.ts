@@ -17,12 +17,14 @@ import {
 } from 'types';
 
 import MetaMaskWallet from './meta-mask-wallet';
+import CosmostationWallet from './cosmostation-wallet';
 
 dotenv.config();
 const logger = loggerFactory.getLogger('[EthWalletManager]');
 
 const walletMap: Record<EthWalletType, IEthWallet> = {
-  [EthWalletType.MetaMask]: new MetaMaskWallet()
+  [EthWalletType.MetaMask]: new MetaMaskWallet(),
+  [EthWalletType.Cosmostation]: new CosmostationWallet()
 };
 
 const chainWalletTypeMap: Record<SupportedEthChain, EthWalletType | undefined> = {

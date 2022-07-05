@@ -9,6 +9,7 @@ import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
 import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
 import keplrWallet from 'services/cosmos-wallet/keplr-wallet';
 import ledgerCosmosWallet from 'services/cosmos-wallet/ledger-cosmos-wallet';
+import cosmostationWallet from 'services/cosmos-wallet/cosmostation-wallet';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
 import accountStore from 'stores/account-store';
@@ -27,7 +28,8 @@ const logger = loggerFactory.getLogger('[CosmosWalletManager]');
 
 const walletMap: Record<CosmosWalletType, ICosmosWallet> = {
   [CosmosWalletType.Keplr]: keplrWallet,
-  [CosmosWalletType.Ledger]: ledgerCosmosWallet
+  [CosmosWalletType.Ledger]: ledgerCosmosWallet,
+  [CosmosWalletType.Cosmostation]: cosmostationWallet
 };
 
 const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefined> = {
@@ -325,9 +327,11 @@ function registerEventHandlers (chain: SupportedCosmosChain): void {
 function getAccountChangeEventHandler (chain: SupportedCosmosChain, wallet: ICosmosWallet): AccountChangeEventHandler {
   const chainInfo = cosmosChains[chain];
   return async (accounts: string[]): Promise<void> => {
+    // eslint-disable-next-line no-console
+    console.log(accounts);
     logger.info('[accountChangeEventHandler] Chain:', chain);
     logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
-    if (!_.isEmpty(accounts)) {
+    if ((!_.isEmpty(accounts) && wallet.type !== 'Cosmostation') || wallet.type === 'Cosmostation') {
       const account = await wallet.getAccount(chainInfo);
       accountStore.updateAccount(chain, account, undefined);
     } else {
