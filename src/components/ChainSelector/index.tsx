@@ -430,7 +430,7 @@ async function connectChain (chain: SupportedChain, walletType: EthWalletType | 
           </>
         );
       } else {
-        toastService.showFailToast('Metamask required', 'Please try again');
+        toastService.showFailToast('Cosmostation required', 'Please try again');
       }
     }
   } else if (typeHelper.isSupportedCosmosChain(chain) && walletType === CosmosWalletType.Keplr) {
