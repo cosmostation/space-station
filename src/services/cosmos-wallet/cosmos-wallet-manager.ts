@@ -22,6 +22,7 @@ import {
   NetworkChangeEventHandler,
   SupportedCosmosChain,
 } from 'types';
+import chainInfoMap from 'constants/keplr-chain-info';
 
 dotenv.config();
 const logger = loggerFactory.getLogger('[CosmosWalletManager]');
@@ -150,12 +151,14 @@ async function signDirect (
   const txBody = cosmosTxService.createTxBody(messages, memo);
   logger.info('[signDirect] txBody:', txBody);
 
+  const baseDenom = chainInfo.chainName === 'Nyx' ? chainInfoMap.nyx.feeCurrencies[0].coinMinimalDenom : chainInfo.denom;
+
   const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
   const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
   const authInfo = cosmosTxService.getAuthInfo(
     account.pubKey,
     sequence,
-    chainInfo.denom,
+    baseDenom,
     feeAmount,
     new Long(gasLimit),
     mode

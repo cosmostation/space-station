@@ -6,7 +6,7 @@
     "@cosmjs/launchpad": "^0.26.5",
     "@cosmjs/proto-signing": "^0.26.5",
     "@cosmjs/stargate": "^0.28.0",
-    "@cosmostation/extension-client": "^0.1.0",
+    "@cosmostation/extension-client": "^0.1.2-alpha.3",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@headlessui/react": "^1.4.2",

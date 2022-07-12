@@ -4,7 +4,7 @@ import { cosmos } from 'constants/cosmos-v0.44.5';
 import _ from 'lodash';
 import Long from 'long';
 import loggerFactory from 'services/util/logger-factory';
-import { Tendermint, tendermint } from '@cosmostation/extension-client';
+import { Cosmos, cosmos as cosmosProvider } from '@cosmostation/extension-client';
 import {
   AccountChangeEventHandler,
   CosmosChainInfo,
@@ -14,7 +14,6 @@ import {
   CosmosWalletType
 } from 'types';
 import { Fee, Msg } from '@cosmostation/extension-client/types/message';
-import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
 import { findChainInfoByChainId } from 'constants/cosmos-chains';
 import keplrChainInfo from 'constants/keplr-chain-info';
 
@@ -22,9 +21,9 @@ const logger = loggerFactory.getLogger('[KelprWallet]');
 
 let accountChangeEventHandler: AccountChangeEventHandler;
 
-async function detectCosmostationProvider ():Promise<Tendermint> {
+async function detectCosmostationProvider ():Promise<Cosmos> {
   try {
-    return await tendermint();
+    return await cosmosProvider();
   } catch (e) {
     throw new NoKeplrWalletError("Can't find Keplr wallet.");
   }
@@ -139,11 +138,12 @@ async function signAmino (chainInfo: CosmosChainInfo, signer: string, signDoc: S
 
 async function sendTx (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode): Promise<Uint8Array> {
   logger.info('[sendTx] Sending TX...');
+  const cosmostation = await detectCosmostationProvider();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const chainInfo = findChainInfoByChainId(chainId)!;
 
-  const result = await lcdService.broadcastProtoTxByChain(chainInfo, txBytes, mode);
+  const result = await cosmostation.sendTransaction(chainInfo.chainName, txBytes, mode);
 
   return Buffer.from(result.tx_response.txhash, 'hex');
 }
