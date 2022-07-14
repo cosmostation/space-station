@@ -143,13 +143,16 @@ class MetaMaskWallet implements IEthWallet {
   }
 }
 
+function isMetaMaskProvider (provider: unknown): provider is MetaMaskProvider {
+  return _.get(provider, 'isMetaMask', false);
+}
+
 async function getMetaMaskProvider (): Promise<MetaMaskProvider> {
-  try {
-    const provider: any = await detectEthereumProvider();
-    return provider;
-  } catch (e) {
+  const provider: any = await detectEthereumProvider();
+  if (!isMetaMaskProvider(provider)) {
     throw new NoMetaMaskWalletError();
   }
+  return provider;
 }
 
 async function getChainId (): Promise<string> {
