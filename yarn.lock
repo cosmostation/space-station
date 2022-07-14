@@ -1388,10 +1388,10 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.24.1.tgz#0adfefe63b7f17222bc2bc12f71296f35e7ad378"
   integrity sha512-VA3WFx1lMFb7esp9BqHWkDgMvHoA3D9w+uDRvWhVRpUpDc7RYHxMbWExASjz+gNblTCg556WJGzF64tXnf9tdQ==
 
-"@cosmostation/extension-client@^0.1.2-alpha.3":
-  version "0.1.2-alpha.3"
-  resolved "https://registry.yarnpkg.com/@cosmostation/extension-client/-/extension-client-0.1.2-alpha.3.tgz#5fb714a6b7a7a556d5b3f2838ce823ced2275382"
-  integrity sha512-sFxqkfmT4+SCw2oiitxRC/yxMskhHj9LCiRUsYrvNUYsL8uAmMw3e5jhqkiwGc6RuA7+OZNx3GF7mxj0UgOSmA==
+"@cosmostation/extension-client@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@cosmostation/extension-client/-/extension-client-0.1.2.tgz#8eda60efc0216677d2816d0884a4ff365f47cda1"
+  integrity sha512-lupB4aVPhPg+20Bs8JdOVCNXIHSuwaW5Qpn9MGHx8xcFUQb4oXTefLi0dtbShrwAkevgkeFWZwDNjMiHhCiN7w==
   dependencies:
     cpy-cli "^4.1.0"
 

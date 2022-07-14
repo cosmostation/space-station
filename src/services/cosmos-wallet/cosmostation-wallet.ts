@@ -10,7 +10,7 @@ import {
   CosmosChainInfo,
   ICosmosSdkAccount,
   ICosmosWallet,
-  NoKeplrWalletError,
+  NoCosmostationWalletError,
   CosmosWalletType
 } from 'types';
 import { Fee, Msg } from '@cosmostation/extension-client/types/message';
@@ -25,7 +25,7 @@ async function detectCosmostationProvider ():Promise<Cosmos> {
   try {
     return await cosmosProvider();
   } catch (e) {
-    throw new NoKeplrWalletError("Can't find Keplr wallet.");
+    throw new NoCosmostationWalletError("Can't find Cosmostation wallet.");
   }
 }
 
@@ -156,7 +156,7 @@ async function registerAccountChangeHandler (handler: AccountChangeEventHandler)
 }
 
 function registerNetworkChangeHandler (handler: AccountChangeEventHandler): void {
-  logger.info('[registerNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
+  logger.info('[registerNetworkChangeHandler] Cosmostation does not support network change event. Do nothing...');
 }
 
 async function unregisterAccountChangeHandler (): Promise<void> {
@@ -167,7 +167,7 @@ async function unregisterAccountChangeHandler (): Promise<void> {
 }
 
 function unregisterNetworkChangeHandler (): void {
-  logger.info('[unregisterNetworkChangeHandler] Keplr does not support network change event. Do nothing...');
+  logger.info('[unregisterNetworkChangeHandler] Cosmostation does not support network change event. Do nothing...');
 }
 
 function convertBroadcastMode (mode: cosmos.tx.v1beta1.BroadcastMode): BroadcastMode {
