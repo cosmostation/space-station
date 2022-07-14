@@ -2,6 +2,7 @@ import { CosmosChainInfo, SupportedCosmosChain } from 'types';
 import _ from 'lodash';
 
 const gravityBridge: CosmosChainInfo = {
+  chainName: 'Gravity Bridge',
   chainId: 'gravity-bridge-3',
   lcd: 'https://lcd-gravity-bridge.cosmostation.io',
   bech32Prefix: 'gravity',
@@ -21,6 +22,7 @@ const gravityBridge: CosmosChainInfo = {
 };
 
 const cosmos: CosmosChainInfo = {
+  chainName: 'Cosmos',
   chainId: 'cosmoshub-4',
   lcd: 'https://lcd-cosmos.cosmostation.io',
   bech32Prefix: 'cosmos',
@@ -33,6 +35,7 @@ const cosmos: CosmosChainInfo = {
 };
 
 const osmosis: CosmosChainInfo = {
+  chainName: 'Osmosis',
   chainId: 'osmosis-1',
   lcd: 'https://lcd-osmosis-app-and.cosmostation.io',
   bech32Prefix: 'osmo',
@@ -45,6 +48,7 @@ const osmosis: CosmosChainInfo = {
 };
 
 const stargaze: CosmosChainInfo = {
+  chainName: 'Stargaze',
   chainId: 'stargaze-1',
   lcd: 'https://lcd-stargaze.cosmostation.io',
   bech32Prefix: 'star',
@@ -57,6 +61,7 @@ const stargaze: CosmosChainInfo = {
 };
 
 const cheqd: CosmosChainInfo = {
+  chainName: 'Cheqd',
   chainId: 'cheqd-mainnet-1',
   lcd: 'https://api.cheqd.net',
   bech32Prefix: 'cheqd',
@@ -69,6 +74,7 @@ const cheqd: CosmosChainInfo = {
 };
 
 const iris: CosmosChainInfo = {
+  chainName: 'Iris',
   chainId: 'irishub-1',
   lcd: 'https://lcd-iris.cosmostation.io',
   bech32Prefix: 'iris',
@@ -81,6 +87,7 @@ const iris: CosmosChainInfo = {
 };
 
 const chihuahua: CosmosChainInfo = {
+  chainName: 'Chihuahua',
   chainId: 'chihuahua-1',
   lcd: 'https://lcd-chihuahua.cosmostation.io',
   bech32Prefix: 'chihuahua',
@@ -93,6 +100,7 @@ const chihuahua: CosmosChainInfo = {
 };
 
 const nyx: CosmosChainInfo = {
+  chainName: 'Nyx',
   chainId: 'nyx',
   lcd: 'https://lcd-nym.cosmostation.io',
   bech32Prefix: 'n',
@@ -104,6 +112,7 @@ const nyx: CosmosChainInfo = {
   supportZeroFee: false
 };
 const crescent: CosmosChainInfo = {
+  chainName: 'Crescent',
   chainId: 'crescent-1',
   lcd: 'https://lcd-crescent.cosmostation.io/',
   bech32Prefix: 'cre',

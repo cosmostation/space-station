@@ -3,6 +3,7 @@ import { DirectSignResponse } from '@cosmjs/proto-signing';
 import { cosmos, google } from 'constants/cosmos-v0.44.5';
 import { EventEmitter } from 'events';
 import Long from 'long';
+import { off } from 'process';
 import Web3Manager from 'services/eth-wallet/web3-manager';
 import { AbstractProvider, RequestArguments } from 'web3-core';
 import { ContractSendMethod } from 'web3-eth-contract';
@@ -84,7 +85,8 @@ export interface ICosmosSdkAccount extends IAccount {
 export interface IEthAccount extends IAccount {}
 export type SupportedAccount = ICosmosSdkAccount | IEthAccount;
 export enum EthWalletType {
-  MetaMask = 'MetaMask'
+  MetaMask = 'MetaMask',
+  Cosmostation = 'Cosmostation',
 }
 
 export enum EthWalletEvent {
@@ -109,7 +111,7 @@ export interface IEthWallet {
   type: EthWalletType;
   connect: (chain: SupportedEthChain) => Promise<void>;
   checkConnection: (chain: SupportedEthChain) => Promise<boolean>;
-  getAccount: () => Promise<IEthAccount>;
+  getAccount: () => Promise<IEthAccount | undefined>;
   updateNetwork: (chain: SupportedEthChain) => Promise<boolean>;
   getWeb3: () => Promise<Web3Manager | null>;
   isSupportMultiConnection: () => boolean;
@@ -124,6 +126,11 @@ export interface MetaMaskProvider extends AbstractProvider, EventEmitter {
   request (args: RequestArguments): Promise<any>;
 }
 
+export interface CosmostationProvider extends AbstractProvider, EventEmitter {
+  request (args: RequestArguments): Promise<any>;
+  off (handler: unknown): any;
+}
+
 export type EthChainInfo = {
   chainId: string;
 }
@@ -136,11 +143,13 @@ export type CosmosChainInfo = {
   path: number[];
   ibcChannels: { [key in SupportedCosmosChain]?: string };
   supportZeroFee: boolean;
+  chainName: string;
 }
 
 export enum CosmosWalletType {
   Keplr = 'Keplr',
-  Ledger = 'Ledger'
+  Ledger = 'Ledger',
+  Cosmostation = 'Cosmostation'
 }
 
 export type DirectSignDoc = {
@@ -173,7 +182,7 @@ export interface ICosmosWallet {
   isSupportAminoSign(chainInfo: CosmosChainInfo): Promise<boolean>;
   isSupportBroadcast(chainInfo: CosmosChainInfo): Promise<boolean>;
   connect: (chainInfo: CosmosChainInfo) => Promise<void>;
-  getAccount: (chainInfo: CosmosChainInfo) => Promise<ICosmosSdkAccount>;
+  getAccount: (chainInfo: CosmosChainInfo) => Promise<ICosmosSdkAccount | undefined>;
   signDirect: (chainInfo: CosmosChainInfo, signer: string, signDoc: cosmos.tx.v1beta1.SignDoc) => Promise<DirectSignResponse>;
   signAmino: (chainInfo: CosmosChainInfo, signer: string, signDoc: StdSignDoc) => Promise<AminoSignResponse>;
   sendTx: (chainId: string, txBytes: Uint8Array, mode: cosmos.tx.v1beta1.BroadcastMode) => Promise<Uint8Array>;
@@ -200,6 +209,9 @@ export type GravityBridgetContractMethods = {
 export class NoMetaMaskWalletError extends Error {}
 export class MetaMaskPendingRequestError extends Error {}
 export class NoKeplrWalletError extends Error {}
+
+export class NoCosmostationWalletError extends Error {}
+export class CosmostationPendingRequestError extends Error {}
 
 export interface Price {
   readonly currency: string;
