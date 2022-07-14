@@ -330,8 +330,6 @@ function registerEventHandlers (chain: SupportedCosmosChain): void {
 function getAccountChangeEventHandler (chain: SupportedCosmosChain, wallet: ICosmosWallet): AccountChangeEventHandler {
   const chainInfo = cosmosChains[chain];
   return async (accounts: string[]): Promise<void> => {
-    // eslint-disable-next-line no-console
-    console.log(accounts);
     logger.info('[accountChangeEventHandler] Chain:', chain);
     logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
     if ((!_.isEmpty(accounts) && wallet.type !== 'Cosmostation') || wallet.type === 'Cosmostation') {
