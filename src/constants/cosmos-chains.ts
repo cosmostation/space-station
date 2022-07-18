@@ -1,4 +1,5 @@
 import { CosmosChainInfo, SupportedCosmosChain } from 'types';
+
 import _ from 'lodash';
 
 const gravityBridge: CosmosChainInfo = {
@@ -16,7 +17,8 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Iris]: 'channel-47',
     [SupportedCosmosChain.Chihuahua]: 'channel-34',
     [SupportedCosmosChain.Nyx]: 'channel-18',
-    [SupportedCosmosChain.Crescent]: 'channel-62'
+    [SupportedCosmosChain.Crescent]: 'channel-62',
+    [SupportedCosmosChain.Secret]: 'channel-79'
   },
   supportZeroFee: true
 };
@@ -123,6 +125,18 @@ const crescent: CosmosChainInfo = {
   },
   supportZeroFee: false
 };
+const secret: CosmosChainInfo = {
+  chainName: 'Secret',
+  chainId: 'secret-4',
+  lcd: 'https://api.scrt.network',
+  bech32Prefix: 'secret',
+  path: [44, 529, 0, 0, 0],
+  denom: 'uscrt',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-17'
+  },
+  supportZeroFee: false
+};
 
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
@@ -133,7 +147,8 @@ const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   iris,
   chihuahua,
   nyx,
-  crescent
+  crescent,
+  secret
 };
 
 export function findChainInfoByChainId (chainId: string): CosmosChainInfo | undefined {

@@ -1,36 +1,9 @@
 import './ChainSelector.css';
 
-import classNames from 'classnames';
-import Box from 'components/Box';
-import ChainSelectDialog from 'components/ChainSelectDialog';
-import ConnectedWalletDialog from 'components/ConnectedWalletDialog';
-import IconButton from 'components/IconButton';
-import Text from 'components/Text';
-import WalletSelectDialog from 'components/WalletSelectDialog';
-import useAccount from 'hooks/use-account';
-import useConnectedWallet from 'hooks/use-connected-wallet';
-import arrowIcon from 'images/arrow-icon.png';
-import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
-import CheqdChainLogo from 'images/cheqd-chain-logo.png';
-import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
-import CosmosChainLogo from 'images/cosmos-chain-logo.png';
-import EthChainLogo from 'images/eth-chain-logo.png';
-import GbChainLogo from 'images/gb-chain-logo.png';
-import IrisChainLogo from 'images/iris-chain-image.png';
-import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
-import StargazeChainLogo from 'images/stargaze-chain-logo.png';
-import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
-import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
-import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
-import loggerFactory from 'services/util/logger-factory';
-import toastService from 'services/util/toast-service';
-import typeHelper from 'services/util/type-helper';
-import walletHelper from 'services/util/wallet-helper';
 import {
   ChainViewInfo,
-  CosmostationPendingRequestError,
   CosmosWalletType,
+  CosmostationPendingRequestError,
   EthWalletType,
   MetaMaskPendingRequestError,
   NoCosmostationWalletError,
@@ -39,8 +12,37 @@ import {
   SupportedAccount,
   SupportedChain,
 } from 'types';
-import NyxChainLogo from 'images/nyx-chain-logo.png';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
+import Box from 'components/Box';
+import ChainSelectDialog from 'components/ChainSelectDialog';
+import CheqdChainLogo from 'images/cheqd-chain-logo.png';
+import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
+import ConnectedWalletDialog from 'components/ConnectedWalletDialog';
+import CosmosChainLogo from 'images/cosmos-chain-logo.png';
 import CresecntChainLogo from 'images/cre-chain-logo.png';
+import EthChainLogo from 'images/eth-chain-logo.png';
+import GbChainLogo from 'images/gb-chain-logo.png';
+import IconButton from 'components/IconButton';
+import IrisChainLogo from 'images/iris-chain-image.png';
+import NyxChainLogo from 'images/nyx-chain-logo.png';
+import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
+import SecretChainLogo from 'images/secret-chain-logo.png';
+import StargazeChainLogo from 'images/stargaze-chain-logo.png';
+import Text from 'components/Text';
+import WalletSelectDialog from 'components/WalletSelectDialog';
+import _ from 'lodash';
+import arrowIcon from 'images/arrow-icon.png';
+import classNames from 'classnames';
+import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
+import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import loggerFactory from 'services/util/logger-factory';
+import toastService from 'services/util/toast-service';
+import typeHelper from 'services/util/type-helper';
+import useAccount from 'hooks/use-account';
+import useConnectedWallet from 'hooks/use-connected-wallet';
+import walletHelper from 'services/util/wallet-helper';
 
 const logger = loggerFactory.getLogger('[ChainSelector]');
 
@@ -79,7 +81,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
       SupportedChain.Iris,
       SupportedChain.Chihuahua,
       SupportedChain.Nyx,
-      SupportedChain.Crescent
+      SupportedChain.Crescent,
+      SupportedChain.Secret
     ],
     head: 8,
     tail: 8
@@ -172,6 +175,18 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Crescent,
     name: 'Crescent',
     image: CresecntChainLogo,
+    supportedWallets: [
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
+    ],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Secret]: {
+    chain: SupportedChain.Secret,
+    name: 'Secret Network',
+    image: SecretChainLogo,
     supportedWallets: [
       CosmosWalletType.Keplr,
       CosmosWalletType.Cosmostation
