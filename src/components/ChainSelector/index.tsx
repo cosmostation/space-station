@@ -1,43 +1,48 @@
 import './ChainSelector.css';
 
-import classNames from 'classnames';
-import Box from 'components/Box';
-import ChainSelectDialog from 'components/ChainSelectDialog';
-import ConnectedWalletDialog from 'components/ConnectedWalletDialog';
-import IconButton from 'components/IconButton';
-import Text from 'components/Text';
-import WalletSelectDialog from 'components/WalletSelectDialog';
-import useAccount from 'hooks/use-account';
-import useConnectedWallet from 'hooks/use-connected-wallet';
-import arrowIcon from 'images/arrow-icon.png';
-import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
-import CheqdChainLogo from 'images/cheqd-chain-logo.png';
-import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
-import CosmosChainLogo from 'images/cosmos-chain-logo.png';
-import EthChainLogo from 'images/eth-chain-logo.png';
-import GbChainLogo from 'images/gb-chain-logo.png';
-import IrisChainLogo from 'images/iris-chain-image.png';
-import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
-import StargazeChainLogo from 'images/stargaze-chain-logo.png';
-import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
-import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
-import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
-import loggerFactory from 'services/util/logger-factory';
-import toastService from 'services/util/toast-service';
-import typeHelper from 'services/util/type-helper';
-import walletHelper from 'services/util/wallet-helper';
 import {
   ChainViewInfo,
   CosmosWalletType,
+  CosmostationPendingRequestError,
   EthWalletType,
   MetaMaskPendingRequestError,
+  NoCosmostationWalletError,
   NoKeplrWalletError,
   NoMetaMaskWalletError,
   SupportedAccount,
   SupportedChain,
 } from 'types';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { ReactComponent as ArrowNoTailIcon } from 'images/arrow-no-tail.svg';
+import Box from 'components/Box';
+import ChainSelectDialog from 'components/ChainSelectDialog';
+import CheqdChainLogo from 'images/cheqd-chain-logo.png';
+import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
+import ConnectedWalletDialog from 'components/ConnectedWalletDialog';
+import CosmosChainLogo from 'images/cosmos-chain-logo.png';
+import CresecntChainLogo from 'images/cre-chain-logo.png';
+import EthChainLogo from 'images/eth-chain-logo.png';
+import GbChainLogo from 'images/gb-chain-logo.png';
+import IconButton from 'components/IconButton';
+import IrisChainLogo from 'images/iris-chain-image.png';
 import NyxChainLogo from 'images/nyx-chain-logo.png';
+import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
+import SecretChainLogo from 'images/secret-chain-logo.png';
+import StargazeChainLogo from 'images/stargaze-chain-logo.png';
+import Text from 'components/Text';
+import WalletSelectDialog from 'components/WalletSelectDialog';
+import _ from 'lodash';
+import arrowIcon from 'images/arrow-icon.png';
+import classNames from 'classnames';
+import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
+import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import loggerFactory from 'services/util/logger-factory';
+import toastService from 'services/util/toast-service';
+import typeHelper from 'services/util/type-helper';
+import useAccount from 'hooks/use-account';
+import useConnectedWallet from 'hooks/use-connected-wallet';
+import walletHelper from 'services/util/wallet-helper';
 
 const logger = loggerFactory.getLogger('[ChainSelector]');
 
@@ -54,7 +59,7 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Eth,
     name: 'Ethereum',
     image: EthChainLogo,
-    supportedWallets: [EthWalletType.MetaMask],
+    supportedWallets: [EthWalletType.MetaMask, EthWalletType.Cosmostation],
     toChains: [SupportedChain.GravityBridge, SupportedChain.Osmosis],
     head: 8,
     tail: 8
@@ -64,7 +69,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Gravity Bridge',
     image: GbChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
     ],
     toChains: [
       SupportedChain.Eth,
@@ -74,7 +80,9 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
       SupportedChain.Cheqd,
       SupportedChain.Iris,
       SupportedChain.Chihuahua,
-      SupportedChain.Nyx
+      SupportedChain.Nyx,
+      SupportedChain.Crescent,
+      SupportedChain.Secret
     ],
     head: 8,
     tail: 8
@@ -84,7 +92,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Osmosis',
     image: OsmosisChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
     ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
@@ -95,7 +104,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Cosmos',
     image: CosmosChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
     ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
@@ -106,7 +116,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Stargaze',
     image: StargazeChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
     ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
@@ -116,7 +127,10 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     chain: SupportedChain.Cheqd,
     name: 'cheqd',
     image: CheqdChainLogo,
-    supportedWallets: [CosmosWalletType.Keplr],
+    supportedWallets: [
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
+    ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
     tail: 8
@@ -126,7 +140,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Iris',
     image: IrisChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
     ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
@@ -137,7 +152,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Chihuahua',
     image: ChihuahuaChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
     ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
@@ -148,7 +164,32 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     name: 'Nyx',
     image: NyxChainLogo,
     supportedWallets: [
-      CosmosWalletType.Keplr
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
+    ],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Crescent]: {
+    chain: SupportedChain.Crescent,
+    name: 'Crescent',
+    image: CresecntChainLogo,
+    supportedWallets: [
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
+    ],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Secret]: {
+    chain: SupportedChain.Secret,
+    name: 'Secret Network',
+    image: SecretChainLogo,
+    supportedWallets: [
+      CosmosWalletType.Keplr,
+      CosmosWalletType.Cosmostation
     ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,
@@ -389,6 +430,24 @@ async function connectChain (chain: SupportedChain, walletType: EthWalletType | 
         toastService.showFailToast('Metamask required', 'Please try again');
       }
     }
+  } else if (typeHelper.isSupportedEthChain(chain) && walletType === EthWalletType.Cosmostation) {
+    try {
+      if (typeHelper.isSupportedEthChain(chain)) {
+        await ethWalletManager.connect(chain, walletType);
+      }
+    } catch (error) {
+      if (error instanceof CosmostationPendingRequestError) {
+        toastService.showFailToast('Please check Cosmostation', 'Some requests are pending!');
+      } else if (error instanceof NoCosmostationWalletError) {
+        toastService.showFailToast("Can't find Cosmostation",
+          <>
+            Please install Cosmostation - <a href="https://chrome.google.com/webstore/detail/cosmostation/fpkhgmpbidmiogeglndfbkegfdlnajnf" target="_blank" rel="noopener noreferrer">HERE</a>
+          </>
+        );
+      } else {
+        toastService.showFailToast('Cosmostation required', 'Please try again');
+      }
+    }
   } else if (typeHelper.isSupportedCosmosChain(chain) && walletType === CosmosWalletType.Keplr) {
     try {
       await cosmosWalletManager.connect(chain, walletType);
@@ -401,6 +460,20 @@ async function connectChain (chain: SupportedChain, walletType: EthWalletType | 
         );
       } else {
         toastService.showFailToast("Can't connect to Keplr", 'Please try again');
+      }
+    }
+  } else if (typeHelper.isSupportedCosmosChain(chain) && walletType === CosmosWalletType.Cosmostation) {
+    try {
+      await cosmosWalletManager.connect(chain, walletType);
+    } catch (error) {
+      if (error instanceof NoCosmostationWalletError) {
+        toastService.showFailToast('Cosmostation extension required',
+          <>
+            Please install Cosmostation - <a href="https://chrome.google.com/webstore/detail/cosmostation/fpkhgmpbidmiogeglndfbkegfdlnajnf" target="_blank" rel="noopener noreferrer">HERE</a>
+          </>
+        );
+      } else {
+        toastService.showFailToast("Can't connect to Cosmostation", 'Please try again');
       }
     }
   } else if (typeHelper.isSupportedCosmosChain(chain) && walletType === CosmosWalletType.Ledger) {

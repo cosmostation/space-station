@@ -13,6 +13,10 @@ import chihuahuaToGravityBridgeTokens from 'constants/tokens/chihuahua-gb-tokens
 import gravityBridgeToChihuahuaTokens from 'constants/tokens/gb-chihuahua-tokens';
 import gravityBridgeToNyxTokens from 'constants/tokens/gb-nyx-tokens';
 import nyxToGravityBridgeTokens from 'constants/tokens/nyx-gb-tokens';
+import gravityBridgeToCrescentTokens from 'constants/tokens/gb-crescent-tokens.json';
+import crescentToGravityBridgeTokens from 'constants/tokens/crescent-gb-tokens.json';
+import gravityBridgeToSecretTokens from 'constants/tokens/gb-secret-tokens.json';
+import secretToGravityBridgeTokens from 'constants/tokens/secret-gb-tokens.json';
 import { SupportedChain } from 'types';
 
 export type CosmosTokenWithoutChainId = {
@@ -33,7 +37,9 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
     [SupportedChain.Cheqd]: gravityBridgeToCheqdTokens,
     [SupportedChain.Iris]: gravityBridgeToIrisTokens,
     [SupportedChain.Chihuahua]: gravityBridgeToChihuahuaTokens,
-    [SupportedChain.Nyx]: gravityBridgeToNyxTokens
+    [SupportedChain.Nyx]: gravityBridgeToNyxTokens,
+    [SupportedChain.Crescent]: gravityBridgeToCrescentTokens,
+    [SupportedChain.Secret]: gravityBridgeToSecretTokens
   },
   [SupportedChain.Stargaze]: {
     [SupportedChain.GravityBridge]: stargazeToGravityBridgeTokens
@@ -55,6 +61,12 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
   },
   [SupportedChain.Nyx]: {
     [SupportedChain.GravityBridge]: nyxToGravityBridgeTokens
+  },
+  [SupportedChain.Crescent]: {
+    [SupportedChain.GravityBridge]: crescentToGravityBridgeTokens
+  },
+  [SupportedChain.Secret]: {
+    [SupportedChain.GravityBridge]: secretToGravityBridgeTokens
   },
   [SupportedChain.Eth]: {}
 };

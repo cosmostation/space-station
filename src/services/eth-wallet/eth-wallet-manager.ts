@@ -17,12 +17,14 @@ import {
 } from 'types';
 
 import MetaMaskWallet from './meta-mask-wallet';
+import CosmostationWallet from './cosmostation-wallet';
 
 dotenv.config();
 const logger = loggerFactory.getLogger('[EthWalletManager]');
 
 const walletMap: Record<EthWalletType, IEthWallet> = {
-  [EthWalletType.MetaMask]: new MetaMaskWallet()
+  [EthWalletType.MetaMask]: new MetaMaskWallet(),
+  [EthWalletType.Cosmostation]: new CosmostationWallet()
 };
 
 const chainWalletTypeMap: Record<SupportedEthChain, EthWalletType | undefined> = {
@@ -123,7 +125,7 @@ function getAccountChangeEventHandler (chain: SupportedEthChain, wallet: IEthWal
   return async (accounts: string[]): Promise<void> => {
     logger.info('[accountChangeEventHandler] Chain:', chain);
     logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
-    if (!_.isEmpty(accounts)) {
+    if ((!_.isEmpty(accounts) && wallet.type === 'MetaMask') || wallet.type === 'Cosmostation') {
       const account = await wallet.getAccount();
       accountStore.updateAccount(chain, account, undefined);
     } else {

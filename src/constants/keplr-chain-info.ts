@@ -182,11 +182,105 @@ const nyx: ChainInfo = {
   features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
 };
 
+const crescent: ChainInfo = {
+  chainId: 'crescent-1',
+  chainName: 'CRESCENT',
+  rpc: 'https://mainnet.crescent.network:26657',
+  rest: 'https://lcd-crescent.cosmostation.io',
+  stakeCurrency: {
+    coinDenom: 'CRE',
+    coinMinimalDenom: 'ucre',
+    coinDecimals: 6,
+    coinGeckoId: '-'
+  },
+  bip44: {
+    coinType: 118
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'cre',
+    bech32PrefixAccPub: 'crepub',
+    bech32PrefixValAddr: 'crevaloper',
+    bech32PrefixValPub: 'crevaloperpub',
+    bech32PrefixConsAddr: 'crevalcons',
+    bech32PrefixConsPub: 'crevalconspub'
+  },
+  currencies: [
+    {
+      coinDenom: 'CRE',
+      coinMinimalDenom: 'ucre',
+      coinDecimals: 6,
+      coinGeckoId: '-'
+    }
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'CRE',
+      coinMinimalDenom: 'ucre',
+      coinDecimals: 6,
+      coinGeckoId: '-'
+    }
+  ],
+  gasPriceStep: {
+    low: 0.01,
+    high: 0.1,
+    average: 0.02
+  },
+  features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
+};
+
+const secret: ChainInfo = {
+  chainId: 'secret-4',
+  chainName: 'SECRET',
+  rpc: 'https://api.scrt.network:26657',
+  rest: 'https://api.scrt.network',
+  stakeCurrency: {
+    coinDenom: 'SCRT',
+    coinMinimalDenom: 'uscrt',
+    coinDecimals: 6,
+    coinGeckoId: 'secret'
+  },
+  bip44: {
+    coinType: 529
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'secret',
+    bech32PrefixAccPub: 'secretpub',
+    bech32PrefixValAddr: 'secretvaloper',
+    bech32PrefixValPub: 'secretvaloperpub',
+    bech32PrefixConsAddr: 'secretvalcons',
+    bech32PrefixConsPub: 'secretvalconspub'
+  },
+  currencies: [
+    {
+      coinDenom: 'SCRT',
+      coinMinimalDenom: 'uscrt',
+      coinDecimals: 6,
+      coinGeckoId: 'secret'
+    }
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'SCRT',
+      coinMinimalDenom: 'uscrt',
+      coinDecimals: 6,
+      coinGeckoId: 'secret'
+    }
+  ],
+  gasPriceStep: {
+    low: 0.01,
+    high: 0.1,
+    average: 0.02
+  },
+  features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
+};
+
 const chainInfoMap: Record<string, ChainInfo> = {
   gravityBridge,
   cheqd,
   chihuahua,
-  nyx
+  nyx,
+  crescent,
+  secret
 };
 
 export default chainInfoMap;

@@ -77,6 +77,11 @@
   background-size: 16px 16px;
 }
 
+.chain-selector-wallet-icon.Cosmostation {
+  background-image: url('../../images/cosmostation-icon.png');
+  background-size: 16px 16px;
+}
+
 .chain-selector-wallet-icon.Keplr {
   background-image: url('../../images/keplr-icon.png');
   background-size: 16px 16px;

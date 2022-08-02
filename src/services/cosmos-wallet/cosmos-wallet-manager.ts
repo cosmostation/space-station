@@ -9,6 +9,7 @@ import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
 import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
 import keplrWallet from 'services/cosmos-wallet/keplr-wallet';
 import ledgerCosmosWallet from 'services/cosmos-wallet/ledger-cosmos-wallet';
+import cosmostationWallet from 'services/cosmos-wallet/cosmostation-wallet';
 import loggerFactory from 'services/util/logger-factory';
 import typeHelper from 'services/util/type-helper';
 import accountStore from 'stores/account-store';
@@ -21,13 +22,15 @@ import {
   NetworkChangeEventHandler,
   SupportedCosmosChain,
 } from 'types';
+import chainInfoMap from 'constants/keplr-chain-info';
 
 dotenv.config();
 const logger = loggerFactory.getLogger('[CosmosWalletManager]');
 
 const walletMap: Record<CosmosWalletType, ICosmosWallet> = {
   [CosmosWalletType.Keplr]: keplrWallet,
-  [CosmosWalletType.Ledger]: ledgerCosmosWallet
+  [CosmosWalletType.Ledger]: ledgerCosmosWallet,
+  [CosmosWalletType.Cosmostation]: cosmostationWallet
 };
 
 const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefined> = {
@@ -38,7 +41,9 @@ const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefi
   [SupportedCosmosChain.Cheqd]: undefined,
   [SupportedCosmosChain.Iris]: undefined,
   [SupportedCosmosChain.Chihuahua]: undefined,
-  [SupportedCosmosChain.Nyx]: undefined
+  [SupportedCosmosChain.Nyx]: undefined,
+  [SupportedCosmosChain.Crescent]: undefined,
+  [SupportedCosmosChain.Secret]: undefined
 };
 
 const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
@@ -49,7 +54,9 @@ const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = 
   [SupportedCosmosChain.Cheqd]: undefined,
   [SupportedCosmosChain.Iris]: undefined,
   [SupportedCosmosChain.Chihuahua]: undefined,
-  [SupportedCosmosChain.Nyx]: undefined
+  [SupportedCosmosChain.Nyx]: undefined,
+  [SupportedCosmosChain.Crescent]: undefined,
+  [SupportedCosmosChain.Secret]: undefined
 };
 
 async function init (): Promise<void> {
@@ -146,12 +153,14 @@ async function signDirect (
   const txBody = cosmosTxService.createTxBody(messages, memo);
   logger.info('[signDirect] txBody:', txBody);
 
+  const baseDenom = chainInfo.chainName === 'Nyx' ? chainInfoMap.nyx.feeCurrencies[0].coinMinimalDenom : chainInfo.denom;
+
   const [accountNumber, sequence] = await getAccountInfo(chain, account.address);
   const mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT;
   const authInfo = cosmosTxService.getAuthInfo(
     account.pubKey,
     sequence,
-    chainInfo.denom,
+    baseDenom,
     feeAmount,
     new Long(gasLimit),
     mode
@@ -325,7 +334,7 @@ function getAccountChangeEventHandler (chain: SupportedCosmosChain, wallet: ICos
   return async (accounts: string[]): Promise<void> => {
     logger.info('[accountChangeEventHandler] Chain:', chain);
     logger.info('[accountChangeEventHandler] Updated accounts:', accounts);
-    if (!_.isEmpty(accounts)) {
+    if ((!_.isEmpty(accounts) && wallet.type !== 'Cosmostation') || wallet.type === 'Cosmostation') {
       const account = await wallet.getAccount(chainInfo);
       accountStore.updateAccount(chain, account, undefined);
     } else {
