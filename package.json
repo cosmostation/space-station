@@ -36,6 +36,7 @@
     "react": "^17.0.2",
     "react-blockies": "^1.4.1",
     "react-dom": "^17.0.2",
+    "react-ga4": "^1.4.1",
     "react-scripts": "^4.0.3",
     "react-toastify": "^8.1.0",
     "reset-css": "^5.0.1",
@@ -48,12 +49,12 @@
     "web3-utils": "^1.6.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "REACT_APP_GA=G-VEG6QT20YL react-scripts start",
+    "build": "REACT_APP_GA=G-VEG6QT20YL react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy:testnet": "yarn run build && aws s3 sync --cache-control max-age=0,public ./build/ s3://gb-eth",
-    "deploy:prod": "yarn run build && aws s3 sync --cache-control max-age=0,public ./build/ s3://spacestation.zone && aws cloudfront create-invalidation --distribution-id ESRVODSMBBH8C --paths '/*'"
+    "deploy:prod": "REACT_APP_GA=G-VEG6QT20YL yarn run build && aws s3 sync --cache-control max-age=0,public ./build/ s3://spacestation.zone && aws cloudfront create-invalidation --distribution-id ESRVODSMBBH8C --paths '/*'"
   },
   "eslintConfig": {
     "extends": [

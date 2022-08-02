@@ -1,17 +1,19 @@
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
-import classNames from 'classnames';
+import React, { useEffect } from 'react';
+
 import Footer from 'components/Footer';
 import Header from 'components/Header';
-import TransferBox from 'components/TransferBox';
-import dotenv from 'dotenv';
-import useTheme from 'hooks/use-theme';
-import React, { useEffect } from 'react';
-import { ToastContainer } from 'react-toastify';
-import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
-import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
 import { SupportedEthChain } from 'types';
+import { ToastContainer } from 'react-toastify';
+import TransferBox from 'components/TransferBox';
+import classNames from 'classnames';
+import cosmosWalletManager from 'services/cosmos-wallet/cosmos-wallet-manager';
+import dotenv from 'dotenv';
+import ethWalletManager from 'services/eth-wallet/eth-wallet-manager';
+import { initGA } from 'services/ga';
+import useTheme from 'hooks/use-theme';
 
 dotenv.config();
 
@@ -20,6 +22,10 @@ const App: React.FC = () => {
   useEffect(() => {
     cosmosWalletManager.init();
     ethWalletManager.init(SupportedEthChain.Eth);
+  }, []);
+
+  useEffect(() => {
+    initGA();
   }, []);
 
   return (
