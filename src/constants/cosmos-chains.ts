@@ -46,7 +46,7 @@ const osmosis: CosmosChainInfo = {
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-144'
   },
-  supportZeroFee: true
+  supportZeroFee: false
 };
 
 const stargaze: CosmosChainInfo = {
