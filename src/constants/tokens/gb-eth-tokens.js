@@ -1,6 +1,7 @@
 import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
 import NymLogo from 'images/nym-icon.png';
+import EvmosLogo from 'images/evmos-logo.png';
 
 export default {
   gravity0x6B175474E89094C44Da98b954EedeAC495271d0F: {
@@ -82,5 +83,13 @@ export default {
     decimals: 6,
     logoURI: NymLogo,
     priceDenom: 'unym'
+  },
+  'ibc/6B207CDA2448604B83A0674AADD830C490C1AAB7D568135E52589E96A00B6EEF': {
+    name: 'Evmos',
+    denom: 'ibc/6B207CDA2448604B83A0674AADD830C490C1AAB7D568135E52589E96A00B6EEF',
+    symbol: 'EVMOS',
+    decimals: 18,
+    logoURI: EvmosLogo,
+    priceDenom: 'aevmos'
   }
 };

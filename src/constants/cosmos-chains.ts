@@ -18,7 +18,8 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Chihuahua]: 'channel-34',
     [SupportedCosmosChain.Nyx]: 'channel-18',
     [SupportedCosmosChain.Crescent]: 'channel-62',
-    [SupportedCosmosChain.Secret]: 'channel-79'
+    [SupportedCosmosChain.Secret]: 'channel-79',
+    [SupportedCosmosChain.Evmos]: 'channel-65'
   },
   supportZeroFee: true
 };
@@ -113,6 +114,7 @@ const nyx: CosmosChainInfo = {
   },
   supportZeroFee: false
 };
+
 const crescent: CosmosChainInfo = {
   chainName: 'Crescent',
   chainId: 'crescent-1',
@@ -125,6 +127,7 @@ const crescent: CosmosChainInfo = {
   },
   supportZeroFee: false
 };
+
 const secret: CosmosChainInfo = {
   chainName: 'Secret',
   chainId: 'secret-4',
@@ -134,6 +137,19 @@ const secret: CosmosChainInfo = {
   denom: 'uscrt',
   ibcChannels: {
     [SupportedCosmosChain.GravityBridge]: 'channel-17'
+  },
+  supportZeroFee: false
+};
+
+const evmos: CosmosChainInfo = {
+  chainName: 'Evmos',
+  chainId: 'evmos_9001-2',
+  lcd: 'https://lcd-evmos.cosmostation.io',
+  bech32Prefix: 'evmos',
+  path: [44, 118, 0, 0, 0],
+  denom: 'aevmos',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-65'
   },
   supportZeroFee: false
 };
@@ -148,7 +164,8 @@ const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   chihuahua,
   nyx,
   crescent,
-  secret
+  secret,
+  evmos
 };
 
 export function findChainInfoByChainId (chainId: string): CosmosChainInfo | undefined {
