@@ -149,7 +149,7 @@ const evmos: CosmosChainInfo = {
   path: [44, 118, 0, 0, 0],
   denom: 'aevmos',
   ibcChannels: {
-    [SupportedCosmosChain.GravityBridge]: 'channel-65'
+    [SupportedCosmosChain.GravityBridge]: 'channel-8'
   },
   supportZeroFee: false
 };
