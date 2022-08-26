@@ -1,4 +1,4 @@
-import { SupportedChain, SupportedCosmosChain, BroadcastSource } from 'types';
+import { BroadcastSource, SupportedChain, SupportedCosmosChain } from 'types';
 
 const nameMap: Record<SupportedChain, string> = {
   [SupportedChain.Eth]: 'Ethereum',
@@ -42,7 +42,7 @@ const accountLinkMap: Record<SupportedChain, string> = {
   [SupportedChain.Nyx]: 'https://nym.explorers.guru/account',
   [SupportedChain.Crescent]: 'https://www.mintscan.io/crescent/account',
   [SupportedChain.Secret]: 'https://www.mintscan.io/secret/account',
-  [SupportedChain.Evmos]: 'https://evm.evmos.org/accounts'
+  [SupportedChain.Evmos]: 'https://www.mintscan.io/evmos/account'
 };
 
 const broadcastSourceMap: Record<SupportedCosmosChain, BroadcastSource> = {
