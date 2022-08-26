@@ -1,18 +1,3 @@
-import { AminoMsg, AminoSignResponse } from '@cosmjs/amino';
-import { DirectSignResponse } from '@cosmjs/proto-signing';
-import cosmosChains from 'constants/cosmos-chains';
-import { cosmos, google } from 'constants/cosmos-v0.44.5';
-import dotenv from 'dotenv';
-import _ from 'lodash';
-import Long from 'long';
-import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
-import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
-import keplrWallet from 'services/cosmos-wallet/keplr-wallet';
-import ledgerCosmosWallet from 'services/cosmos-wallet/ledger-cosmos-wallet';
-import cosmostationWallet from 'services/cosmos-wallet/cosmostation-wallet';
-import loggerFactory from 'services/util/logger-factory';
-import typeHelper from 'services/util/type-helper';
-import accountStore from 'stores/account-store';
 import {
   AccountChangeEventHandler,
   BroadcastSource,
@@ -22,7 +7,23 @@ import {
   NetworkChangeEventHandler,
   SupportedCosmosChain,
 } from 'types';
+import { AminoMsg, AminoSignResponse } from '@cosmjs/amino';
+import { cosmos, google } from 'constants/cosmos-v0.44.5';
+
+import { DirectSignResponse } from '@cosmjs/proto-signing';
+import Long from 'long';
+import _ from 'lodash';
+import accountStore from 'stores/account-store';
 import chainInfoMap from 'constants/keplr-chain-info';
+import cosmosChains from 'constants/cosmos-chains';
+import cosmosTxService from 'services/cosmos-tx/cosmos-tx-service';
+import cosmostationWallet from 'services/cosmos-wallet/cosmostation-wallet';
+import dotenv from 'dotenv';
+import keplrWallet from 'services/cosmos-wallet/keplr-wallet';
+import lcdService from 'services/cosmos-tx/cosmos-sdk-lcd-service';
+import ledgerCosmosWallet from 'services/cosmos-wallet/ledger-cosmos-wallet';
+import loggerFactory from 'services/util/logger-factory';
+import typeHelper from 'services/util/type-helper';
 
 dotenv.config();
 const logger = loggerFactory.getLogger('[CosmosWalletManager]');
@@ -43,7 +44,8 @@ const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefi
   [SupportedCosmosChain.Chihuahua]: undefined,
   [SupportedCosmosChain.Nyx]: undefined,
   [SupportedCosmosChain.Crescent]: undefined,
-  [SupportedCosmosChain.Secret]: undefined
+  [SupportedCosmosChain.Secret]: undefined,
+  [SupportedCosmosChain.Evmos]: undefined
 };
 
 const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
@@ -56,7 +58,8 @@ const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = 
   [SupportedCosmosChain.Chihuahua]: undefined,
   [SupportedCosmosChain.Nyx]: undefined,
   [SupportedCosmosChain.Crescent]: undefined,
-  [SupportedCosmosChain.Secret]: undefined
+  [SupportedCosmosChain.Secret]: undefined,
+  [SupportedCosmosChain.Evmos]: undefined
 };
 
 async function init (): Promise<void> {
@@ -163,7 +166,8 @@ async function signDirect (
     baseDenom,
     feeAmount,
     new Long(gasLimit),
-    mode
+    mode,
+    chain
   );
   logger.info('[signDirect] Auth Info:', authInfo);
 
@@ -301,9 +305,11 @@ async function getAccountInfo (chain: SupportedCosmosChain, address: string): Pr
     const accountInfo = await lcdService.getAccountInfo(chain, address);
     logger.info('[getAccountInfo] Account Info:', accountInfo);
     const accountNumber = _.get(accountInfo, 'base_vesting_account.base_account.account_number') ||
-      _.get(accountInfo, 'account_number');
+    _.get(accountInfo, 'base_account.account_number') ||
+    _.get(accountInfo, 'account_number');
     const sequence = _.get(accountInfo, 'base_vesting_account.base_account.sequence') ||
-      _.get(accountInfo, 'sequence');
+    _.get(accountInfo, 'base_account.sequence') ||
+    _.get(accountInfo, 'sequence');
 
     return [accountNumber, sequence];
   } catch (error) {

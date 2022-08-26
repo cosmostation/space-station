@@ -1,6 +1,7 @@
 import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
 import NymLogo from 'images/nym-icon.png';
+import EvmosLogo from 'images/evmos-logo.png';
 
 export default [
   {
@@ -92,5 +93,14 @@ export default [
     decimals: 6,
     logoURI: NymLogo,
     priceDenom: 'unym'
+  },
+  {
+    chainId: '0x1',
+    address: '0xBF183E0d2f06872e10F5DBEc745999aDfcB5f000',
+    name: 'Evmos',
+    symbol: 'EVMOS',
+    decimals: 18,
+    logoURI: EvmosLogo,
+    priceDenom: 'aevmos'
   }
 ];

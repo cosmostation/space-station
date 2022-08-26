@@ -274,13 +274,60 @@ const secret: ChainInfo = {
   features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
 };
 
+const evmos: ChainInfo = {
+  chainId: 'evmos_9001-2',
+  chainName: 'Evmos',
+  rpc: 'https://tendermint.bd.evmos.org:26657',
+  rest: 'https://rest.bd.evmos.org:1317',
+  stakeCurrency: {
+    coinDenom: 'EVMOS',
+    coinMinimalDenom: 'aevmos',
+    coinDecimals: 18,
+    coinGeckoId: 'evmos'
+  },
+  bip44: {
+    coinType: 60
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'evmos',
+    bech32PrefixAccPub: 'evmospub',
+    bech32PrefixValAddr: 'evmosvaloper',
+    bech32PrefixValPub: 'evmosvaloperpub',
+    bech32PrefixConsAddr: 'evmosvalcons',
+    bech32PrefixConsPub: 'evmosvalconspub'
+  },
+  currencies: [
+    {
+      coinDenom: 'EVMOS',
+      coinMinimalDenom: 'aevmos',
+      coinDecimals: 18,
+      coinGeckoId: 'evmos'
+    }
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'EVMOS',
+      coinMinimalDenom: 'aevmos',
+      coinDecimals: 18,
+      coinGeckoId: 'evmos'
+    }
+  ],
+  gasPriceStep: {
+    low: 25000000000,
+    average: 25000000000,
+    high: 40000000000
+  },
+  features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
+};
+
 const chainInfoMap: Record<string, ChainInfo> = {
   gravityBridge,
   cheqd,
   chihuahua,
   nyx,
   crescent,
-  secret
+  secret,
+  evmos
 };
 
 export default chainInfoMap;
