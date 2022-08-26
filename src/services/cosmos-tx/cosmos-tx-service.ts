@@ -1,7 +1,9 @@
-import { DirectSignResponse } from '@cosmjs/proto-signing';
+import { AminoMsg, AminoSignResponse, StdFee, StdSignDoc, makeSignDoc } from '@cosmjs/amino';
 import { cosmos, google } from 'constants/cosmos-v0.44.5';
+
+import { DirectSignResponse } from '@cosmjs/proto-signing';
 import Long from 'long';
-import { AminoMsg, StdSignDoc, makeSignDoc, StdFee, AminoSignResponse } from '@cosmjs/amino';
+import { SupportedCosmosChain } from 'types';
 import _ from 'lodash';
 
 function createTxBody (messages: google.protobuf.IAny[], memo: string): cosmos.tx.v1beta1.TxBody {
@@ -14,13 +16,17 @@ function getAuthInfo (
   feeDenom: string,
   feeAmount: string,
   gasLimit: Long,
-  mode: cosmos.tx.signing.v1beta1.SignMode
+  mode: cosmos.tx.signing.v1beta1.SignMode,
+  chain: SupportedCosmosChain
 ): cosmos.tx.v1beta1.AuthInfo {
   const publicKeyProto = new cosmos.crypto.secp256k1.PubKey({ key: publicKey });
-
+  let typeUrl = '/cosmos.crypto.secp256k1.PubKey';
+  if (chain === SupportedCosmosChain.Evmos) {
+    typeUrl = '/ethermint.crypto.v1.ethsecp256k1.PubKey';
+  }
   const signerInfo = new cosmos.tx.v1beta1.SignerInfo({
     public_key: new google.protobuf.Any({
-      type_url: '/cosmos.crypto.secp256k1.PubKey',
+      type_url: typeUrl,
       value: cosmos.crypto.secp256k1.PubKey.encode(publicKeyProto).finish()
     }),
     mode_info: { single: { mode } },
