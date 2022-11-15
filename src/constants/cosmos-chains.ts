@@ -19,7 +19,8 @@ const gravityBridge: CosmosChainInfo = {
     [SupportedCosmosChain.Nyx]: 'channel-18',
     [SupportedCosmosChain.Crescent]: 'channel-62',
     [SupportedCosmosChain.Secret]: 'channel-79',
-    [SupportedCosmosChain.Evmos]: 'channel-65'
+    [SupportedCosmosChain.Evmos]: 'channel-65',
+    [SupportedCosmosChain.Unification]: 'channel-98'
   },
   supportZeroFee: true
 };
@@ -154,6 +155,19 @@ const evmos: CosmosChainInfo = {
   supportZeroFee: false
 };
 
+const unification: CosmosChainInfo = {
+  chainName: 'Unification',
+  chainId: 'FUND-MainNet-2',
+  lcd: 'https://rest.unification.io',
+  bech32Prefix: 'und',
+  path: [44, 5555, 0, 0, 0],
+  denom: 'nund',
+  ibcChannels: {
+    [SupportedCosmosChain.GravityBridge]: 'channel-2'
+  },
+  supportZeroFee: false
+};
+
 const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   gravityBridge,
   cosmos,
@@ -165,7 +179,8 @@ const chainInfoMap: Record<SupportedCosmosChain, CosmosChainInfo> = {
   nyx,
   crescent,
   secret,
-  evmos
+  evmos,
+  unification
 };
 
 export function findChainInfoByChainId (chainId: string): CosmosChainInfo | undefined {

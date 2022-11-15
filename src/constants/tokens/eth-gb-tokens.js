@@ -2,6 +2,7 @@ import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
 import NymLogo from 'images/nym-icon.png';
 import EvmosLogo from 'images/evmos-logo.png';
+import UnificationLogo from 'images/unification-logo.png';
 
 export default [
   {
@@ -102,5 +103,14 @@ export default [
     decimals: 18,
     logoURI: EvmosLogo,
     priceDenom: 'aevmos'
+  },
+  {
+    chainId: '0x1',
+    address: '0xe9B076B476D8865cDF79D1Cf7DF420EE397a7f75',
+    name: 'Unification',
+    symbol: 'FUND',
+    decimals: 9,
+    logoURI: UnificationLogo,
+    priceDenom: 'nund'
   }
 ];

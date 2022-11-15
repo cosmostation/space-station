@@ -45,7 +45,8 @@ const chainWalletTypeMap: Record<SupportedCosmosChain, CosmosWalletType | undefi
   [SupportedCosmosChain.Nyx]: undefined,
   [SupportedCosmosChain.Crescent]: undefined,
   [SupportedCosmosChain.Secret]: undefined,
-  [SupportedCosmosChain.Evmos]: undefined
+  [SupportedCosmosChain.Evmos]: undefined,
+  [SupportedCosmosChain.Unification]: undefined
 };
 
 const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = {
@@ -59,7 +60,8 @@ const chainWalletMap: Record<SupportedCosmosChain, ICosmosWallet | undefined> = 
   [SupportedCosmosChain.Nyx]: undefined,
   [SupportedCosmosChain.Crescent]: undefined,
   [SupportedCosmosChain.Secret]: undefined,
-  [SupportedCosmosChain.Evmos]: undefined
+  [SupportedCosmosChain.Evmos]: undefined,
+  [SupportedCosmosChain.Unification]: undefined
 };
 
 async function init (): Promise<void> {

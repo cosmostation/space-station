@@ -2,6 +2,7 @@ import CheqdChainLogo from 'images/cheqd-chain-logo.png';
 import ChihuahuaChainLogo from 'images/chihuahua-chain-logo.png';
 import NymLogo from 'images/nym-icon.png';
 import EvmosLogo from 'images/evmos-logo.png';
+import UnificationLogo from 'images/unification-logo.png';
 
 export default {
   gravity0x6B175474E89094C44Da98b954EedeAC495271d0F: {
@@ -91,5 +92,13 @@ export default {
     decimals: 18,
     logoURI: EvmosLogo,
     priceDenom: 'aevmos'
+  },
+  'ibc/D157AD8A50DAB0FC4EB95BBE1D9407A590FA2CDEE04C90A76C005089BF76E519': {
+    name: 'Unification',
+    denom: 'ibc/D157AD8A50DAB0FC4EB95BBE1D9407A590FA2CDEE04C90A76C005089BF76E519',
+    symbol: 'FUND',
+    decimals: 9,
+    logoURI: UnificationLogo,
+    priceDenom: 'nund'
   }
 };
