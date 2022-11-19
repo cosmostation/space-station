@@ -19,6 +19,8 @@ import gravityBridgeToSecretTokens from 'constants/tokens/gb-secret-tokens.json'
 import secretToGravityBridgeTokens from 'constants/tokens/secret-gb-tokens.json';
 import gravityBridgeToEvmosTokens from 'constants/tokens/gb-evmos-tokens';
 import evmosToGravityBridgeTokens from 'constants/tokens/evmos-gb-tokens';
+import gravityBridgeToUnificationTokens from 'constants/tokens/gb-unification-tokens';
+import unificationToGravityBridgeTokens from 'constants/tokens/unification-gb-tokens';
 import { SupportedChain } from 'types';
 
 export type CosmosTokenWithoutChainId = {
@@ -42,7 +44,8 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
     [SupportedChain.Nyx]: gravityBridgeToNyxTokens,
     [SupportedChain.Crescent]: gravityBridgeToCrescentTokens,
     [SupportedChain.Secret]: gravityBridgeToSecretTokens,
-    [SupportedChain.Evmos]: gravityBridgeToEvmosTokens
+    [SupportedChain.Evmos]: gravityBridgeToEvmosTokens,
+    [SupportedChain.Unification]: gravityBridgeToUnificationTokens
   },
   [SupportedChain.Stargaze]: {
     [SupportedChain.GravityBridge]: stargazeToGravityBridgeTokens
@@ -73,6 +76,9 @@ export const ibcTokenFromToMap: Record<SupportedChain, { [key in SupportedChain]
   },
   [SupportedChain.Evmos]: {
     [SupportedChain.GravityBridge]: evmosToGravityBridgeTokens
+  },
+  [SupportedChain.Unification]: {
+    [SupportedChain.GravityBridge]: unificationToGravityBridgeTokens
   },
   [SupportedChain.Eth]: {}
 };

@@ -2,8 +2,8 @@ import './ChainSelector.css';
 
 import {
   ChainViewInfo,
-  CosmosWalletType,
   CosmostationPendingRequestError,
+  CosmosWalletType,
   EthWalletType,
   MetaMaskPendingRequestError,
   NoCosmostationWalletError,
@@ -31,6 +31,7 @@ import NyxChainLogo from 'images/nyx-chain-logo.png';
 import OsmosisChainLogo from 'images/osmosis-chain-logo.png';
 import SecretChainLogo from 'images/secret-chain-logo.png';
 import StargazeChainLogo from 'images/stargaze-chain-logo.png';
+import UnificationChainLogo from 'images/unification-chain-logo.png';
 import Text from 'components/Text';
 import WalletSelectDialog from 'components/WalletSelectDialog';
 import _ from 'lodash';
@@ -84,7 +85,8 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
       SupportedChain.Nyx,
       SupportedChain.Crescent,
       SupportedChain.Secret,
-      SupportedChain.Evmos
+      SupportedChain.Evmos,
+      SupportedChain.Unification
     ],
     head: 8,
     tail: 8
@@ -204,6 +206,17 @@ const SUPPORTED_CHAIN_MAP: Record<SupportedChain, ChainViewInfo> = {
     supportedWallets: [
       CosmosWalletType.Keplr,
       CosmosWalletType.Cosmostation
+    ],
+    toChains: [SupportedChain.GravityBridge],
+    head: 8,
+    tail: 8
+  },
+  [SupportedChain.Unification]: {
+    chain: SupportedChain.Unification,
+    name: 'Unification',
+    image: UnificationChainLogo,
+    supportedWallets: [
+      CosmosWalletType.Keplr
     ],
     toChains: [SupportedChain.GravityBridge],
     head: 8,

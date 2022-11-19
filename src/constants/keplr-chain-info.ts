@@ -320,6 +320,52 @@ const evmos: ChainInfo = {
   features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
 };
 
+const unification: ChainInfo = {
+  chainId: 'FUND-MainNet-2',
+  chainName: 'Unification',
+  rpc: 'https://rpc1.unification.io',
+  rest: 'https://rest.unification.io',
+  stakeCurrency: {
+    coinDenom: 'FUND',
+    coinMinimalDenom: 'nund',
+    coinDecimals: 9,
+    coinGeckoId: 'unification'
+  },
+  bip44: {
+    coinType: 5555
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'und',
+    bech32PrefixAccPub: 'undpub',
+    bech32PrefixValAddr: 'undvaloper',
+    bech32PrefixValPub: 'undvaloperpub',
+    bech32PrefixConsAddr: 'undvalcons',
+    bech32PrefixConsPub: 'undvalconspub'
+  },
+  currencies: [
+    {
+      coinDenom: 'FUND',
+      coinMinimalDenom: 'nund',
+      coinDecimals: 9,
+      coinGeckoId: 'unification'
+    }
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'FUND',
+      coinMinimalDenom: 'nund',
+      coinDecimals: 9,
+      coinGeckoId: 'unification'
+    }
+  ],
+  gasPriceStep: {
+    low: 25,
+    average: 50,
+    high: 100
+  },
+  features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
+};
+
 const chainInfoMap: Record<string, ChainInfo> = {
   gravityBridge,
   cheqd,
@@ -327,7 +373,8 @@ const chainInfoMap: Record<string, ChainInfo> = {
   nyx,
   crescent,
   secret,
-  evmos
+  evmos,
+  unification
 };
 
 export default chainInfoMap;

@@ -25,7 +25,8 @@ export enum SupportedChain {
   Nyx = 'nyx',
   Crescent = 'crescent',
   Secret = 'secret',
-  Evmos = 'evmos'
+  Evmos = 'evmos',
+  Unification = 'unification'
 }
 
 export enum SupportedEthChain {
@@ -43,7 +44,8 @@ export enum SupportedCosmosChain {
   Nyx = 'nyx',
   Crescent = 'crescent',
   Secret = 'secret',
-  Evmos = 'evmos'
+  Evmos = 'evmos',
+  Unification = 'unification'
 }
 
 export interface IERC20Token {
