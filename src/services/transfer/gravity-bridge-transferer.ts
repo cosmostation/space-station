@@ -164,25 +164,31 @@ function isSendCosmosResponse (response: unknown): response is SendToCosmosRespo
   return (response as SendToCosmosResponse).transactionHash !== undefined;
 }
 
-function getFees (fromChain: SupportedChain, token: IToken, tokenPrice: string): BridgeFee[] {
+function getFees (fromChain: SupportedChain, token: IToken, tokenPrice: string, amount?: string): BridgeFee[] {
   if (fromChain === SupportedChain.GravityBridge) {
+    const chainFeeRate = '0.0002';
+
+    const chainFee = Big(amount || '0').times(chainFeeRate).round(6, Big.roundDown).toString();
+
     if (token.erc20) {
       const erc20Token = token.erc20;
-      return _.map([10, 200, 500], (usdFee, i) => ({
+      return _.map([4, 14, 23], (usdFee, i) => ({
         id: i,
         label: getFeeLabel(usdFee),
         denom: erc20Token.symbol,
         amount: Big(usdFee).div(tokenPrice).round(6, Big.roundDown).toString(),
-        amountInCurrency: usdFee.toString()
+        amountInCurrency: usdFee.toString(),
+        chainFee
       }));
     } else if (token.cosmos) {
       const cosmosToken = token.cosmos;
-      return _.map([10, 200, 500], (usdFee, i) => ({
+      return _.map([1, 10, 18], (usdFee, i) => ({
         id: i,
         label: getFeeLabel(usdFee),
         denom: cosmosToken.symbol,
         amount: Big(usdFee).div(tokenPrice).round(6, Big.roundDown).toString(),
-        amountInCurrency: usdFee.toString()
+        amountInCurrency: usdFee.toString(),
+        chainFee
       }));
     }
   }
@@ -192,9 +198,15 @@ function getFees (fromChain: SupportedChain, token: IToken, tokenPrice: string):
 
 function getFeeLabel (usdFee: number): string {
   switch (usdFee) {
-    case 10: return 'Average 4 hours';
-    case 200: return 'Within an hour';
-    case 500: return 'Instantly';
+    case 1:
+    case 4:
+      return 'up to 24h';
+    case 10:
+    case 14:
+      return 'up to 4h';
+    case 18:
+    case 23:
+      return 'Instantly';
     default: return 'Unknown';
   }
 }
