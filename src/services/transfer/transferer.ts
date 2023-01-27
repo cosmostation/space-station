@@ -21,9 +21,9 @@ function needBridgeFee (fromChain: SupportedChain, toChain: SupportedChain): boo
   return false;
 }
 
-function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: IToken, tokenPrice: string): BridgeFee[] {
+function getFees (fromChain: SupportedChain, toChain: SupportedChain, token: IToken, tokenPrice: string, amount?: string): BridgeFee[] {
   if (gravityBridgeTransferer.isGravityBridgeTransfer(fromChain, toChain)) {
-    return gravityBridgeTransferer.getFees(fromChain, token, tokenPrice);
+    return gravityBridgeTransferer.getFees(fromChain, token, tokenPrice, amount);
   }
   return [];
 }

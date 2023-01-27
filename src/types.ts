@@ -237,6 +237,7 @@ export interface BridgeFee {
   label: string;
   denom: string;
   amount: string;
+  chainFee: string;
   amountInCurrency: string;
 }
 

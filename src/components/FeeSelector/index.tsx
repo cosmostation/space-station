@@ -38,7 +38,7 @@ const FeeSelector: React.FC<FeeSelectorProps> = ({ fromChain, toChain, selectedT
   const priceDenom = getPriceDenom(selectedToken);
   const tokenPrice = usePrice(currency, priceDenom);
   const _tokenPrice = new Big(tokenPrice?.current_price || '1').toString();
-  const fees = transferer.getFees(fromChain, toChain, selectedToken, _tokenPrice);
+  const fees = transferer.getFees(fromChain, toChain, selectedToken, _tokenPrice, amount);
   logger.info('denom:', priceDenom, 'Fees:', fees);
 
   useEffect(() => {
