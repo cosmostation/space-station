@@ -182,7 +182,7 @@ function getFees (fromChain: SupportedChain, token: IToken, tokenPrice: string, 
       }));
     } else if (token.cosmos) {
       const cosmosToken = token.cosmos;
-      return _.map([1, 10, 18], (usdFee, i) => ({
+      return _.map([4, 14, 23], (usdFee, i) => ({
         id: i,
         label: getFeeLabel(usdFee),
         denom: cosmosToken.symbol,
