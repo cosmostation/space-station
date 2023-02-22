@@ -26,6 +26,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     initGA();
+    window.location.href = 'https://bridge.blockscape.network';
   }, []);
 
   return (
